@@ -1,16 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // Penting untuk mengatur warna status bar
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart'; // Import Provider
 import 'package:apkbooking/core/app_colors.dart';
 import 'package:apkbooking/views/main_screen.dart';
+import 'package:apkbooking/providers/booking_provider.dart'; // Import BookingProvider
 
 void main() {
-  // Memastikan aplikasi hanya berorientasi portrait agar layout tidak rusak
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  runApp(const MyApp());
+  runApp(
+    // Evolusi: Bungkus aplikasi di level paling atas dengan MultiProvider
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => BookingProvider()),
+        // Jika nanti ada AuthProvider atau GorProvider, tinggal tambah di sini
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -19,7 +29,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: const Size(360, 800), // Ukuran 800 lebih ideal untuk standar layar modern
+      designSize: const Size(360, 800),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
@@ -28,22 +38,17 @@ class MyApp extends StatelessWidget {
           title: 'Sport Booking App',
           theme: ThemeData(
             useMaterial3: true,
-            // Warna dasar dari palet AppColors kita
             colorScheme: ColorScheme.fromSeed(
               seedColor: AppColors.primary,
               primary: AppColors.primary,
               surface: AppColors.surface,
             ),
-            // Font Poppins terintegrasi global
             textTheme: GoogleFonts.poppinsTextTheme(),
-
-            // --- Global Styles (Efisiensi Kode) ---
             scaffoldBackgroundColor: AppColors.background,
-
-            // AppBar otomatis mengikuti tema aplikasi
             appBarTheme: AppBarTheme(
               backgroundColor: AppColors.surface,
               elevation: 0,
+              centerTitle: true, // Tambahan: Biar semua AppBar otomatis center
               titleTextStyle: GoogleFonts.poppins(
                 color: AppColors.textDark,
                 fontSize: 18.sp,
@@ -51,13 +56,12 @@ class MyApp extends StatelessWidget {
               ),
               iconTheme: const IconThemeData(color: AppColors.textDark),
             ),
-
-            // Button otomatis mengikuti style primary
             elevatedButtonTheme: ElevatedButtonThemeData(
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
                 elevation: 0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
                 textStyle: TextStyle(fontWeight: FontWeight.w600, fontSize: 14.sp),
               ),
             ),
