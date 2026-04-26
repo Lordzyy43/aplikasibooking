@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:apkbooking/core/app_colors.dart';
-import 'package:apkbooking/views/home/home_page.dart';
-import 'package:apkbooking/views/profile/profile_page.dart';
-import 'package:apkbooking/views/gor/gor_list_page.dart'; // Import halaman list GOR baru
+import '../../core/app_colors.dart';
+import 'home/home_page.dart';
+import 'venue/venue_list_page.dart';
+// import 'notification/notification_page.dart';
+import 'profile/profile_page.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -15,28 +16,29 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
-  // Evolusi: BookingPage dihapus dari sini karena dipanggil via Navigator dari Detail GOR
+  // 5 Halaman sesuai urutan navigasi di mockup
   final List<Widget> _pages = [
-    const HomePage(),
-    const GorListPage(), // Tab 2: Sekarang berisi daftar eksplorasi GOR
-    _buildPlaceholder("Riwayat Booking"), // Tab 3: Riwayat transaksi user
-    const ProfilePage(), // Tab 4: Profil
+    const HomePage(), // Index 0
+    const VenueListPage(), // Index 1 (EXPLORE)
+    _buildPlaceholder("My Bookings"), // Index 2 (BOOKINGS)
+    _buildPlaceholder("Alerts"), // Index 3 (ALERTS)
+    const ProfilePage(), // Index 4 (PROFILE)
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      // Menggunakan IndexedStack agar state halaman tidak hilang saat pindah tab
       body: IndexedStack(index: _selectedIndex, children: _pages),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,
+          border: const Border(top: BorderSide(color: AppColors.divider, width: 0.5)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 15,
-              offset: const Offset(0, -3),
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
             ),
           ],
         ),
@@ -47,29 +49,34 @@ class _MainScreenState extends State<MainScreen> {
             selectedItemColor: AppColors.primary,
             unselectedItemColor: AppColors.textMuted,
             backgroundColor: Colors.transparent,
-            type: BottomNavigationBarType.fixed,
+            type: BottomNavigationBarType.fixed, // Wajib fixed kalau 5 menu
             elevation: 0,
-            selectedLabelStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
-            unselectedLabelStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+            selectedLabelStyle: const TextStyle(
+              fontSize: 9,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.2,
+            ),
+            unselectedLabelStyle: const TextStyle(fontSize: 9, fontWeight: FontWeight.w500),
             items: const [
               BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.house, size: 20),
-                label: "Home",
+                icon: FaIcon(FontAwesomeIcons.house, size: 18),
+                label: "HOME",
               ),
               BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.mapLocationDot, size: 20),
-                label: "Eksplor", // Ganti label agar lebih intuitif
+                icon: FaIcon(FontAwesomeIcons.magnifyingGlass, size: 18),
+                label: "EXPLORE",
               ),
               BottomNavigationBarItem(
-                icon: FaIcon(
-                  FontAwesomeIcons.clockRotateLeft,
-                  size: 20,
-                ), // Icon riwayat lebih cocok
-                label: "Riwayat",
+                icon: FaIcon(FontAwesomeIcons.calendarCheck, size: 18),
+                label: "BOOKINGS",
               ),
               BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.user, size: 20),
-                label: "Profile",
+                icon: FaIcon(FontAwesomeIcons.bell, size: 18),
+                label: "ALERTS",
+              ),
+              BottomNavigationBarItem(
+                icon: FaIcon(FontAwesomeIcons.user, size: 18),
+                label: "PROFILE",
               ),
             ],
           ),
@@ -80,16 +87,9 @@ class _MainScreenState extends State<MainScreen> {
 
   static Widget _buildPlaceholder(String title) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          FaIcon(FontAwesomeIcons.boxOpen, size: 50, color: AppColors.textMuted.withOpacity(0.3)),
-          const SizedBox(height: 10),
-          Text(
-            title,
-            style: const TextStyle(color: AppColors.textMuted, fontWeight: FontWeight.w500),
-          ),
-        ],
+      child: Text(
+        title,
+        style: const TextStyle(color: AppColors.textMuted, fontWeight: FontWeight.bold),
       ),
     );
   }
