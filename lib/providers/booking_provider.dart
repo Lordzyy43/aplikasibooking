@@ -1,37 +1,43 @@
 import 'package:flutter/material.dart';
-import '../models/booking_model.dart';
 
 class BookingProvider extends ChangeNotifier {
-  String? selectedField;
-  DateTime selectedDate = DateTime.now();
-  String? selectedTime;
+  // 1. Data State
+  DateTime _selectedDate = DateTime.now();
+  String? _selectedTime;
+  String? _selectedField;
 
-  final List<String> fields = ["Lapangan Futsal A", "Lapangan Futsal B", "Lapangan Badminton"];
+  // 2. Getter (Buat ambil data ke UI)
+  DateTime get selectedDate => _selectedDate;
+  String? get selectedTime => _selectedTime;
+  String? get selectedField => _selectedField;
 
-  final List<String> times = ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00"];
+  // 3. Setter / Action (Tangan buat nerima data dari UI)
 
-  final List<BookingModel> bookings = [];
+  // Fungsi untuk set tanggal
+  void setDate(DateTime date) {
+    _selectedDate = date;
+    // Setiap kali ganti tanggal, reset jamnya biar user pilih ulang
+    _selectedTime = null;
+    notifyListeners(); // Ini penting biar UI tau ada perubahan!
+  }
 
-  void selectField(String field) {
-    selectedField = field;
+  // Fungsi untuk set jam
+  void setTime(String time) {
+    _selectedTime = time;
     notifyListeners();
   }
 
-  void selectDate(DateTime date) {
-    selectedDate = date;
+  // Fungsi untuk set nama lapangan
+  void setSelectedField(String fieldName) {
+    _selectedField = fieldName;
     notifyListeners();
   }
 
-  void selectTime(String time) {
-    selectedTime = time;
-    notifyListeners();
-  }
-
-  void createBooking() {
-    if (selectedField == null || selectedTime == null) return;
-
-    bookings.add(BookingModel(fieldName: selectedField!, date: selectedDate, time: selectedTime!));
-
+  // Bonus: Fungsi reset kalau booking batal/selesai
+  void resetBooking() {
+    _selectedDate = DateTime.now();
+    _selectedTime = null;
+    _selectedField = null;
     notifyListeners();
   }
 }
