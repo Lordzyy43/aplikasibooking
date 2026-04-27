@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../main_screen.dart';
 import '../../core/app_colors.dart';
+import '../history/mybooking_page.dart';
 
 class PaymentSuccessPage extends StatelessWidget {
   const PaymentSuccessPage({super.key});
@@ -54,10 +55,9 @@ class PaymentSuccessPage extends StatelessWidget {
               label: "Lihat Tiket Saya",
               isPrimary: true,
               onPressed: () {
-                Navigator.pushAndRemoveUntil(
+                Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const MainScreen()),
-                  (route) => false,
+                  MaterialPageRoute(builder: (context) => const MyBookingPage()),
                 );
               },
             ),
