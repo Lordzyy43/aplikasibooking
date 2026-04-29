@@ -1,1 +1,128 @@
+import '../../models/venue_model.dart';
 
+class GorService {
+  const GorService();
+
+  List<VenueModel> getVenues() {
+    const commonTimes = [
+      '08:00',
+      '09:00',
+      '10:00',
+      '11:00',
+      '13:00',
+      '14:00',
+      '15:00',
+      '16:00',
+      '19:00',
+      '20:00',
+      '21:00',
+      '22:00',
+    ];
+
+    return const [
+      VenueModel(
+        id: 'stadium-atelier',
+        name: 'Stadium Atelier',
+        location: 'Olympic Sports Complex, Solo Baru, Sukoharjo',
+        distanceKm: 1.2,
+        imageUrl: 'https://picsum.photos/id/101/800/600',
+        rating: 4.8,
+        reviewCount: 120,
+        pricePerHour: 120000,
+        sports: ['Badminton', 'Tennis'],
+        amenities: ['WiFi', 'Shower', 'Socket', 'Mineral', 'Parkir'],
+        statusLabel: 'OPEN',
+        description: 'Premium indoor venue with concierge-style service and clean modern courts.',
+        courts: [
+          VenueCourtModel(
+            id: 'court-01',
+            name: 'Grand Court 01',
+            imageUrl: 'https://picsum.photos/seed/court0/800/600',
+            surface: 'Vinyl Premium',
+            environment: 'Indoor',
+            pricePerHour: 100000,
+            specs: {'Lantai': 'Vinyl Premium', 'Lampu': 'LED High-Bay', 'Ventilasi': 'Exhaust Fan Pro'},
+            availableTimes: commonTimes,
+            bookedTimes: ['10:00', '14:00'],
+          ),
+          VenueCourtModel(
+            id: 'court-02',
+            name: 'Grand Court 02',
+            imageUrl: 'https://picsum.photos/seed/court1/800/600',
+            surface: 'Interlock Pro',
+            environment: 'Indoor',
+            pricePerHour: 100000,
+            specs: {'Lantai': 'Interlock Pro', 'Lampu': 'LED Match', 'Ventilasi': 'Air Flow Plus'},
+            availableTimes: commonTimes,
+            bookedTimes: ['09:00', '20:00'],
+          ),
+          VenueCourtModel(
+            id: 'court-03',
+            name: 'Grand Court 03',
+            imageUrl: 'https://picsum.photos/seed/court2/800/600',
+            surface: 'Rubber Shock',
+            environment: 'Indoor',
+            pricePerHour: 110000,
+            specs: {'Lantai': 'Rubber Shock', 'Lampu': 'LED High-Bay', 'Ventilasi': 'Air Flow Plus'},
+            availableTimes: commonTimes,
+            bookedTimes: ['11:00', '21:00'],
+          ),
+        ],
+      ),
+      VenueModel(
+        id: 'grand-slam',
+        name: 'Grand Slam Arena',
+        location: 'Solo Center District',
+        distanceKm: 2.4,
+        imageUrl: 'https://picsum.photos/seed/51/800/600',
+        rating: 4.9,
+        reviewCount: 98,
+        pricePerHour: 95000,
+        sports: ['Tennis'],
+        amenities: ['WiFi', 'Shower', 'Parkir'],
+        statusLabel: 'OPEN',
+        description: 'Bright training courts with tournament-standard lighting.',
+        courts: [
+          VenueCourtModel(
+            id: 'grand-a',
+            name: 'Center Court',
+            imageUrl: 'https://picsum.photos/seed/tennis1/800/600',
+            surface: 'Synthetic Acrylic',
+            environment: 'Indoor',
+            pricePerHour: 95000,
+            specs: {'Lantai': 'Synthetic Acrylic', 'Lampu': 'Focus LED', 'Ventilasi': 'Cross Flow'},
+            availableTimes: commonTimes,
+            bookedTimes: ['15:00'],
+          ),
+        ],
+      ),
+      VenueModel(
+        id: 'smash-club',
+        name: 'The Smash Club',
+        location: 'Kartasura Sports Hub',
+        distanceKm: 3.1,
+        imageUrl: 'https://picsum.photos/seed/52/800/600',
+        rating: 4.7,
+        reviewCount: 144,
+        pricePerHour: 85000,
+        sports: ['Badminton'],
+        amenities: ['WiFi', 'Mineral', 'Parkir'],
+        statusLabel: 'OPEN',
+        description: 'Fast and friendly badminton club for weekly sparring and league nights.',
+        courts: [
+          VenueCourtModel(
+            id: 'smash-a',
+            name: 'Court A',
+            imageUrl: 'https://picsum.photos/seed/badminton1/800/600',
+            surface: 'Wood Finish',
+            environment: 'Indoor',
+            pricePerHour: 85000,
+            specs: {'Lantai': 'Wood Finish', 'Lampu': 'Daylight LED', 'Ventilasi': 'Smart Fan'},
+            availableTimes: commonTimes,
+            bookedTimes: ['08:00', '16:00'],
+          ),
+        ],
+      ),
+    ];
+  }
+}

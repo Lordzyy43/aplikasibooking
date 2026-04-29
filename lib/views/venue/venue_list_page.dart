@@ -1,7 +1,11 @@
+import 'package:apkbooking/core/app_colors.dart';
+import 'package:apkbooking/core/utils/currency_formatter.dart';
+import 'package:apkbooking/models/venue_model.dart';
+import 'package:apkbooking/providers/app_data_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:apkbooking/core/app_colors.dart';
+import 'package:provider/provider.dart';
 import 'venue_detail_page.dart';
 
 class VenueListPage extends StatefulWidget {
@@ -13,40 +17,44 @@ class VenueListPage extends StatefulWidget {
 
 class _VenueListPageState extends State<VenueListPage> {
   int selectedCategory = 0;
-  final List<String> sports = ["All", "Futsal", "Badminton", "Basketball", "Tennis"];
 
   @override
   Widget build(BuildContext context) {
+    final appData = context.watch<AppDataProvider>();
+    final sports = appData.sportsCategories;
+    final selectedSport = sports[selectedCategory];
+    final venues = _filterVenues(appData.venues, selectedSport);
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
         title: Text(
-          "Explore Venues",
+          'Explore Venues',
           style: TextStyle(
             color: AppColors.textPrimary,
-            fontWeight: FontWeight.bold,
-            fontSize: 18.sp,
+            fontWeight: FontWeight.w800,
+            fontSize: 20.sp,
           ),
         ),
         actions: [
           IconButton(
             onPressed: () {},
-            icon: const FaIcon(FontAwesomeIcons.sliders, color: AppColors.primary, size: 18),
+            icon: const FaIcon(
+              FontAwesomeIcons.sliders,
+              color: AppColors.primary,
+              size: 18,
+            ),
           ),
         ],
       ),
       body: Column(
         children: [
-          _buildFilterTabs(),
+          _buildFilterTabs(sports),
           Expanded(
             child: ListView.builder(
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-              itemCount: 5,
-              itemBuilder: (context, index) {
-                return _buildGorCard(context, index);
-              },
+              itemCount: venues.length,
+              itemBuilder: (context, index) => _buildGorCard(context, venues[index]),
             ),
           ),
         ],
@@ -54,33 +62,39 @@ class _VenueListPageState extends State<VenueListPage> {
     );
   }
 
-  // Widget Filter Olahraga
-  Widget _buildFilterTabs() {
-    return Container(
-      height: 50.h,
-      margin: EdgeInsets.symmetric(vertical: 10.h),
+  List<VenueModel> _filterVenues(List<VenueModel> venues, String selectedSport) {
+    if (selectedSport == 'All') {
+      return venues;
+    }
+    return venues.where((venue) => venue.sports.contains(selectedSport)).toList();
+  }
+
+  Widget _buildFilterTabs(List<String> sports) {
+    return SizedBox(
+      height: 52.h,
       child: ListView.builder(
-        padding: EdgeInsets.only(left: 20.w),
+        padding: EdgeInsets.only(left: 20.w, top: 6.h, bottom: 6.h),
         scrollDirection: Axis.horizontal,
         itemCount: sports.length,
         itemBuilder: (context, index) {
-          bool isSelected = selectedCategory == index;
+          final isSelected = selectedCategory == index;
           return GestureDetector(
             onTap: () => setState(() => selectedCategory = index),
             child: Container(
-              margin: EdgeInsets.only(right: 12.w),
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              margin: EdgeInsets.only(right: 10.w),
+              padding: EdgeInsets.symmetric(horizontal: 18.w),
               decoration: BoxDecoration(
-                color: isSelected ? AppColors.primary : Colors.white,
-                borderRadius: BorderRadius.circular(25.r),
-                border: Border.all(color: isSelected ? AppColors.primary : Colors.grey.shade300),
+                color: isSelected
+                    ? AppColors.primary
+                    : AppColors.secondaryContainer.withValues(alpha: 0.45),
+                borderRadius: BorderRadius.circular(999.r),
               ),
               child: Center(
                 child: Text(
                   sports[index],
                   style: TextStyle(
-                    color: isSelected ? Colors.white : AppColors.textMuted,
-                    fontWeight: FontWeight.bold,
+                    color: isSelected ? Colors.white : AppColors.textSecondary,
+                    fontWeight: FontWeight.w700,
                     fontSize: 13.sp,
                   ),
                 ),
@@ -92,23 +106,19 @@ class _VenueListPageState extends State<VenueListPage> {
     );
   }
 
-  Widget _buildGorCard(BuildContext context, int index) {
+  Widget _buildGorCard(BuildContext context, VenueModel venue) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const VenueDetailPage()));
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => VenueDetailPage(venue: venue)),
+        );
       },
       child: Container(
-        margin: EdgeInsets.only(bottom: 20.h),
+        margin: EdgeInsets.only(bottom: 18.h),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: AppColors.surfaceLowest,
           borderRadius: BorderRadius.circular(20.r),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 15,
-              offset: const Offset(0, 8),
-            ),
-          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,7 +128,7 @@ class _VenueListPageState extends State<VenueListPage> {
                 ClipRRect(
                   borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
                   child: Image.network(
-                    "https://picsum.photos/seed/${index + 50}/400/200",
+                    venue.imageUrl,
                     height: 160.h,
                     width: double.infinity,
                     fit: BoxFit.cover,
@@ -128,17 +138,17 @@ class _VenueListPageState extends State<VenueListPage> {
                   top: 15,
                   left: 15,
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
                     decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.circular(8.r),
+                      color: AppColors.successContainer,
+                      borderRadius: BorderRadius.circular(999.r),
                     ),
                     child: Text(
-                      "OPEN",
+                      venue.statusLabel,
                       style: TextStyle(
-                        color: Colors.white,
+                        color: AppColors.success,
                         fontSize: 10.sp,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                   ),
@@ -147,13 +157,13 @@ class _VenueListPageState extends State<VenueListPage> {
                   bottom: 15,
                   right: 15,
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                    padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 7.h),
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12.r),
+                      color: AppColors.surfaceLowest.withValues(alpha: 0.94),
+                      borderRadius: BorderRadius.circular(999.r),
                     ),
                     child: Text(
-                      "IDR 50k / hr",
+                      '${CurrencyFormatter.idr(venue.pricePerHour)} / hr',
                       style: TextStyle(
                         color: AppColors.primary,
                         fontWeight: FontWeight.w800,
@@ -172,20 +182,22 @@ class _VenueListPageState extends State<VenueListPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        "Elite Sport Center $index",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16.sp,
-                          color: AppColors.textPrimary,
+                      Expanded(
+                        child: Text(
+                          venue.name,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 16.sp,
+                            color: AppColors.textPrimary,
+                          ),
                         ),
                       ),
                       Row(
                         children: [
-                          const Icon(Icons.star, color: Colors.amber, size: 16),
+                          const Icon(Icons.star, color: AppColors.accent, size: 16),
                           Text(
-                            " 4.9",
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.sp),
+                            ' ${venue.rating}',
+                            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12.sp),
                           ),
                         ],
                       ),
@@ -200,20 +212,37 @@ class _VenueListPageState extends State<VenueListPage> {
                         color: AppColors.textMuted,
                       ),
                       SizedBox(width: 6.w),
-                      Text(
-                        "Pekanbaru • 2.4 km",
-                        style: TextStyle(fontSize: 12.sp, color: AppColors.textMuted),
-                      ),
-                      const Spacer(),
-                      Text(
-                        "Futsal & Basket",
-                        style: TextStyle(
-                          fontSize: 11.sp,
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w600,
+                      Expanded(
+                        child: Text(
+                          '${venue.location} • ${venue.distanceKm.toStringAsFixed(1)} km',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 12.sp, color: AppColors.textMuted),
                         ),
                       ),
                     ],
+                  ),
+                  SizedBox(height: 10.h),
+                  Wrap(
+                    spacing: 8.w,
+                    runSpacing: 8.h,
+                    children: venue.sports.map((sport) {
+                      return Container(
+                        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+                        decoration: BoxDecoration(
+                          color: AppColors.surfaceLow,
+                          borderRadius: BorderRadius.circular(999.r),
+                        ),
+                        child: Text(
+                          sport,
+                          style: TextStyle(
+                            fontSize: 11.sp,
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      );
+                    }).toList(),
                   ),
                 ],
               ),

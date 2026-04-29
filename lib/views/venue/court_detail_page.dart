@@ -1,36 +1,34 @@
+import 'package:apkbooking/core/app_colors.dart';
+import 'package:apkbooking/core/utils/currency_formatter.dart';
+import 'package:apkbooking/models/venue_model.dart';
+import 'package:apkbooking/providers/booking_provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:apkbooking/core/app_colors.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../../providers/booking_provider.dart';
+import 'package:provider/provider.dart';
 import '../booking/checkout_page.dart';
 
-class CourtDetailPage extends StatefulWidget {
-  final String courtName;
-  final String courtImage;
+class CourtDetailPage extends StatelessWidget {
+  const CourtDetailPage({
+    super.key,
+    required this.venue,
+    required this.court,
+  });
 
-  const CourtDetailPage({super.key, required this.courtName, required this.courtImage});
-
-  @override
-  State<CourtDetailPage> createState() => _CourtDetailPageState();
-}
-
-class _CourtDetailPageState extends State<CourtDetailPage> {
-  DateTime selectedDate = DateTime.now();
+  final VenueModel venue;
+  final VenueCourtModel court;
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<BookingProvider>();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: AppColors.background,
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
-          _buildSliverAppBar(),
+          _buildSliverAppBar(context),
           SliverToBoxAdapter(
             child: Padding(
               padding: EdgeInsets.fromLTRB(20.w, 20.h, 20.w, 120.h),
@@ -39,20 +37,17 @@ class _CourtDetailPageState extends State<CourtDetailPage> {
                 children: [
                   _buildMainInfo(),
                   SizedBox(height: 25.h),
-
-                  _sectionTitle("Fasilitas & Spesifikasi"),
+                  _sectionTitle('Fasilitas & Spesifikasi'),
                   SizedBox(height: 12.h),
                   _buildSpecs(),
-
                   SizedBox(height: 30.h),
-                  _sectionTitle("Pilih Tanggal"),
+                  _sectionTitle('Pilih Tanggal'),
                   SizedBox(height: 12.h),
                   _buildHorizontalDatePicker(provider),
-
                   SizedBox(height: 30.h),
-                  _sectionTitle("Jam Tersedia"),
+                  _sectionTitle('Jam Tersedia'),
                   Text(
-                    "Durasi sesi 60 menit",
+                    'Durasi sesi 60 menit',
                     style: TextStyle(fontSize: 11.sp, color: AppColors.textMuted),
                   ),
                   SizedBox(height: 15.h),
@@ -63,7 +58,7 @@ class _CourtDetailPageState extends State<CourtDetailPage> {
           ),
         ],
       ),
-      bottomSheet: _buildBottomAction(provider),
+      bottomSheet: _buildBottomAction(context, provider),
     );
   }
 
@@ -74,7 +69,7 @@ class _CourtDetailPageState extends State<CourtDetailPage> {
     );
   }
 
-  Widget _buildSliverAppBar() {
+  Widget _buildSliverAppBar(BuildContext context) {
     return SliverAppBar(
       expandedHeight: 280.h,
       pinned: true,
@@ -83,7 +78,7 @@ class _CourtDetailPageState extends State<CourtDetailPage> {
       backgroundColor: AppColors.primary,
       leading: IconButton(
         icon: CircleAvatar(
-          backgroundColor: Colors.white.withOpacity(0.9),
+          backgroundColor: Colors.white.withValues(alpha: 0.9),
           child: Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 18.sp),
         ),
         onPressed: () => Navigator.pop(context),
@@ -93,14 +88,13 @@ class _CourtDetailPageState extends State<CourtDetailPage> {
         background: Stack(
           fit: StackFit.expand,
           children: [
-            CachedNetworkImage(imageUrl: widget.courtImage, fit: BoxFit.cover),
-            // Gradient Overlay agar teks/icon lebih terlihat
+            CachedNetworkImage(imageUrl: court.imageUrl, fit: BoxFit.cover),
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.black.withOpacity(0.3), Colors.transparent],
+                  colors: [Colors.black.withValues(alpha: 0.3), Colors.transparent],
                 ),
               ),
             ),
@@ -120,18 +114,18 @@ class _CourtDetailPageState extends State<CourtDetailPage> {
           children: [
             Expanded(
               child: Text(
-                widget.courtName,
+                court.name,
                 style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w900),
               ),
             ),
             Container(
               padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10.r),
               ),
               child: Text(
-                "Rp 50.000/Jam",
+                '${CurrencyFormatter.idr(court.pricePerHour)}/Jam',
                 style: TextStyle(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w800,
@@ -144,17 +138,17 @@ class _CourtDetailPageState extends State<CourtDetailPage> {
         SizedBox(height: 10.h),
         Row(
           children: [
-            const Icon(Icons.star_rounded, color: Colors.amber, size: 20),
+            const Icon(Icons.star_rounded, color: AppColors.accent, size: 20),
             Text(
-              " 4.9 ",
+              ' ${venue.rating} ',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
             ),
             Text(
-              "(120 Ulasan) • ",
+              '(${venue.reviewCount} Ulasan) • ',
               style: TextStyle(color: AppColors.textMuted, fontSize: 13.sp),
             ),
             Text(
-              "Indoor",
+              court.environment,
               style: TextStyle(
                 color: AppColors.primary,
                 fontWeight: FontWeight.w600,
@@ -171,33 +165,33 @@ class _CourtDetailPageState extends State<CourtDetailPage> {
     return Container(
       padding: EdgeInsets.all(15.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surfaceLowest,
         borderRadius: BorderRadius.circular(20.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
         ],
       ),
       child: Column(
-        children: [
-          _specRow(FontAwesomeIcons.layerGroup, "Lantai", "Vinyl Premium"),
-          const Divider(height: 20),
-          _specRow(FontAwesomeIcons.lightbulb, "Lampu", "LED High-Bay"),
-          const Divider(height: 20),
-          _specRow(FontAwesomeIcons.wind, "Ventilasi", "Exhaust Fan Pro"),
-        ],
+        children: court.specs.entries.map((entry) {
+          final isLast = entry.key == court.specs.keys.last;
+          return Column(
+            children: [
+              _specRow(entry.key, entry.value),
+              if (!isLast) const Divider(height: 20),
+            ],
+          );
+        }).toList(),
       ),
     );
   }
 
-  Widget _specRow(dynamic icon, String label, String value) {
+  Widget _specRow(String label, String value) {
     return Row(
       children: [
-        FaIcon(icon, size: 14.sp, color: Colors.grey),
-        SizedBox(width: 12.w),
         Text(
           label,
           style: TextStyle(color: AppColors.textMuted, fontSize: 13.sp),
@@ -217,10 +211,10 @@ class _CourtDetailPageState extends State<CourtDetailPage> {
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
-        itemCount: 14, // Tampilkan 2 minggu
+        itemCount: 14,
         itemBuilder: (context, index) {
-          DateTime date = DateTime.now().add(Duration(days: index));
-          bool isSelected =
+          final date = DateTime.now().add(Duration(days: index));
+          final isSelected =
               DateFormat('dd-MM').format(date) == DateFormat('dd-MM').format(provider.selectedDate);
 
           return GestureDetector(
@@ -230,18 +224,17 @@ class _CourtDetailPageState extends State<CourtDetailPage> {
               width: 65.w,
               margin: EdgeInsets.only(right: 12.w),
               decoration: BoxDecoration(
-                color: isSelected ? AppColors.primary : Colors.white,
+                color: isSelected ? AppColors.primary : AppColors.surfaceLowest,
                 borderRadius: BorderRadius.circular(15.r),
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: AppColors.primary.withOpacity(0.3),
+                          color: AppColors.primary.withValues(alpha: 0.3),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
                       ]
                     : [],
-                border: Border.all(color: isSelected ? AppColors.primary : Colors.grey.shade200),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -272,21 +265,6 @@ class _CourtDetailPageState extends State<CourtDetailPage> {
   }
 
   Widget _buildTimeGrid(BookingProvider provider) {
-    final times = [
-      "08:00",
-      "09:00",
-      "10:00",
-      "11:00",
-      "13:00",
-      "14:00",
-      "15:00",
-      "16:00",
-      "19:00",
-      "20:00",
-      "21:00",
-      "22:00",
-    ];
-
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -297,12 +275,11 @@ class _CourtDetailPageState extends State<CourtDetailPage> {
         mainAxisSpacing: 10.w,
         childAspectRatio: 2.1,
       ),
-      itemCount: times.length,
+      itemCount: court.availableTimes.length,
       itemBuilder: (context, index) {
-        String time = times[index];
-        bool isSelected = provider.selectedTime == time;
-        // Simulasi jam sibuk (booked)
-        bool isBooked = index == 2 || index == 5;
+        final time = court.availableTimes[index];
+        final isSelected = provider.selectedTime == time;
+        final isBooked = court.bookedTimes.contains(time);
 
         return GestureDetector(
           onTap: isBooked ? null : () => provider.setTime(time),
@@ -310,7 +287,7 @@ class _CourtDetailPageState extends State<CourtDetailPage> {
             decoration: BoxDecoration(
               color: isSelected
                   ? AppColors.primary
-                  : (isBooked ? Colors.grey.shade100 : Colors.white),
+                  : (isBooked ? Colors.grey.shade100 : AppColors.surfaceLowest),
               borderRadius: BorderRadius.circular(12.r),
               border: Border.all(
                 color: isSelected
@@ -337,7 +314,7 @@ class _CourtDetailPageState extends State<CourtDetailPage> {
     );
   }
 
-  Widget _buildBottomAction(BookingProvider provider) {
+  Widget _buildBottomAction(BuildContext context, BookingProvider provider) {
     return Container(
       padding: EdgeInsets.fromLTRB(25.w, 15.h, 25.w, 35.h),
       decoration: BoxDecoration(
@@ -348,7 +325,7 @@ class _CourtDetailPageState extends State<CourtDetailPage> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 20,
             offset: const Offset(0, -5),
           ),
@@ -362,7 +339,7 @@ class _CourtDetailPageState extends State<CourtDetailPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Sesi Terpilih",
+                  'Sesi Terpilih',
                   style: TextStyle(
                     fontSize: 11.sp,
                     color: AppColors.textMuted,
@@ -371,8 +348,8 @@ class _CourtDetailPageState extends State<CourtDetailPage> {
                 ),
                 Text(
                   provider.selectedTime != null
-                      ? "${DateFormat('dd MMM').format(provider.selectedDate)} • ${provider.selectedTime}"
-                      : "Pilih Jadwal",
+                      ? '${DateFormat('dd MMM').format(provider.selectedDate)} • ${provider.selectedTime}'
+                      : 'Pilih Jadwal',
                   style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold),
                 ),
               ],
@@ -385,8 +362,15 @@ class _CourtDetailPageState extends State<CourtDetailPage> {
               onPressed: provider.selectedTime == null
                   ? null
                   : () {
-                      // Set data tambahan ke provider jika perlu
-                      provider.setSelectedField(widget.courtName);
+                      provider.setVenueSelection(
+                        venueId: venue.id,
+                        venueName: venue.name,
+                        venueLocation: venue.location,
+                        venueImageUrl: venue.imageUrl,
+                        sport: venue.sports.first,
+                        fieldName: court.name,
+                        price: court.pricePerHour,
+                      );
 
                       Navigator.push(
                         context,
@@ -401,7 +385,7 @@ class _CourtDetailPageState extends State<CourtDetailPage> {
                 elevation: 0,
               ),
               child: Text(
-                "Lanjut",
+                'Lanjut',
                 style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15.sp),
               ),
             ),

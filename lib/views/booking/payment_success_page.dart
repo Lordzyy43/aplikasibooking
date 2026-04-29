@@ -1,15 +1,25 @@
+import 'package:apkbooking/core/app_colors.dart';
+import 'package:apkbooking/core/utils/currency_formatter.dart';
+import 'package:apkbooking/models/booking_model.dart';
+import 'package:apkbooking/providers/booking_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../main_screen.dart';
-import '../../core/app_colors.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../history/mybooking_page.dart';
+import '../main_screen.dart';
 
 class PaymentSuccessPage extends StatelessWidget {
-  const PaymentSuccessPage({super.key});
+  const PaymentSuccessPage({super.key, required this.booking});
+
+  final BookingModel booking;
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<BookingProvider>().resetBooking();
+    });
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       body: Container(
@@ -18,18 +28,17 @@ class PaymentSuccessPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Icon Section dengan Shadow Glow
             Container(
               padding: EdgeInsets.all(20.w),
               decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.1),
+                color: Colors.green.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(Icons.check_circle_rounded, color: Colors.green.shade600, size: 100.sp),
             ),
             SizedBox(height: 25.h),
             Text(
-              "Booking Berhasil!",
+              'Booking Berhasil!',
               style: TextStyle(
                 fontSize: 24.sp,
                 fontWeight: FontWeight.w900,
@@ -38,21 +47,16 @@ class PaymentSuccessPage extends StatelessWidget {
             ),
             SizedBox(height: 12.h),
             Text(
-              "Pembayaran telah dikonfirmasi. Siapkan fisikmu untuk pertandingan nanti!",
+              'Pembayaran telah dikonfirmasi. Siapkan fisikmu untuk pertandingan nanti!',
               textAlign: TextAlign.center,
               style: TextStyle(color: AppColors.textMuted, fontSize: 14.sp, height: 1.5),
             ),
-
             SizedBox(height: 40.h),
-
-            // DUMMY TICKET CARD
             _buildMiniReceipt(),
-
             SizedBox(height: 50.h),
-
             _buildActionButton(
               context,
-              label: "Lihat Tiket Saya",
+              label: 'Lihat Tiket Saya',
               isPrimary: true,
               onPressed: () {
                 Navigator.push(
@@ -62,10 +66,9 @@ class PaymentSuccessPage extends StatelessWidget {
               },
             ),
             SizedBox(height: 15.h),
-
             _buildActionButton(
               context,
-              label: "Kembali ke Beranda",
+              label: 'Kembali ke Beranda',
               isPrimary: false,
               onPressed: () {
                 Navigator.pushAndRemoveUntil(
@@ -89,7 +92,7 @@ class PaymentSuccessPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(20.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -97,15 +100,14 @@ class PaymentSuccessPage extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Pakai Icon standar atau FA, di bawah kita buat fleksibel
-          _receiptRow(FontAwesomeIcons.circleCheck, "Stadium Atelier"),
+          _receiptRow(booking.venueName),
           const Divider(height: 25),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _receiptSubItem("Tanggal", "28 Apr 2026"),
-              _receiptSubItem("Jam", "19:00 WIB"),
-              _receiptSubItem("Lapangan", "Court 01"),
+              _receiptSubItem('Tanggal', DateFormat('dd MMM yyyy').format(booking.date)),
+              _receiptSubItem('Jam', booking.startTime),
+              _receiptSubItem('Total', CurrencyFormatter.idr(booking.totalPrice)),
             ],
           ),
         ],
@@ -113,12 +115,10 @@ class PaymentSuccessPage extends StatelessWidget {
     );
   }
 
-  // FIX: Menggunakan IconData dan widget FaIcon dengan cast yang benar
-  Widget _receiptRow(FaIconData icon, String title) {
+  Widget _receiptRow(String title) {
     return Row(
       children: [
-        // Gunakan FaIcon dan pastikan tipenya dipaksa menjadi FaIconData jika dari FontAwesome
-        FaIcon(icon, size: 14.sp, color: AppColors.primary),
+        Icon(Icons.check_circle_rounded, size: 16.sp, color: AppColors.primary),
         SizedBox(width: 10.w),
         Text(
           title,

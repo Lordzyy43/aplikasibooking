@@ -1,12 +1,16 @@
+import 'package:apkbooking/core/app_colors.dart';
+import 'package:apkbooking/core/utils/currency_formatter.dart';
+import 'package:apkbooking/models/venue_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:apkbooking/core/app_colors.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'court_detail_page.dart';
 
 class VenueDetailPage extends StatefulWidget {
-  const VenueDetailPage({super.key});
+  const VenueDetailPage({super.key, required this.venue});
+
+  final VenueModel venue;
 
   @override
   State<VenueDetailPage> createState() => _VenueDetailPageState();
@@ -15,56 +19,43 @@ class VenueDetailPage extends StatefulWidget {
 class _VenueDetailPageState extends State<VenueDetailPage> {
   @override
   Widget build(BuildContext context) {
+    final venue = widget.venue;
     return Scaffold(
-      backgroundColor: const Color(0xFFFBFBFB), // Ultra light gray agar card terlihat stand out
+      backgroundColor: AppColors.background,
       body: CustomScrollView(
         slivers: [
-          _buildSliverAppBar(context),
+          _buildSliverAppBar(context, venue),
           SliverToBoxAdapter(
             child: Padding(
               padding: EdgeInsets.all(20.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildTitleSection(),
-                  SizedBox(height: 25.h),
-
-                  // INFO ROW (Jarak, Rating, Jam Buka)
-                  _buildQuickInfoRow(),
-                  SizedBox(height: 30.h),
-
-                  // FASILITAS SECTION
-                  Text(
-                    "Fasilitas Venue",
-                    style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 15.h),
-                  _buildFasilitasRow(),
-
-                  SizedBox(height: 30.h),
-
-                  // COURT SELECTION (Core Action)
-                  _buildSectionHeader("Pilih Lapangan", "Tersedia 3 Lapangan"),
-                  SizedBox(height: 15.h),
-                  _buildCourtSelectionList(),
-
-                  SizedBox(height: 30.h),
-
-                  // PERATURAN SECTION (Biar makin Pro)
-                  _buildSectionHeader("Peraturan GOR", null),
-                  SizedBox(height: 15.h),
+                  _buildTitleSection(venue),
+                  SizedBox(height: 24.h),
+                  _buildQuickInfoRow(venue),
+                  SizedBox(height: 28.h),
+                  _buildSectionHeader('Fasilitas Venue', null),
+                  SizedBox(height: 14.h),
+                  _buildFasilitasRow(venue.amenities),
+                  SizedBox(height: 28.h),
+                  _buildSectionHeader('Pilih Lapangan', 'Tersedia ${venue.courts.length} Lapangan'),
+                  SizedBox(height: 14.h),
+                  _buildCourtSelectionList(venue),
+                  SizedBox(height: 28.h),
+                  _buildSectionHeader('Peraturan GOR', null),
+                  SizedBox(height: 14.h),
                   _buildRuleCard(
                     FontAwesomeIcons.shirt,
-                    "Pakaian Olahraga",
-                    "Wajib menggunakan sepatu olahraga indoor.",
+                    'Pakaian Olahraga',
+                    'Wajib menggunakan sepatu olahraga indoor.',
                   ),
                   SizedBox(height: 10.h),
                   _buildRuleCard(
                     FontAwesomeIcons.banSmoking,
-                    "Dilarang Merokok",
-                    "Area bebas asap rokok demi kenyamanan bersama.",
+                    'Dilarang Merokok',
+                    'Area bebas asap rokok demi kenyamanan bersama.',
                   ),
-
                   SizedBox(height: 50.h),
                 ],
               ),
@@ -75,41 +66,70 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
     );
   }
 
-  Widget _buildSliverAppBar(BuildContext context) {
+  Widget _buildSliverAppBar(BuildContext context, VenueModel venue) {
     return SliverAppBar(
-      expandedHeight: 280.h,
+      expandedHeight: 300.h,
       pinned: true,
       elevation: 0,
       backgroundColor: AppColors.primary,
       leading: IconButton(
         icon: CircleAvatar(
-          backgroundColor: Colors.white,
-          child: Icon(Icons.arrow_back, color: Colors.black, size: 20.sp),
+          backgroundColor: AppColors.surfaceLowest.withValues(alpha: 0.9),
+          child: Icon(Icons.arrow_back, color: AppColors.textPrimary, size: 20.sp),
         ),
         onPressed: () => Navigator.pop(context),
       ),
       flexibleSpace: FlexibleSpaceBar(
-        background: CachedNetworkImage(
-          imageUrl: "https://picsum.photos/id/101/800/600",
-          fit: BoxFit.cover,
+        background: Stack(
+          fit: StackFit.expand,
+          children: [
+            CachedNetworkImage(
+              imageUrl: venue.imageUrl,
+              fit: BoxFit.cover,
+            ),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  colors: [
+                    AppColors.primary.withValues(alpha: 0.62),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildTitleSection() {
+  Widget _buildTitleSection(VenueModel venue) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              "Stadium Atelier",
-              style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w900, letterSpacing: -0.5),
+            Expanded(
+              child: Text(
+                venue.name,
+                style: TextStyle(
+                  fontSize: 26.sp,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.textPrimary,
+                ),
+              ),
             ),
             _buildEliteBadge(),
           ],
+        ),
+        SizedBox(height: 8.h),
+        Text(
+          venue.description,
+          style: TextStyle(color: AppColors.textSecondary, fontSize: 13.sp, height: 1.4),
         ),
         SizedBox(height: 8.h),
         Row(
@@ -118,7 +138,7 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
             SizedBox(width: 4.w),
             Expanded(
               child: Text(
-                "Olympic Sports Complex, Solo Baru, Sukoharjo",
+                venue.location,
                 style: TextStyle(color: AppColors.textMuted, fontSize: 13.sp),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -130,14 +150,25 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
     );
   }
 
-  Widget _buildQuickInfoRow() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _infoItem(Icons.star_rounded, "4.8 (120+)", "Rating"),
-        _infoItem(Icons.access_time_filled_rounded, "08:00 - 22:00", "Buka"),
-        _infoItem(Icons.directions_walk_rounded, "1.2 km", "Jarak"),
-      ],
+  Widget _buildQuickInfoRow(VenueModel venue) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceLow,
+        borderRadius: BorderRadius.circular(20.r),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _infoItem(Icons.star_rounded, '${venue.rating} (${venue.reviewCount}+)', 'Rating'),
+          _infoItem(Icons.access_time_filled_rounded, '08:00 - 22:00', 'Buka'),
+          _infoItem(
+            Icons.directions_walk_rounded,
+            '${venue.distanceKm.toStringAsFixed(1)} km',
+            'Jarak',
+          ),
+        ],
+      ),
     );
   }
 
@@ -146,11 +177,11 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
       children: [
         Row(
           children: [
-            Icon(icon, size: 14.sp, color: Colors.orange),
+            Icon(icon, size: 14.sp, color: AppColors.accent),
             SizedBox(width: 4.w),
             Text(
               value,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13.sp),
+              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13.sp),
             ),
           ],
         ),
@@ -167,15 +198,15 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
       decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(10.r),
+        color: AppColors.primaryLight,
+        borderRadius: BorderRadius.circular(999.r),
       ),
       child: Row(
         children: [
           Icon(Icons.verified_rounded, color: AppColors.primary, size: 12.sp),
           SizedBox(width: 4.w),
           Text(
-            "VERIFIED",
+            'VERIFIED',
             style: TextStyle(
               color: AppColors.primary,
               fontWeight: FontWeight.w800,
@@ -193,7 +224,7 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
       children: [
         Text(
           title,
-          style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w800),
         ),
         if (subtitle != null)
           Text(
@@ -204,18 +235,15 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
     );
   }
 
-  Widget _buildCourtSelectionList() {
+  Widget _buildCourtSelectionList(VenueModel venue) {
     return Column(
-      children: List.generate(3, (index) {
+      children: venue.courts.map((court) {
         return GestureDetector(
           onTap: () {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => CourtDetailPage(
-                  courtName: "Grand Court 0${index + 1}",
-                  courtImage: "https://picsum.photos/seed/court$index/800/600",
-                ),
+                builder: (context) => CourtDetailPage(venue: venue, court: court),
               ),
             );
           },
@@ -223,22 +251,15 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
             margin: EdgeInsets.only(bottom: 16.h),
             padding: EdgeInsets.all(12.w),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.surfaceLowest,
               borderRadius: BorderRadius.circular(20.r),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.03),
-                  blurRadius: 15,
-                  offset: const Offset(0, 8),
-                ),
-              ],
             ),
             child: Row(
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(15.r),
                   child: CachedNetworkImage(
-                    imageUrl: "https://picsum.photos/seed/court$index/200/200",
+                    imageUrl: court.imageUrl,
                     width: 90.w,
                     height: 90.w,
                     fit: BoxFit.cover,
@@ -250,19 +271,19 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Grand Court 0${index + 1}",
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp),
+                        court.name,
+                        style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16.sp),
                       ),
                       SizedBox(height: 4.h),
                       Text(
-                        "Lantai Interlock - Indoor",
+                        '${court.surface} - ${court.environment}',
                         style: TextStyle(fontSize: 12.sp, color: AppColors.textMuted),
                       ),
                       SizedBox(height: 12.h),
                       Row(
                         children: [
                           Text(
-                            "Rp 50.000",
+                            CurrencyFormatter.idr(court.pricePerHour),
                             style: TextStyle(
                               fontWeight: FontWeight.w900,
                               color: AppColors.primary,
@@ -270,7 +291,7 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                             ),
                           ),
                           Text(
-                            "/jam",
+                            '/jam',
                             style: TextStyle(fontSize: 11.sp, color: AppColors.textMuted),
                           ),
                         ],
@@ -279,83 +300,80 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.all(8.w),
+                  padding: EdgeInsets.all(10.w),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
+                    color: AppColors.surfaceLow,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.arrow_forward_rounded, size: 18.sp, color: AppColors.primary),
+                  child: Icon(
+                    Icons.arrow_forward_rounded,
+                    size: 18.sp,
+                    color: AppColors.primary,
+                  ),
                 ),
               ],
             ),
           ),
         );
-      }),
+      }).toList(),
     );
   }
 
-  Widget _buildFasilitasRow() {
+  Widget _buildFasilitasRow(List<String> amenities) {
+    final icons = <String, IconData>{
+      'WiFi': Icons.wifi_rounded,
+      'Shower': Icons.shower_rounded,
+      'Socket': Icons.electrical_services_rounded,
+      'Mineral': Icons.local_drink_rounded,
+      'Parkir': Icons.local_parking_rounded,
+    };
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       physics: const BouncingScrollPhysics(),
       child: Row(
-        children: [
-          _iconFasilitas(FontAwesomeIcons.wifi, "WiFi"),
-          _iconFasilitas(FontAwesomeIcons.shower, "Shower"),
-          _iconFasilitas(FontAwesomeIcons.plug, "Socket"),
-          _iconFasilitas(FontAwesomeIcons.bottleWater, "Mineral"),
-          _iconFasilitas(FontAwesomeIcons.p, "Parkir"),
-        ],
-      ),
-    );
-  }
-
-  // 1. Update fungsi _iconFasilitas
-  // Gunakan dynamic agar bisa menerima FontAwesomeIcons maupun Icons biasa
-  Widget _iconFasilitas(dynamic icon, String label) {
-    return Container(
-      margin: EdgeInsets.only(right: 20.w),
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.all(14.w),
+        children: amenities.map((amenity) {
+          return Container(
+            margin: EdgeInsets.only(right: 12.w),
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(15.r),
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10)],
+              color: AppColors.surfaceLow,
+              borderRadius: BorderRadius.circular(18.r),
             ),
-            // Jika icon adalah FaIconData, gunakan FaIcon. Jika tidak, gunakan Icon biasa.
-            child: icon is IconData
-                ? Icon(icon, size: 18.sp, color: AppColors.textPrimary)
-                : FaIcon(icon, size: 18.sp, color: AppColors.textPrimary),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            label,
-            style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w500),
-          ),
-        ],
+            child: Column(
+              children: [
+                Icon(icons[amenity] ?? Icons.check_circle, size: 18.sp, color: AppColors.textPrimary),
+                SizedBox(height: 8.h),
+                Text(
+                  amenity,
+                  style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
       ),
     );
   }
 
-  // Lakukan hal yang sama untuk _buildRuleCard jika masih error
   Widget _buildRuleCard(dynamic icon, String title, String desc) {
     return Container(
-      padding: EdgeInsets.all(15.w),
+      padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15.r),
-        border: Border.all(color: Colors.grey.shade100),
+        color: AppColors.surfaceLowest,
+        borderRadius: BorderRadius.circular(18.r),
       ),
       child: Row(
         children: [
           Container(
             padding: EdgeInsets.all(10.w),
-            decoration: BoxDecoration(color: Colors.red.withOpacity(0.05), shape: BoxShape.circle),
+            decoration: const BoxDecoration(
+              color: AppColors.errorContainer,
+              shape: BoxShape.circle,
+            ),
             child: icon is IconData
-                ? Icon(icon, color: Colors.redAccent, size: 16.sp)
-                : FaIcon(icon, color: Colors.redAccent, size: 16.sp),
+                ? Icon(icon, color: AppColors.error, size: 16.sp)
+                : FaIcon(icon, color: AppColors.error, size: 16.sp),
           ),
           SizedBox(width: 15.w),
           Expanded(
@@ -364,7 +382,7 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
               children: [
                 Text(
                   title,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13.sp),
+                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13.sp),
                 ),
                 Text(
                   desc,

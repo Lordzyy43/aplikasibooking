@@ -1,11 +1,13 @@
+import 'package:apkbooking/core/app_colors.dart';
+import 'package:apkbooking/core/utils/currency_formatter.dart';
+import 'package:apkbooking/providers/app_data_provider.dart';
+import 'package:apkbooking/providers/booking_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:dotted_line/dotted_line.dart';
-import '../../providers/booking_provider.dart';
-import '../../core/app_colors.dart';
 import 'payment_page.dart';
 
 class CheckoutPage extends StatelessWidget {
@@ -13,13 +15,17 @@ class CheckoutPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<BookingProvider>();
+    final bookingProvider = context.watch<BookingProvider>();
+    final user = context.watch<AppDataProvider>().user;
+    final subtotal = bookingProvider.selectedPrice;
+    final fee = 2500;
+    final total = subtotal + fee;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA), // Background lebih soft
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          "Checkout",
+          'Checkout',
           style: TextStyle(color: Colors.black, fontSize: 16.sp, fontWeight: FontWeight.w800),
         ),
         backgroundColor: Colors.white,
@@ -36,37 +42,26 @@ class CheckoutPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// 1. RINGKASAN PESANAN
-            _buildSectionLabel("Ringkasan Pesanan", FontAwesomeIcons.receipt),
+            _buildSectionLabel('Ringkasan Pesanan', FontAwesomeIcons.receipt),
             SizedBox(height: 12.h),
-            _buildFinalSummaryCard(provider),
-
+            _buildFinalSummaryCard(bookingProvider),
             SizedBox(height: 25.h),
-
-            /// 2. DETAIL PEMESAN
-            _buildSectionLabel("Detail Kontak", FontAwesomeIcons.solidUser),
+            _buildSectionLabel('Detail Kontak', FontAwesomeIcons.solidUser),
             SizedBox(height: 12.h),
-            _buildUserInfoFields(),
-
+            _buildUserInfoCard(user.name, user.phone ?? '-', user.email),
             SizedBox(height: 25.h),
-
-            /// 3. METODE PEMBAYARAN (POLISH BARU)
-            _buildSectionLabel("Metode Pembayaran", FontAwesomeIcons.wallet),
+            _buildSectionLabel('Metode Pembayaran', FontAwesomeIcons.wallet),
             SizedBox(height: 12.h),
             _buildPaymentMethodSelector(),
-
             SizedBox(height: 25.h),
-
-            /// 4. RINCIAN BIAYA
-            _buildSectionLabel("Rincian Biaya", FontAwesomeIcons.fileInvoiceDollar),
+            _buildSectionLabel('Rincian Biaya', FontAwesomeIcons.fileInvoiceDollar),
             SizedBox(height: 12.h),
-            _buildPriceDetail(provider),
-
-            SizedBox(height: 120.h), // Space agar tidak tertutup bottom sheet
+            _buildPriceDetail(subtotal, fee, total),
+            SizedBox(height: 120.h),
           ],
         ),
       ),
-      bottomSheet: _buildBottomAction(context, provider),
+      bottomSheet: _buildBottomAction(context, total),
     );
   }
 
@@ -78,7 +73,7 @@ class CheckoutPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(20.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -86,15 +81,15 @@ class CheckoutPage extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _summaryItem(FontAwesomeIcons.hospital, "Venue", "Stadium Atelier"),
+          _summaryItem(FontAwesomeIcons.hospital, 'Venue', provider.selectedVenueName ?? '-'),
           Padding(
             padding: EdgeInsets.symmetric(vertical: 12.h),
             child: Divider(color: Colors.grey.shade100, thickness: 1),
           ),
           _summaryItem(
             FontAwesomeIcons.tableTennisPaddleBall,
-            "Lapangan",
-            provider.selectedField ?? "Grand Court 01",
+            'Lapangan',
+            provider.selectedField ?? '-',
           ),
           Padding(
             padding: EdgeInsets.symmetric(vertical: 12.h),
@@ -102,8 +97,8 @@ class CheckoutPage extends StatelessWidget {
           ),
           _summaryItem(
             FontAwesomeIcons.clock,
-            "Jadwal Main",
-            "${DateFormat('EEE, dd MMM').format(provider.selectedDate)} • ${provider.selectedTime ?? '09:00'}",
+            'Jadwal Main',
+            "${DateFormat('EEE, dd MMM').format(provider.selectedDate)} • ${provider.selectedTime ?? '-'}",
           ),
         ],
       ),
@@ -117,7 +112,7 @@ class CheckoutPage extends StatelessWidget {
           width: 36.w,
           height: 36.w,
           decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.08),
+            color: AppColors.primary.withValues(alpha: 0.08),
             shape: BoxShape.circle,
           ),
           child: Center(
@@ -150,7 +145,7 @@ class CheckoutPage extends StatelessWidget {
     );
   }
 
-  Widget _buildUserInfoFields() {
+  Widget _buildUserInfoCard(String name, String phone, String email) {
     return Container(
       padding: EdgeInsets.all(18.w),
       decoration: BoxDecoration(
@@ -158,7 +153,7 @@ class CheckoutPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(20.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -166,43 +161,38 @@ class CheckoutPage extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _customTextField("Nama Lengkap", "Yogi Eka Saputra", FontAwesomeIcons.user),
-          SizedBox(height: 18.h),
-          _customTextField("WhatsApp", "0812 3456 7890", FontAwesomeIcons.whatsapp),
+          _infoRow('Nama Lengkap', name, FontAwesomeIcons.user),
+          SizedBox(height: 16.h),
+          _infoRow('WhatsApp', phone, FontAwesomeIcons.whatsapp),
+          SizedBox(height: 16.h),
+          _infoRow('Email', email, FontAwesomeIcons.envelope),
         ],
       ),
     );
   }
 
-  Widget _customTextField(String label, String hint, dynamic icon) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _infoRow(String label, String value, FaIconData icon) {
+    return Row(
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 11.sp,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
+        Container(
+          width: 36.w,
+          height: 36.w,
+          decoration: BoxDecoration(
+            color: AppColors.surfaceLow,
+            borderRadius: BorderRadius.circular(12.r),
           ),
+          child: Center(child: FaIcon(icon, color: AppColors.primary, size: 14.sp)),
         ),
-        SizedBox(height: 8.h),
-        TextField(
-          style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w600),
-          decoration: InputDecoration(
-            hintText: hint,
-            prefixIcon: Container(
-              padding: EdgeInsets.all(12.w),
-              child: FaIcon(icon, size: 14.sp, color: Colors.grey),
+        SizedBox(width: 12.w),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label, style: TextStyle(fontSize: 11.sp, color: AppColors.textMuted)),
+            Text(
+              value,
+              style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w700),
             ),
-            filled: true,
-            fillColor: const Color(0xFFF1F4F8),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12.r),
-              borderSide: BorderSide.none,
-            ),
-            contentPadding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 12.h),
-          ),
+          ],
         ),
       ],
     );
@@ -216,7 +206,7 @@ class CheckoutPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(20.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -227,21 +217,21 @@ class CheckoutPage extends StatelessWidget {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey.shade200),
+              color: AppColors.surfaceLow,
               borderRadius: BorderRadius.circular(8.r),
             ),
             child: Text(
-              "QRIS",
+              'QRIS',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 12.sp,
-                color: Colors.blue.shade900,
+                color: AppColors.primary,
               ),
             ),
           ),
           SizedBox(width: 15.w),
           Text(
-            "Bayar Cepat via QRIS",
+            'Bayar Cepat via QRIS',
             style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w600),
           ),
           const Spacer(),
@@ -251,7 +241,7 @@ class CheckoutPage extends StatelessWidget {
     );
   }
 
-  Widget _buildPriceDetail(BookingProvider provider) {
+  Widget _buildPriceDetail(int subtotal, int fee, int total) {
     return Container(
       padding: EdgeInsets.all(18.w),
       decoration: BoxDecoration(
@@ -259,7 +249,7 @@ class CheckoutPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(20.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -267,26 +257,26 @@ class CheckoutPage extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _priceRow("Biaya Sewa (1 Sesi)", "Rp 100.000"),
-          _priceRow("Pajak & Layanan", "Rp 2.500"),
+          _priceRow('Biaya Sewa (1 Sesi)', CurrencyFormatter.idr(subtotal)),
+          _priceRow('Pajak & Layanan', CurrencyFormatter.idr(fee)),
           Padding(
-  padding: EdgeInsets.symmetric(vertical: 10.h),
-  child: DottedLine(
-    dashLength: 5.w,
-    dashGapLength: 5.w,
-    lineThickness: 1,
-    dashColor: Colors.grey.shade300,
-  ),
-),
+            padding: EdgeInsets.symmetric(vertical: 10.h),
+            child: DottedLine(
+              dashLength: 5.w,
+              dashGapLength: 5.w,
+              lineThickness: 1,
+              dashColor: Colors.grey.shade300,
+            ),
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Total Tagihan",
+                'Total Tagihan',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
               ),
               Text(
-                "Rp 102.500",
+                CurrencyFormatter.idr(total),
                 style: TextStyle(
                   fontWeight: FontWeight.w900,
                   color: AppColors.primary,
@@ -348,7 +338,7 @@ class CheckoutPage extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomAction(BuildContext context, BookingProvider provider) {
+  Widget _buildBottomAction(BuildContext context, int total) {
     return Container(
       padding: EdgeInsets.fromLTRB(25.w, 15.h, 25.w, 35.h),
       decoration: BoxDecoration(
@@ -359,7 +349,7 @@ class CheckoutPage extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 20,
             offset: const Offset(0, -5),
           ),
@@ -372,7 +362,7 @@ class CheckoutPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Total",
+                'Total',
                 style: TextStyle(
                   fontSize: 12.sp,
                   color: AppColors.textMuted,
@@ -380,7 +370,7 @@ class CheckoutPage extends StatelessWidget {
                 ),
               ),
               Text(
-                "Rp 102.500",
+                CurrencyFormatter.idr(total),
                 style: TextStyle(
                   fontSize: 20.sp,
                   fontWeight: FontWeight.w900,
@@ -395,10 +385,9 @@ class CheckoutPage extends StatelessWidget {
             height: 52.h,
             child: ElevatedButton(
               onPressed: () {
-                // Navigasi ke halaman pembayaran
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => PaymentPage()),
+                  MaterialPageRoute(builder: (context) => const PaymentPage()),
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -408,7 +397,7 @@ class CheckoutPage extends StatelessWidget {
                 elevation: 0,
               ),
               child: Text(
-                "Bayar Sekarang",
+                'Bayar Sekarang',
                 style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14.sp),
               ),
             ),

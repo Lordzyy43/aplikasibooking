@@ -1,43 +1,71 @@
 import 'package:flutter/material.dart';
 
 class BookingProvider extends ChangeNotifier {
-  // 1. Data State
   DateTime _selectedDate = DateTime.now();
   String? _selectedTime;
   String? _selectedField;
+  String? _selectedVenueId;
+  String? _selectedVenueName;
+  String? _selectedVenueLocation;
+  String? _selectedVenueImageUrl;
+  String? _selectedSport;
+  int? _selectedPrice;
 
-  // 2. Getter (Buat ambil data ke UI)
   DateTime get selectedDate => _selectedDate;
   String? get selectedTime => _selectedTime;
   String? get selectedField => _selectedField;
+  String? get selectedVenueId => _selectedVenueId;
+  String? get selectedVenueName => _selectedVenueName;
+  String? get selectedVenueLocation => _selectedVenueLocation;
+  String? get selectedVenueImageUrl => _selectedVenueImageUrl;
+  String? get selectedSport => _selectedSport;
+  int get selectedPrice => _selectedPrice ?? 0;
 
-  // 3. Setter / Action (Tangan buat nerima data dari UI)
-
-  // Fungsi untuk set tanggal
   void setDate(DateTime date) {
     _selectedDate = date;
-    // Setiap kali ganti tanggal, reset jamnya biar user pilih ulang
     _selectedTime = null;
-    notifyListeners(); // Ini penting biar UI tau ada perubahan!
+    notifyListeners();
   }
 
-  // Fungsi untuk set jam
   void setTime(String time) {
     _selectedTime = time;
     notifyListeners();
   }
 
-  // Fungsi untuk set nama lapangan
   void setSelectedField(String fieldName) {
     _selectedField = fieldName;
     notifyListeners();
   }
 
-  // Bonus: Fungsi reset kalau booking batal/selesai
+  void setVenueSelection({
+    required String venueId,
+    required String venueName,
+    required String venueLocation,
+    required String venueImageUrl,
+    required String sport,
+    required String fieldName,
+    required int price,
+  }) {
+    _selectedVenueId = venueId;
+    _selectedVenueName = venueName;
+    _selectedVenueLocation = venueLocation;
+    _selectedVenueImageUrl = venueImageUrl;
+    _selectedSport = sport;
+    _selectedField = fieldName;
+    _selectedPrice = price;
+    notifyListeners();
+  }
+
   void resetBooking() {
     _selectedDate = DateTime.now();
     _selectedTime = null;
     _selectedField = null;
+    _selectedVenueId = null;
+    _selectedVenueName = null;
+    _selectedVenueLocation = null;
+    _selectedVenueImageUrl = null;
+    _selectedSport = null;
+    _selectedPrice = null;
     notifyListeners();
   }
 }
