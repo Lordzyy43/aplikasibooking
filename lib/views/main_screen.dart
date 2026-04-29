@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../../core/app_colors.dart';
+import '../core/app_colors.dart';
+import 'history/mybooking_page.dart';
 import 'home/home_page.dart';
-import 'venue/venue_list_page.dart';
-// import 'notification/notification_page.dart';
+import 'notification/notification_page.dart';
 import 'profile/profile_page.dart';
+import 'venue/venue_list_page.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -16,13 +17,12 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
-  // 5 Halaman sesuai urutan navigasi di mockup
-  final List<Widget> _pages = [
-    const HomePage(), // Index 0
-    const VenueListPage(), // Index 1 (EXPLORE)
-    _buildPlaceholder("My Bookings"), // Index 2 (BOOKINGS)
-    _buildPlaceholder("Alerts"), // Index 3 (ALERTS)
-    const ProfilePage(), // Index 4 (PROFILE)
+  final List<Widget> _pages = const [
+    HomePage(),
+    VenueListPage(),
+    MyBookingPage(),
+    NotificationPage(),
+    ProfilePage(),
   ];
 
   @override
@@ -32,13 +32,13 @@ class _MainScreenState extends State<MainScreen> {
       body: IndexedStack(index: _selectedIndex, children: _pages),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: AppColors.surface,
-          border: const Border(top: BorderSide(color: AppColors.divider, width: 0.5)),
+          color: AppColors.surfaceLowest,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 24,
+              offset: const Offset(0, -6),
             ),
           ],
         ),
@@ -49,47 +49,39 @@ class _MainScreenState extends State<MainScreen> {
             selectedItemColor: AppColors.primary,
             unselectedItemColor: AppColors.textMuted,
             backgroundColor: Colors.transparent,
-            type: BottomNavigationBarType.fixed, // Wajib fixed kalau 5 menu
             elevation: 0,
             selectedLabelStyle: const TextStyle(
               fontSize: 9,
               fontWeight: FontWeight.w700,
-              letterSpacing: 0.2,
             ),
-            unselectedLabelStyle: const TextStyle(fontSize: 9, fontWeight: FontWeight.w500),
+            unselectedLabelStyle: const TextStyle(
+              fontSize: 9,
+              fontWeight: FontWeight.w500,
+            ),
             items: const [
               BottomNavigationBarItem(
                 icon: FaIcon(FontAwesomeIcons.house, size: 18),
-                label: "HOME",
+                label: 'HOME',
               ),
               BottomNavigationBarItem(
                 icon: FaIcon(FontAwesomeIcons.magnifyingGlass, size: 18),
-                label: "EXPLORE",
+                label: 'EXPLORE',
               ),
               BottomNavigationBarItem(
                 icon: FaIcon(FontAwesomeIcons.calendarCheck, size: 18),
-                label: "BOOKINGS",
+                label: 'BOOKINGS',
               ),
               BottomNavigationBarItem(
                 icon: FaIcon(FontAwesomeIcons.bell, size: 18),
-                label: "ALERTS",
+                label: 'ALERTS',
               ),
               BottomNavigationBarItem(
                 icon: FaIcon(FontAwesomeIcons.user, size: 18),
-                label: "PROFILE",
+                label: 'PROFILE',
               ),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  static Widget _buildPlaceholder(String title) {
-    return Center(
-      child: Text(
-        title,
-        style: const TextStyle(color: AppColors.textMuted, fontWeight: FontWeight.bold),
       ),
     );
   }

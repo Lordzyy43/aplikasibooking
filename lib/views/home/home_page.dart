@@ -1,14 +1,23 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import '../../core/app_colors.dart';
+import '../../core/utils/currency_formatter.dart';
+import '../../models/booking_model.dart';
+import '../../models/venue_model.dart';
+import '../../providers/app_data_provider.dart';
+import '../venue/venue_detail_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final appData = context.watch<AppDataProvider>();
+    final user = appData.user;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -16,35 +25,33 @@ class HomePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(),
+              _buildHeader(user.name),
               _buildSearchBar(),
-
-              // NEW: PROMO BANNER
-              _buildPromoBanner(),
-
-              _buildCategorySection(),
-
+              _buildPromoBanner(
+                title: appData.promo.title,
+                subtitle: appData.promo.subtitle,
+                ctaLabel: appData.promo.ctaLabel,
+              ),
+              _buildCategorySection(appData.sportsCategories),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 24.h),
-
-                    // NEW: RECENTLY BOOKED
-                    _buildSectionHeader("Recently Booked", "History"),
+                    _buildSectionHeader('Recently Booked', 'History'),
                     SizedBox(height: 16.h),
-                    _buildRecentBookingCard(),
-
+                    _buildRecentBookingCard(appData.upcomingBookings.isNotEmpty
+                        ? appData.upcomingBookings.first
+                        : appData.completedBookings.first),
                     SizedBox(height: 24.h),
-                    _buildSectionHeader("Recommended Venues", "View All"),
+                    _buildSectionHeader('Recommended Venues', 'View All'),
                     SizedBox(height: 16.h),
-                    _buildRecommendedList(),
-
+                    _buildRecommendedList(context, appData.recommendedVenues),
                     SizedBox(height: 30.h),
-                    _buildSectionHeader("Nearby Locations", null),
+                    _buildSectionHeader('Nearby Locations', null),
                     SizedBox(height: 16.h),
-                    _buildNearbyList(),
+                    _buildNearbyList(context, appData.nearbyVenues),
                     SizedBox(height: 100.h),
                   ],
                 ),
@@ -56,7 +63,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(String userName) {
     return Padding(
       padding: EdgeInsets.fromLTRB(20.w, 20.h, 20.w, 0),
       child: Row(
@@ -66,14 +73,14 @@ class HomePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Good Morning,",
+                'Good Morning,',
                 style: TextStyle(color: AppColors.textMuted, fontSize: 14.sp),
               ),
               Text(
-                "Yogi Eka Saputra",
+                userName,
                 style: TextStyle(
                   color: AppColors.textPrimary,
-                  fontSize: 20.sp,
+                  fontSize: 22.sp,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -82,21 +89,33 @@ class HomePage extends StatelessWidget {
           Stack(
             children: [
               Container(
-                padding: EdgeInsets.all(10.w),
+                padding: EdgeInsets.all(11.w),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.surfaceLowest,
                   shape: BoxShape.circle,
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 16,
+                    ),
+                  ],
                 ),
-                child: const FaIcon(FontAwesomeIcons.solidBell, size: 20, color: AppColors.primary),
+                child: const FaIcon(
+                  FontAwesomeIcons.solidBell,
+                  size: 18,
+                  color: AppColors.primary,
+                ),
               ),
               Positioned(
-                right: 2,
-                top: 2,
+                right: 3,
+                top: 3,
                 child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
-                  constraints: const BoxConstraints(minWidth: 8, minHeight: 8),
+                  width: 10.w,
+                  height: 10.w,
+                  decoration: const BoxDecoration(
+                    color: AppColors.accent,
+                    shape: BoxShape.circle,
+                  ),
                 ),
               ),
             ],
@@ -106,21 +125,33 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildPromoBanner() {
+  Widget _buildPromoBanner({
+    required String title,
+    required String subtitle,
+    required String ctaLabel,
+  }) {
     return Container(
-      height: 140.h,
+      height: 150.h,
       width: double.infinity,
-      margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+      margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
       decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [AppColors.primary, AppColors.primary.withOpacity(0.7)]),
-        borderRadius: BorderRadius.circular(20.r),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppColors.primary, AppColors.primaryContainer],
+        ),
+        borderRadius: BorderRadius.circular(24.r),
       ),
       child: Stack(
         children: [
           Positioned(
-            right: -20,
-            bottom: -10,
-            child: Icon(Icons.sports_tennis, size: 150, color: Colors.white.withOpacity(0.1)),
+            right: -24.w,
+            bottom: -24.h,
+            child: Icon(
+              Icons.sports_tennis,
+              size: 160.sp,
+              color: Colors.white.withValues(alpha: 0.1),
+            ),
           ),
           Padding(
             padding: EdgeInsets.all(20.w),
@@ -129,29 +160,33 @@ class HomePage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Get 30% OFF",
+                  title,
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 22.sp,
+                    fontSize: 24.sp,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
+                SizedBox(height: 4.h),
                 Text(
-                  "On all indoor arenas this week",
-                  style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 13.sp),
+                  subtitle,
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.92),
+                    fontSize: 13.sp,
+                  ),
                 ),
-                SizedBox(height: 12.h),
+                SizedBox(height: 14.h),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                  padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 7.h),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10.r),
+                    color: AppColors.surfaceLowest.withValues(alpha: 0.92),
+                    borderRadius: BorderRadius.circular(999.r),
                   ),
                   child: Text(
-                    "Claim Now",
+                    ctaLabel,
                     style: TextStyle(
                       color: AppColors.primary,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w700,
                       fontSize: 11.sp,
                     ),
                   ),
@@ -166,66 +201,70 @@ class HomePage extends StatelessWidget {
 
   Widget _buildSearchBar() {
     return Container(
-      margin: EdgeInsets.all(20.w),
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+      margin: EdgeInsets.symmetric(horizontal: 20.w),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(15.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
+        color: AppColors.surfaceVariant,
+        borderRadius: BorderRadius.circular(18.r),
       ),
       child: Row(
         children: [
-          const FaIcon(FontAwesomeIcons.magnifyingGlass, size: 16, color: AppColors.textMuted),
+          const FaIcon(
+            FontAwesomeIcons.magnifyingGlass,
+            size: 16,
+            color: AppColors.textMuted,
+          ),
           SizedBox(width: 12.w),
           Text(
-            "Search your favorite court...",
+            'Search your favorite court...',
             style: TextStyle(color: AppColors.textMuted, fontSize: 13.sp),
           ),
           const Spacer(),
-          const FaIcon(FontAwesomeIcons.sliders, size: 16, color: AppColors.primary),
+          const FaIcon(
+            FontAwesomeIcons.sliders,
+            size: 16,
+            color: AppColors.primary,
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildCategorySection() {
-    final categories = [
-      {'name': 'Tennis', 'icon': FontAwesomeIcons.tableTennisPaddleBall},
-      {'name': 'Soccer', 'icon': FontAwesomeIcons.futbol},
-      {'name': 'Basket', 'icon': FontAwesomeIcons.basketball},
-      {'name': 'Volleyball', 'icon': FontAwesomeIcons.volleyball},
-      {'name': 'Badminton', 'icon': FontAwesomeIcons.tableTennisPaddleBall},
-    ];
+  Widget _buildCategorySection(List<String> categories) {
+    final displayCategories = categories.take(5).toList();
+    final icons = <String, FaIconData>{
+      'Tennis': FontAwesomeIcons.tableTennisPaddleBall,
+      'Soccer': FontAwesomeIcons.futbol,
+      'Basketball': FontAwesomeIcons.basketball,
+      'Volleyball': FontAwesomeIcons.volleyball,
+      'Badminton': FontAwesomeIcons.tableTennisPaddleBall,
+      'All': FontAwesomeIcons.layerGroup,
+    };
 
     return SizedBox(
-      height: 125.h, // FIXED: Tinggi ditambah agar tidak overflow
+      height: 122.h,
       child: ListView.builder(
-        padding: EdgeInsets.only(left: 20.w),
+        padding: EdgeInsets.only(left: 20.w, top: 16.h),
         scrollDirection: Axis.horizontal,
-        itemCount: categories.length,
+        itemCount: displayCategories.length,
         itemBuilder: (context, index) {
-          final iconData = categories[index]['icon'] as FaIconData;
+          final category = displayCategories[index];
+          final iconData = icons[category] ?? FontAwesomeIcons.layerGroup;
           return Padding(
-            padding: EdgeInsets.only(right: 20.w),
+            padding: EdgeInsets.only(right: 14.w),
             child: Column(
               children: [
                 Container(
-                  padding: EdgeInsets.all(15.w),
+                  padding: EdgeInsets.all(16.w),
                   decoration: BoxDecoration(
-                    color: AppColors.primaryLight,
-                    borderRadius: BorderRadius.circular(16.r),
+                    color: AppColors.secondaryContainer.withValues(alpha: 0.55),
+                    borderRadius: BorderRadius.circular(999.r),
                   ),
-                  child: FaIcon(iconData, color: AppColors.primary, size: 22),
+                  child: FaIcon(iconData, color: AppColors.primary, size: 20),
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  categories[index]['name'] as String,
+                  category,
                   style: TextStyle(
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w600,
@@ -240,19 +279,26 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildRecentBookingCard() {
+  Widget _buildRecentBookingCard(BookingModel booking) {
     return Container(
-      padding: EdgeInsets.all(12.w),
-      decoration: BoxDecoration(color: Colors.black87, borderRadius: BorderRadius.circular(18.r)),
+      padding: EdgeInsets.all(14.w),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceLowest,
+        borderRadius: BorderRadius.circular(22.r),
+      ),
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(10.w),
+            padding: EdgeInsets.all(11.w),
             decoration: BoxDecoration(
-              color: Colors.white24,
-              borderRadius: BorderRadius.circular(12.r),
+              color: AppColors.primaryLight,
+              borderRadius: BorderRadius.circular(14.r),
             ),
-            child: const FaIcon(FontAwesomeIcons.medal, color: Colors.amber, size: 20),
+            child: const FaIcon(
+              FontAwesomeIcons.medal,
+              color: AppColors.accent,
+              size: 18,
+            ),
           ),
           SizedBox(width: 12.w),
           Expanded(
@@ -260,16 +306,17 @@ class HomePage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "The Smash Club",
+                  booking.venueName,
                   style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w800,
                     fontSize: 14.sp,
                   ),
                 ),
+                SizedBox(height: 2.h),
                 Text(
-                  "Booked 2 days ago • Badminton",
-                  style: TextStyle(color: Colors.white70, fontSize: 11.sp),
+                  '${booking.sport} • ${booking.courtName}',
+                  style: TextStyle(color: AppColors.textSecondary, fontSize: 11.sp),
                 ),
               ],
             ),
@@ -278,11 +325,15 @@ class HomePage extends StatelessWidget {
             onPressed: () {},
             style: TextButton.styleFrom(
               backgroundColor: AppColors.primary,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999.r)),
             ),
             child: Text(
-              "REBOOK",
-              style: TextStyle(color: Colors.white, fontSize: 11.sp, fontWeight: FontWeight.bold),
+              'REBOOK',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 11.sp,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ],
@@ -308,110 +359,125 @@ class HomePage extends StatelessWidget {
             style: TextStyle(
               fontSize: 12.sp,
               color: AppColors.primary,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w700,
             ),
           ),
       ],
     );
   }
 
-  Widget _buildRecommendedList() {
+  Widget _buildRecommendedList(BuildContext context, List<VenueModel> venues) {
     return SizedBox(
       height: 260.h,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: 3,
+        itemCount: venues.length,
         itemBuilder: (context, index) {
-          return Container(
-            width: 260.w,
-            margin: EdgeInsets.only(right: 18.w),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(24.r),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
-                ),
-              ],
+          final venue = venues[index];
+          return GestureDetector(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => VenueDetailPage(venue: venue)),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-                      child: CachedNetworkImage(
-                        imageUrl: "https://picsum.photos/seed/${index + 40}/500/300",
-                        height: 140.h,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    Positioned(
-                      top: 12,
-                      left: 12,
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8.r),
-                        ),
-                        child: Text(
-                          "NEW",
-                          style: TextStyle(
-                            color: AppColors.primary,
-                            fontSize: 10.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding: EdgeInsets.all(15.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            child: Container(
+              width: 260.w,
+              margin: EdgeInsets.only(right: 18.w),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceLowest,
+                borderRadius: BorderRadius.circular(20.r),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Stack(
                     children: [
-                      Text(
-                        "Stadium Atelier",
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.sp),
+                      ClipRRect(
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+                        child: CachedNetworkImage(
+                          imageUrl: venue.imageUrl,
+                          height: 140.h,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                      SizedBox(height: 4.h),
-                      Row(
-                        children: [
-                          const FaIcon(
-                            FontAwesomeIcons.locationDot,
-                            size: 10,
-                            color: AppColors.textMuted,
+                      Positioned(
+                        top: 12,
+                        left: 12,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                          decoration: BoxDecoration(
+                            color: AppColors.surfaceLowest.withValues(alpha: 0.92),
+                            borderRadius: BorderRadius.circular(999.r),
                           ),
-                          SizedBox(width: 5.w),
-                          Text(
-                            "Olympic Complex",
-                            style: TextStyle(fontSize: 12.sp, color: AppColors.textMuted),
-                          ),
-                          const Spacer(),
-                          Text(
-                            "\$120",
+                          child: Text(
+                            venue.sports.first,
                             style: TextStyle(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w800,
-                              fontSize: 14.sp,
+                              color: AppColors.accent,
+                              fontSize: 10.sp,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
-                          Text(
-                            "/hr",
-                            style: TextStyle(color: AppColors.textMuted, fontSize: 10.sp),
-                          ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
-                ),
-              ],
+                  Padding(
+                    padding: EdgeInsets.all(15.w),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          venue.name,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 15.sp,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        SizedBox(height: 4.h),
+                        Row(
+                          children: [
+                            const FaIcon(
+                              FontAwesomeIcons.locationDot,
+                              size: 10,
+                              color: AppColors.textMuted,
+                            ),
+                            SizedBox(width: 5.w),
+                            Expanded(
+                              child: Text(
+                                venue.location,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 12.sp,
+                                  color: AppColors.textMuted,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 8.h),
+                        Row(
+                          children: [
+                            Text(
+                              CurrencyFormatter.idr(venue.pricePerHour),
+                              style: TextStyle(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 14.sp,
+                              ),
+                            ),
+                            Text(
+                              '/hr',
+                              style: TextStyle(color: AppColors.textMuted, fontSize: 10.sp),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         },
@@ -419,57 +485,75 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildNearbyList() {
+  Widget _buildNearbyList(BuildContext context, List<VenueModel> venues) {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: 2,
+      itemCount: venues.length,
       itemBuilder: (context, index) {
-        return Container(
-          margin: EdgeInsets.only(bottom: 15.h),
-          padding: EdgeInsets.all(12.w),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(18.r),
+        final venue = venues[index];
+        return GestureDetector(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => VenueDetailPage(venue: venue)),
           ),
-          child: Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(14.r),
-                child: CachedNetworkImage(
-                  width: 70.w,
-                  height: 70.w,
-                  imageUrl: "https://picsum.photos/seed/${index + 10}/200",
-                  fit: BoxFit.cover,
+          child: Container(
+            margin: EdgeInsets.only(bottom: 15.h),
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceLowest,
+              borderRadius: BorderRadius.circular(20.r),
+            ),
+            child: Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(14.r),
+                  child: CachedNetworkImage(
+                    width: 70.w,
+                    height: 70.w,
+                    imageUrl: venue.imageUrl,
+                    fit: BoxFit.cover,
+                  ),
                 ),
-              ),
-              SizedBox(width: 15.w),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Grand Slam Arena",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
-                    ),
-                    Text(
-                      "Tennis • 1.2 km away",
-                      style: TextStyle(fontSize: 12.sp, color: AppColors.textMuted),
-                    ),
-                    SizedBox(height: 4.h),
-                    Text(
-                      "⭐ 4.8 (120 reviews)",
-                      style: TextStyle(
-                        fontSize: 11.sp,
-                        color: Colors.amber,
-                        fontWeight: FontWeight.bold,
+                SizedBox(width: 15.w),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        venue.name,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 14.sp,
+                          color: AppColors.textPrimary,
+                        ),
                       ),
-                    ),
-                  ],
+                      Text(
+                        '${venue.sports.join(' • ')} • ${venue.distanceKm.toStringAsFixed(1)} km away',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: AppColors.textMuted,
+                        ),
+                      ),
+                      SizedBox(height: 4.h),
+                      Text(
+                        '⭐ ${venue.rating} (${venue.reviewCount} reviews)',
+                        style: TextStyle(
+                          fontSize: 11.sp,
+                          color: AppColors.accent,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.textMuted),
-            ],
+                const Icon(
+                  Icons.arrow_forward_ios,
+                  size: 14,
+                  color: AppColors.textMuted,
+                ),
+              ],
+            ),
           ),
         );
       },
