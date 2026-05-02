@@ -11,64 +11,107 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   bool _isPasswordVisible = false;
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         elevation: 0,
+        centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textPrimary),
+          icon: Container(
+            padding: EdgeInsets.all(8.w),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceLowest,
+              shape: BoxShape.circle,
+              border: Border.all(color: AppColors.divider.withValues(alpha: 0.5)),
+            ),
+            child: Icon(Icons.arrow_back_ios_new, size: 14.sp, color: AppColors.textPrimary),
+          ),
           onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          "Daftar Akun",
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 16.sp,
+            fontWeight: FontWeight.w800,
+          ),
         ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
           padding: EdgeInsets.symmetric(horizontal: 24.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              SizedBox(height: 20.h),
               Text(
-                "Create Account",
+                "Bergabung Bersama Kami! 🏅",
                 style: TextStyle(
-                  fontSize: 28.sp,
+                  fontSize: 26.sp,
                   fontWeight: FontWeight.w900,
                   color: AppColors.textPrimary,
+                  height: 1.2,
                 ),
               ),
               SizedBox(height: 8.h),
               Text(
-                "Join us and start booking your favorite sports venue easily.",
-                style: TextStyle(fontSize: 14.sp, color: AppColors.textMuted),
+                "Mulai langkahmu untuk booking lapangan favorit dengan lebih mudah dan cepat.",
+                style: TextStyle(fontSize: 14.sp, color: AppColors.textSecondary),
               ),
-              SizedBox(height: 30.h),
 
-              _buildLabel("Full Name"),
-              _buildTextField(hint: "Yogi Eka Saputra", icon: Icons.person_outline),
-              SizedBox(height: 16.h),
+              SizedBox(height: 32.h),
 
-              _buildLabel("Email Address"),
-              _buildTextField(hint: "yogi@example.com", icon: Icons.email_outlined),
-              SizedBox(height: 16.h),
+              // Form Fields
+              _buildLabel("Nama Lengkap"),
+              _buildTextField(
+                controller: _nameController,
+                hint: "Contoh: Yogi Eka Saputra",
+                icon: Icons.person_outline_rounded,
+              ),
 
-              _buildLabel("Phone Number"),
-              _buildTextField(hint: "0812xxxx", icon: Icons.phone_android_outlined),
-              SizedBox(height: 16.h),
+              SizedBox(height: 20.h),
+
+              _buildLabel("Alamat Email"),
+              _buildTextField(
+                controller: _emailController,
+                hint: "yogi@example.com",
+                icon: Icons.alternate_email_rounded,
+                keyboardType: TextInputType.emailAddress,
+              ),
+
+              SizedBox(height: 20.h),
+
+              _buildLabel("Nomor WhatsApp"),
+              _buildTextField(
+                controller: _phoneController,
+                hint: "0812xxxx",
+                icon: Icons.phone_android_rounded,
+                keyboardType: TextInputType.phone,
+              ),
+
+              SizedBox(height: 20.h),
 
               _buildLabel("Password"),
               TextField(
+                controller: _passwordController,
                 obscureText: !_isPasswordVisible,
+                style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600),
                 decoration: _buildInputDecoration(
-                  hint: "••••••••",
-                  icon: Icons.lock_outline_rounded,
+                  hint: "Buat password kuat",
+                  icon: Icons.lock_person_outlined,
                   suffix: IconButton(
                     icon: Icon(
-                      _isPasswordVisible
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined,
-                      size: 20.sp,
+                      _isPasswordVisible ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                      size: 22.sp,
                       color: AppColors.textMuted,
                     ),
                     onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
@@ -76,28 +119,55 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
               ),
 
-              SizedBox(height: 30.h),
+              SizedBox(height: 40.h),
+
+              // Register Button
               SizedBox(
                 width: double.infinity,
-                height: 55.h,
+                height: 56.h,
                 child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context), // Kembali ke Login setelah daftar
+                  onPressed: () {
+                    // Logic registrasi nanti di sini
+                    Navigator.pop(context);
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.r)),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
                     elevation: 0,
                   ),
                   child: Text(
-                    "CREATE ACCOUNT",
+                    "BUAT AKUN SEKARANG",
                     style: TextStyle(
                       fontSize: 15.sp,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1,
                     ),
                   ),
                 ),
               ),
-              SizedBox(height: 20.h),
+
+              SizedBox(height: 24.h),
+
+              // Login Link
+              Center(
+                child: GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: RichText(
+                    text: TextSpan(
+                      style: TextStyle(color: AppColors.textSecondary, fontSize: 14.sp),
+                      children: [
+                        const TextSpan(text: "Sudah punya akun? "),
+                        TextSpan(
+                          text: "Masuk Disini",
+                          style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w800),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 40.h),
             ],
           ),
         ),
@@ -107,20 +177,28 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Widget _buildLabel(String text) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 8.h),
+      padding: EdgeInsets.only(left: 4.w, bottom: 8.h),
       child: Text(
         text,
         style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 13.sp,
+          fontWeight: FontWeight.w700,
+          fontSize: 14.sp,
           color: AppColors.textPrimary,
         ),
       ),
     );
   }
 
-  Widget _buildTextField({required String hint, required IconData icon}) {
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
     return TextField(
+      controller: controller,
+      keyboardType: keyboardType,
+      style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600),
       decoration: _buildInputDecoration(hint: hint, icon: icon),
     );
   }
@@ -132,17 +210,27 @@ class _RegisterPageState extends State<RegisterPage> {
   }) {
     return InputDecoration(
       hintText: hint,
-      prefixIcon: Icon(icon, size: 20.sp, color: AppColors.textMuted),
+      hintStyle: TextStyle(
+        color: AppColors.textMuted,
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w400,
+      ),
+      prefixIcon: Icon(icon, size: 22.sp, color: AppColors.textMuted),
       suffixIcon: suffix,
       filled: true,
-      fillColor: Colors.grey.shade50,
+      fillColor: AppColors.surfaceLowest,
+      contentPadding: EdgeInsets.symmetric(vertical: 18.h, horizontal: 20.w),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(15.r),
-        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.circular(16.r),
+        borderSide: BorderSide(color: AppColors.divider.withValues(alpha: 0.5), width: 1),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16.r),
+        borderSide: BorderSide(color: AppColors.divider.withValues(alpha: 0.5), width: 1),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(15.r),
-        borderSide: const BorderSide(color: AppColors.primary),
+        borderRadius: BorderRadius.circular(16.r),
+        borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
       ),
     );
   }

@@ -93,6 +93,23 @@ class AppTheme {
           elevation: 0,
         ),
       ),
+      chipTheme: ChipThemeData(
+        backgroundColor: AppColors.surfaceLow,
+        selectedColor: AppColors.primary,
+        secondarySelectedColor: AppColors.primary,
+        labelStyle: GoogleFonts.inter(
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+          color: AppColors.textSecondary,
+        ),
+        secondaryLabelStyle: GoogleFonts.inter(
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+          color: Colors.white,
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+      ),
       cardTheme: CardThemeData(
         color: AppColors.surfaceLowest,
         elevation: 0,

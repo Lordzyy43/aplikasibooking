@@ -1,8 +1,27 @@
+class VenueReviewModel {
+  const VenueReviewModel({
+    required this.author,
+    required this.avatarUrl,
+    required this.rating,
+    required this.comment,
+    required this.timeLabel,
+    this.hasPhoto = false,
+  });
+
+  final String author;
+  final String avatarUrl;
+  final double rating;
+  final String comment;
+  final String timeLabel;
+  final bool hasPhoto;
+}
+
 class VenueCourtModel {
   const VenueCourtModel({
     required this.id,
     required this.name,
     required this.imageUrl,
+    required this.galleryUrls,
     required this.surface,
     required this.environment,
     required this.pricePerHour,
@@ -14,6 +33,7 @@ class VenueCourtModel {
   final String id;
   final String name;
   final String imageUrl;
+  final List<String> galleryUrls;
   final String surface;
   final String environment;
   final int pricePerHour;
@@ -29,6 +49,7 @@ class VenueModel {
     required this.location,
     required this.distanceKm,
     required this.imageUrl,
+    required this.galleryUrls,
     required this.rating,
     required this.reviewCount,
     required this.pricePerHour,
@@ -37,6 +58,7 @@ class VenueModel {
     required this.courts,
     required this.statusLabel,
     required this.description,
+    required this.reviews,
   });
 
   final String id;
@@ -44,6 +66,7 @@ class VenueModel {
   final String location;
   final double distanceKm;
   final String imageUrl;
+  final List<String> galleryUrls;
   final double rating;
   final int reviewCount;
   final int pricePerHour;
@@ -52,4 +75,5 @@ class VenueModel {
   final List<VenueCourtModel> courts;
   final String statusLabel;
   final String description;
+  final List<VenueReviewModel> reviews;
 }

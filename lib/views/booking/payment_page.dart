@@ -26,49 +26,188 @@ class PaymentPage extends StatelessWidget {
         leading: const BackButton(color: Colors.black),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(25.w),
+        padding: EdgeInsets.all(24.w),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Selesaikan Pembayaran Dalam',
-              style: TextStyle(fontSize: 14.sp, color: Colors.grey),
-            ),
-            Text(
-              '14:59',
-              style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold, color: Colors.red),
-            ),
-            SizedBox(height: 30.h),
-            Container(
-              padding: EdgeInsets.all(20.w),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade200),
-                borderRadius: BorderRadius.circular(20.r),
-              ),
-              child: Column(
-                children: [
-                  Image.network(
-                    'https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg',
-                    height: 200.w,
-                    width: 200.w,
-                  ),
-                  SizedBox(height: 10.h),
-                  Text(
-                    bookingProvider.selectedVenueName ?? 'ArenaFlow Venue',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    'NMKID: 123456789',
-                    style: TextStyle(fontSize: 10.sp, color: Colors.grey),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 30.h),
+            _buildProgressHeader(),
+            SizedBox(height: 22.h),
+            _buildQrisCard(bookingProvider.selectedVenueName ?? 'ArenaFlow Venue'),
+            SizedBox(height: 20.h),
+            _buildInstructionCard(),
+            SizedBox(height: 20.h),
             _buildTotalInfo(total),
           ],
         ),
       ),
       bottomNavigationBar: _buildBottomButton(context, bookingProvider, total),
+    );
+  }
+
+  Widget _buildProgressHeader() {
+    return Container(
+      padding: EdgeInsets.all(18.w),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceLow,
+        borderRadius: BorderRadius.circular(20.r),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 46.w,
+            height: 46.w,
+            decoration: BoxDecoration(
+              color: AppColors.errorContainer,
+              borderRadius: BorderRadius.circular(14.r),
+            ),
+            child: const Icon(Icons.timer_outlined, color: AppColors.error),
+          ),
+          SizedBox(width: 14.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Selesaikan dalam 14:59',
+                  style: TextStyle(
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                SizedBox(height: 2.h),
+                Text(
+                  'Pembayaran akan otomatis dibatalkan jika melewati batas waktu.',
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    height: 1.4,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQrisCard(String venueName) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(20.w),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade200),
+        borderRadius: BorderRadius.circular(20.r),
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(vertical: 10.h),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceLow,
+              borderRadius: BorderRadius.circular(14.r),
+            ),
+            child: Text(
+              'QRIS Pembayaran',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13.sp,
+                fontWeight: FontWeight.w800,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ),
+          SizedBox(height: 18.h),
+          Image.network(
+            'https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg',
+            height: 210.w,
+            width: 210.w,
+          ),
+          SizedBox(height: 14.h),
+          Text(
+            venueName,
+            textAlign: TextAlign.center,
+            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15.sp),
+          ),
+          SizedBox(height: 4.h),
+          Text(
+            'NMID 123456789',
+            style: TextStyle(fontSize: 11.sp, color: AppColors.textMuted),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInstructionCard() {
+    final steps = [
+      'Buka aplikasi e-wallet atau mobile banking.',
+      'Scan kode QRIS di atas.',
+      'Pastikan nominal dan nama venue sudah sesuai.',
+      'Kembali ke aplikasi setelah pembayaran selesai.',
+    ];
+
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(18.w),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceLowest,
+        borderRadius: BorderRadius.circular(20.r),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Langkah Pembayaran',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w800,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          SizedBox(height: 12.h),
+          ...List.generate(steps.length, (index) {
+            return Padding(
+              padding: EdgeInsets.only(bottom: index == steps.length - 1 ? 0 : 10.h),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 22.w,
+                    height: 22.w,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryLight,
+                      borderRadius: BorderRadius.circular(999.r),
+                    ),
+                    child: Text(
+                      '${index + 1}',
+                      style: TextStyle(
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 10.w),
+                  Expanded(
+                    child: Text(
+                      steps[index],
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        height: 1.45,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
     );
   }
 
@@ -97,38 +236,40 @@ class PaymentPage extends StatelessWidget {
   }
 
   Widget _buildBottomButton(BuildContext context, BookingProvider provider, int total) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(25.w, 0, 25.w, 30.h),
-      child: ElevatedButton(
-        onPressed: () {
-          final booking = BookingModel(
-            id: 'BK-${DateTime.now().millisecondsSinceEpoch}',
-            venueName: provider.selectedVenueName ?? '-',
-            venueLocation: provider.selectedVenueLocation ?? '-',
-            venueImageUrl: provider.selectedVenueImageUrl ?? '',
-            courtName: provider.selectedField ?? '-',
-            sport: provider.selectedSport ?? '-',
-            date: provider.selectedDate,
-            startTime: provider.selectedTime ?? '-',
-            endTime: _endTimeFor(provider.selectedTime),
-            totalPrice: total,
-            status: BookingStatus.upcoming,
-          );
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 20.h),
+        child: SizedBox(
+          height: 54.h,
+          child: ElevatedButton(
+            onPressed: () {
+              final booking = BookingModel(
+                id: 'BK-${DateTime.now().millisecondsSinceEpoch}',
+                venueName: provider.selectedVenueName ?? '-',
+                venueLocation: provider.selectedVenueLocation ?? '-',
+                venueImageUrl: provider.selectedVenueImageUrl ?? '',
+                courtName: provider.selectedField ?? '-',
+                sport: provider.selectedSport ?? '-',
+                date: provider.selectedDate,
+                startTime: provider.selectedTime ?? '-',
+                endTime: _endTimeFor(provider.selectedTime),
+                totalPrice: total,
+                status: BookingStatus.upcoming,
+              );
 
-          context.read<AppDataProvider>().confirmBooking(booking);
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => PaymentSuccessPage(booking: booking)),
-          );
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          minimumSize: Size(double.infinity, 52.h),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.r)),
-        ),
-        child: const Text(
-          'Saya Sudah Bayar',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              context.read<AppDataProvider>().confirmBooking(booking);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => PaymentSuccessPage(booking: booking)),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+            ),
+            child: const Text('Saya Sudah Bayar'),
+          ),
         ),
       ),
     );

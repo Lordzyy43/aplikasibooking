@@ -9,10 +9,10 @@ class BookingService {
   UserModel getUser() {
     return const UserModel(
       id: 'USR-001',
-      name: 'Yogi Eka Saputra',
-      email: 'yogi.eka@example.com',
+      name: 'john doe',
+      email: 'john@example.com',
       phone: '0812 3456 7890',
-      avatarUrl: 'https://picsum.photos/seed/yogi/200',
+      avatarUrl: 'https://picsum.photos/seed/john/200',
       walletBalance: 250000,
       points: 320,
     );

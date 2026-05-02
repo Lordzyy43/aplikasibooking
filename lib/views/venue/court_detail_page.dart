@@ -2,7 +2,7 @@ import 'package:apkbooking/core/app_colors.dart';
 import 'package:apkbooking/core/utils/currency_formatter.dart';
 import 'package:apkbooking/models/venue_model.dart';
 import 'package:apkbooking/providers/booking_provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:apkbooking/widgets/common/media_gallery_carousel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
@@ -36,7 +36,15 @@ class CourtDetailPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildMainInfo(),
-                  SizedBox(height: 25.h),
+                  SizedBox(height: 24.h),
+                  _sectionTitle('Galeri Lapangan'),
+                  SizedBox(height: 12.h),
+                  MediaGalleryCarousel(
+                    images: court.galleryUrls,
+                    height: 210.h,
+                    borderRadius: BorderRadius.circular(22.r),
+                  ),
+                  SizedBox(height: 24.h),
                   _sectionTitle('Fasilitas & Spesifikasi'),
                   SizedBox(height: 12.h),
                   _buildSpecs(),
@@ -88,7 +96,7 @@ class CourtDetailPage extends StatelessWidget {
         background: Stack(
           fit: StackFit.expand,
           children: [
-            CachedNetworkImage(imageUrl: court.imageUrl, fit: BoxFit.cover),
+            Image.network(court.imageUrl, fit: BoxFit.cover),
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -121,8 +129,10 @@ class CourtDetailPage extends StatelessWidget {
             Container(
               padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10.r),
+                gradient: const LinearGradient(
+                  colors: [AppColors.primaryLight, AppColors.infoContainer],
+                ),
+                borderRadius: BorderRadius.circular(12.r),
               ),
               child: Text(
                 '${CurrencyFormatter.idr(court.pricePerHour)}/Jam',
@@ -144,14 +154,14 @@ class CourtDetailPage extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
             ),
             Text(
-              '(${venue.reviewCount} Ulasan) • ',
+              '(${venue.reviewCount} ulasan) • ',
               style: TextStyle(color: AppColors.textMuted, fontSize: 13.sp),
             ),
             Text(
               court.environment,
               style: TextStyle(
-                color: AppColors.primary,
-                fontWeight: FontWeight.w600,
+                color: AppColors.accentTeal,
+                fontWeight: FontWeight.w700,
                 fontSize: 13.sp,
               ),
             ),
@@ -224,7 +234,10 @@ class CourtDetailPage extends StatelessWidget {
               width: 65.w,
               margin: EdgeInsets.only(right: 12.w),
               decoration: BoxDecoration(
-                color: isSelected ? AppColors.primary : AppColors.surfaceLowest,
+                gradient: isSelected
+                    ? const LinearGradient(colors: [AppColors.primary, AppColors.accentTeal])
+                    : null,
+                color: isSelected ? null : AppColors.surfaceLowest,
                 borderRadius: BorderRadius.circular(15.r),
                 boxShadow: isSelected
                     ? [
@@ -285,13 +298,16 @@ class CourtDetailPage extends StatelessWidget {
           onTap: isBooked ? null : () => provider.setTime(time),
           child: Container(
             decoration: BoxDecoration(
+              gradient: isSelected
+                  ? const LinearGradient(colors: [AppColors.primary, AppColors.accentRose])
+                  : null,
               color: isSelected
-                  ? AppColors.primary
+                  ? null
                   : (isBooked ? Colors.grey.shade100 : AppColors.surfaceLowest),
               borderRadius: BorderRadius.circular(12.r),
               border: Border.all(
                 color: isSelected
-                    ? AppColors.primary
+                    ? Colors.transparent
                     : (isBooked ? Colors.transparent : Colors.grey.shade200),
               ),
             ),

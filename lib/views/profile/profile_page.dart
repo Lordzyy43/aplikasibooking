@@ -1,10 +1,11 @@
+import 'package:apkbooking/core/app_colors.dart';
 import 'package:apkbooking/core/utils/currency_formatter.dart';
 import 'package:apkbooking/providers/app_data_provider.dart';
+import 'package:apkbooking/widgets/common/app_remote_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:apkbooking/core/app_colors.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -16,36 +17,47 @@ class ProfilePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Profil Saya'), centerTitle: true),
       body: SingleChildScrollView(
+        padding: EdgeInsets.only(bottom: 30.h),
         child: Column(
           children: [
             SizedBox(height: 20.h),
-            _buildProfileHeader(user.name, user.email, user.avatarUrl ?? "https://ui-avatars.com/api/?name=User"),
+            _buildProfileHeader(user.name, user.email, user.avatarUrl),
             SizedBox(height: 25.h),
             _buildStatCards(user.walletBalance, user.points),
             SizedBox(height: 25.h),
+            _buildQuickActions(),
+            SizedBox(height: 20.h),
             _buildMenuSection(context),
-            SizedBox(height: 30.h),
+            SizedBox(height: 24.h),
             Text(
               'Versi 1.0.0',
               style: TextStyle(color: AppColors.textMuted, fontSize: 12.sp),
             ),
-            SizedBox(height: 20.h),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildProfileHeader(String name, String email, String avatarUrl) {
+  Widget _buildProfileHeader(String name, String email, String? avatarUrl) {
     return Column(
       children: [
         Stack(
           alignment: Alignment.bottomRight,
           children: [
-            CircleAvatar(
-              radius: 50.r,
-              backgroundColor: AppColors.primaryLight,
-              backgroundImage: NetworkImage(avatarUrl),
+            Container(
+              width: 100.w,
+              height: 100.w,
+              decoration: BoxDecoration(
+                color: AppColors.primaryLight,
+                shape: BoxShape.circle,
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: AppRemoteImage(
+                imageUrl: avatarUrl ?? 'https://ui-avatars.com/api/?name=User',
+                width: 100.w,
+                height: 100.w,
+              ),
             ),
             CircleAvatar(
               radius: 18.r,
@@ -91,6 +103,45 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
+  Widget _buildQuickActions() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
+      child: Row(
+        children: [
+          Expanded(child: _buildQuickActionCard(Icons.receipt_long_rounded, 'Transaksi')),
+          SizedBox(width: 12.w),
+          Expanded(child: _buildQuickActionCard(Icons.favorite_border_rounded, 'Favorit')),
+          SizedBox(width: 12.w),
+          Expanded(child: _buildQuickActionCard(Icons.support_agent_rounded, 'Bantuan')),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickActionCard(IconData icon, String label) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 14.h),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceLowest,
+        borderRadius: BorderRadius.circular(16.r),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: AppColors.primary, size: 20.sp),
+          SizedBox(height: 8.h),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12.sp,
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildSingleStat(String label, String value, FaIconData icon) {
     return Column(
       children: [
@@ -116,13 +167,22 @@ class ProfilePage extends StatelessWidget {
   Widget _buildMenuSection(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.w),
-      child: Column(
-        children: [
-          _buildMenuItem(FontAwesomeIcons.user, 'Edit Profil', () {}),
-          _buildMenuItem(FontAwesomeIcons.shieldHalved, 'Keamanan Akun', () {}),
-          _buildMenuItem(FontAwesomeIcons.circleQuestion, 'Pusat Bantuan', () {}),
-          _buildMenuItem(FontAwesomeIcons.rightFromBracket, 'Keluar', () {}, isDanger: true),
-        ],
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.surfaceLowest,
+          borderRadius: BorderRadius.circular(18.r),
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 4.h),
+          child: Column(
+            children: [
+              _buildMenuItem(FontAwesomeIcons.user, 'Edit Profil', () {}),
+              _buildMenuItem(FontAwesomeIcons.shieldHalved, 'Keamanan Akun', () {}),
+              _buildMenuItem(FontAwesomeIcons.circleQuestion, 'Pusat Bantuan', () {}),
+              _buildMenuItem(FontAwesomeIcons.rightFromBracket, 'Keluar', () {}, isDanger: true),
+            ],
+          ),
+        ),
       ),
     );
   }
