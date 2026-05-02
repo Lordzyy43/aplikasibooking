@@ -6,7 +6,7 @@ import 'package:apkbooking/widgets/common/media_gallery_carousel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'court_detail_page.dart';
+import 'package:apkbooking/views/venue/court_detail_page.dart';
 
 class VenueDetailPage extends StatefulWidget {
   const VenueDetailPage({super.key, required this.venue});

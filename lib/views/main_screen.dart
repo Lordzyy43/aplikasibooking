@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../core/app_colors.dart';
-import 'history/mybooking_page.dart';
-import 'home/home_page.dart';
-import 'notification/notification_page.dart';
-import 'profile/profile_page.dart';
-import 'venue/venue_list_page.dart';
+import 'package:apkbooking/core/app_colors.dart';
+import 'package:apkbooking/views/history/mybooking_page.dart';
+import 'package:apkbooking/views/home/home_page.dart';
+import 'package:apkbooking/views/notification/notification_page.dart';
+import 'package:apkbooking/views/profile/profile_page.dart';
+import 'package:apkbooking/views/venue/venue_list_page.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});

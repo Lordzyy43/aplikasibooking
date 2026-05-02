@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../models/user_model.dart';
-// import '../services/api_client.dart'; // Nanti diaktifkan kalau sudah konek API
+import 'package:apkbooking/models/user_model.dart';
+// import 'package:apkbooking/services/api_client.dart'; // Nanti diaktifkan kalau sudah konek API
 
 class AuthProvider extends ChangeNotifier {
   UserModel? _user;

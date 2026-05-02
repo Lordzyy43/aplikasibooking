@@ -6,7 +6,7 @@ import 'package:apkbooking/providers/booking_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'payment_success_page.dart';
+import 'package:apkbooking/views/booking/payment_success_page.dart';
 
 class PaymentPage extends StatelessWidget {
   const PaymentPage({super.key});

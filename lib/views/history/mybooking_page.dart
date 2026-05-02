@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../booking/booking_detail_page.dart';
-import '../venue/venue_list_page.dart';
+import 'package:apkbooking/views/booking/booking_detail_page.dart';
+import 'package:apkbooking/views/venue/venue_list_page.dart';
 
 class MyBookingPage extends StatelessWidget {
   const MyBookingPage({super.key});

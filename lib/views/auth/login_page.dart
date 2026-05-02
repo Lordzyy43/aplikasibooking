@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import '../../core/app_colors.dart';
-import '../main_screen.dart';
-import 'register_page.dart';
-import '../../providers/auth_provider.dart';
+import 'package:apkbooking/core/app_colors.dart';
+import 'package:apkbooking/views/main_screen.dart';
+import 'package:apkbooking/views/auth/register_page.dart';
+import 'package:apkbooking/providers/auth_provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

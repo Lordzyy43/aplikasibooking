@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'app_remote_image.dart';
+import 'package:apkbooking/widgets/common/app_remote_image.dart';
 
 class MediaGalleryCarousel extends StatefulWidget {
   const MediaGalleryCarousel({
