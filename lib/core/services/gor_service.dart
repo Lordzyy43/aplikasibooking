@@ -1,4 +1,4 @@
-import '../../models/venue_model.dart';
+import 'package:apkbooking/models/venue_model.dart';
 
 class GorService {
   const GorService();

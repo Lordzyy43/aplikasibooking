@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../core/app_colors.dart';
+import 'package:apkbooking/core/app_colors.dart';
 
 class EmptyStateView extends StatelessWidget {
   const EmptyStateView({

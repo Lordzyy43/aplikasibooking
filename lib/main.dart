@@ -17,7 +17,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => BookingProvider()),
-        ChangeNotifierProvider(create: (_) => AppDataProvider()..load()),
+        ChangeNotifierProvider(create: (_) => AppDataProvider()..loadInitialData()),
         ChangeNotifierProvider(create: (_) => AuthProvider()), // Tambahkan AuthProvider
         // Jika nanti ada AuthProvider atau GorProvider, tinggal tambah di sini
       ],

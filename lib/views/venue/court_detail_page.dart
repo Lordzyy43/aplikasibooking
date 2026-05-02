@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../booking/checkout_page.dart';
+import 'package:apkbooking/views/booking/checkout_page.dart';
 
 class CourtDetailPage extends StatelessWidget {
   const CourtDetailPage({

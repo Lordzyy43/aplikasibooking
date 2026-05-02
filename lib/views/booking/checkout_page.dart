@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:dotted_line/dotted_line.dart';
-import 'payment_page.dart';
+import 'package:apkbooking/views/booking/payment_page.dart';
 
 class CheckoutPage extends StatelessWidget {
   const CheckoutPage({super.key});

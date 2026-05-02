@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../core/app_colors.dart';
-import 'login_page.dart';
+import 'package:apkbooking/core/app_colors.dart';
+import 'package:apkbooking/views/auth/login_page.dart';
 
 class OnboardingPage extends StatelessWidget {
   const OnboardingPage({super.key});

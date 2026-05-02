@@ -1,7 +1,7 @@
-import '../../models/booking_model.dart';
-import '../../models/notification_model.dart';
-import '../../models/promo_model.dart';
-import '../../models/user_model.dart';
+import 'package:apkbooking/models/booking_model.dart';
+import 'package:apkbooking/models/notification_model.dart';
+import 'package:apkbooking/models/promo_model.dart';
+import 'package:apkbooking/models/user_model.dart';
 
 class BookingService {
   const BookingService();
