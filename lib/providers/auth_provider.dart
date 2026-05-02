@@ -23,13 +23,13 @@ class AuthProvider extends ChangeNotifier {
       // Nantinya kamu ganti dengan: await _apiClient.post('/login', ...)
       await Future.delayed(const Duration(seconds: 2));
 
-      if (email == "yogi@example.com" && password == "password123") {
+      if (email == "john@example.com" && password == "password123") {
         _user = UserModel(
-          id: "USR-001", // ID unik untuk Yogi
-          name: "Yogi Eka Saputra",
+          id: "USR-001", // ID unik untuk John
+          name: "John Doe",
           email: email,
           phone: "08123456789",
-          avatarUrl: "https://ui-avatars.com/api/?name=Yogi+Eka", // Avatar otomatis dari nama
+          avatarUrl: "https://ui-avatars.com/api/?name=John+Doe", // Avatar otomatis dari nama
           walletBalance: 50000,
           points: 100,
         );

@@ -25,7 +25,7 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.text('Notifications'), findsOneWidget);
+    expect(find.text('Notifikasi'), findsOneWidget);
     expect(find.text('Booking confirmed'), findsOneWidget);
     expect(find.text('Special offer'), findsOneWidget);
   });
