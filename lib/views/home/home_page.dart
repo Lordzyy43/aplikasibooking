@@ -42,7 +42,8 @@ class _HomePageState extends State<HomePage> {
   String _searchQuery = '';
   String _selectedCategory = 'All';
 
-  // Logic filter yang sudah dioptimalkan
+  // --- Logic Layer ---
+
   List<VenueModel> _filterVenues(List<VenueModel> venues) {
     return venues.where((venue) {
       final matchesCategory =
@@ -57,9 +58,7 @@ class _HomePageState extends State<HomePage> {
     }).toList();
   }
 
-  // Fungsi refresh untuk menarik data terbaru dari provider
   Future<void> _onRefresh() async {
-    // Simulasi refresh data
     await context.read<AppDataProvider>().loadInitialData();
   }
 
@@ -69,19 +68,23 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  // --- UI Layer ---
+
   @override
   Widget build(BuildContext context) {
-    // Menggunakan select untuk efisiensi rebuild
-    final isLoaded = context.select((AppDataProvider p) => p.isLoaded);
+    final theme = Theme.of(context);
+    final appData = context.watch<AppDataProvider>();
 
-    if (!isLoaded) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    // 1. Loading State
+    if (!appData.isLoaded) {
+      return Scaffold(
+        backgroundColor: theme.scaffoldBackgroundColor,
+        body: const Center(child: CircularProgressIndicator.adaptive()),
+      );
     }
 
-    final appData = context.watch<AppDataProvider>();
+    // 2. Data Preparation
     final user = appData.user;
-
-    // Transformasi kategori dengan icon mapping
     final List<CategoryModel> categories = appData.sportsCategories.take(6).map((item) {
       return CategoryModel(
         id: item.hashCode,
@@ -92,174 +95,152 @@ class _HomePageState extends State<HomePage> {
 
     final filteredRecommended = _filterVenues(appData.recommendedVenues);
     final filteredNearby = _filterVenues(appData.nearbyVenues);
-
     final recentBooking =
         appData.upcomingBookings.firstOrNull ?? appData.completedBookings.firstOrNull;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: _onRefresh,
-          color: AppColors.primary,
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 1. Header
-                HomeHeader(userName: user.name),
-
-                // 2. Search & Filter Section
-                HomeSearchBar(
-                  controller: _searchController,
-                  onChanged: (value) => setState(() => _searchQuery = value),
-                  onClear: () {
-                    _searchController.clear();
-                    setState(() => _searchQuery = '');
-                  },
-                  onFilterTap: () {
-                    // Reset filter atau buka BottomSheet filter
-                    setState(() => _selectedCategory = 'All');
-                  },
-                ),
-
-                SizedBox(height: 16.h),
-
-                // 3. Promo Banner
-                HomePromoBanner(
-                  title: 'Promo Spesial!',
-                  subtitle: 'Diskon hingga 50% untuk user baru.',
-                  ctaLabel: 'Klaim Sekarang',
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const VenueListPage()),
+      backgroundColor: theme.scaffoldBackgroundColor,
+      body: RefreshIndicator(
+        onRefresh: _onRefresh,
+        color: theme.colorScheme.primary,
+        backgroundColor: theme.cardColor,
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            // Sticky-like Header & Search
+            SliverToBoxAdapter(
+              child: Column(
+                children: [
+                  SizedBox(height: 12.h),
+                  HomeHeader(userName: user.name),
+                  HomeSearchBar(
+                    controller: _searchController,
+                    onChanged: (value) => setState(() => _searchQuery = value),
+                    onClear: () {
+                      _searchController.clear();
+                      setState(() => _searchQuery = '');
+                    },
+                    onFilterTap: () => setState(() => _selectedCategory = 'All'),
                   ),
-                ),
-
-                SizedBox(height: 24.h),
-
-                // 4. Kategori Olahraga
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Kategori Olahraga',
-                        style: TextStyle(
-                          fontSize: 17.sp,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      if (_selectedCategory != 'All')
-                        GestureDetector(
-                          onTap: () => setState(() => _selectedCategory = 'All'),
-                          child: Text(
-                            'Reset Filter',
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 14.h),
-                HomeCategoryList(
-                  categories: categories,
-                  selectedCategory: _selectedCategory,
-                  onCategorySelected: (category) => setState(() => _selectedCategory = category),
-                ),
-
-                // 5. Main Content Area
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
-                  child: Column(
-                    children: [
-                      SizedBox(height: 28.h),
-
-                      // Section: Booking Terakhir (Hanya muncul jika tidak sedang searching)
-                      if (_searchQuery.isEmpty) ...[
-                        HomeSectionHeader(
-                          title: 'Booking Terakhir',
-                          actionLabel: 'Riwayat',
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => const MyBookingPage()),
-                          ),
-                        ),
-                        SizedBox(height: 12.h),
-                        recentBooking != null
-                            ? RecentBookingCard(booking: recentBooking)
-                            : const EmptyStateView(
-                                icon: Icons.calendar_today_outlined,
-                                title: 'Belum ada jadwal',
-                                message: 'Cari lapangan dan mulai main!',
-                                compact: true,
-                              ),
-                        SizedBox(height: 32.h),
-                      ],
-
-                      // Section: Rekomendasi
-                      HomeSectionHeader(
-                        title: 'Rekomendasi Untukmu',
-                        actionLabel: 'Lihat Semua',
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const VenueListPage()),
-                        ),
-                      ),
-                      SizedBox(height: 12.h),
-                      _buildRecommendedList(filteredRecommended),
-
-                      SizedBox(height: 32.h),
-
-                      // Section: Venue Terdekat
-                      const HomeSectionHeader(title: 'Disekitar Kamu'),
-                      SizedBox(height: 12.h),
-                      _buildNearbyList(filteredNearby),
-
-                      SizedBox(height: 40.h),
-                    ],
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
+
+            // Main Content Body
+            SliverPadding(
+              padding: EdgeInsets.only(top: 24.h, bottom: 40.h),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  // Section 1: Promo
+                  HomePromoBanner(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const VenueListPage()),
+                    ),
+                  ),
+
+                  SizedBox(height: 30.h),
+
+                  // Section 2: Categories (Clean & Seragam)
+                  HomeSectionHeader(
+                    title: "Kategori Olahraga",
+                    actionLabel: _selectedCategory != 'All' ? "Reset Filter" : null,
+                    onTap: () => setState(() => _selectedCategory = 'All'),
+                  ),
+                  SizedBox(height: 16.h),
+                  HomeCategoryList(
+                    categories: categories,
+                    selectedCategory: _selectedCategory,
+                    onCategorySelected: (category) => setState(() => _selectedCategory = category),
+                  ),
+
+                  SizedBox(height: 32.h),
+
+                  // Section 3: Recent Booking
+                  if (_searchQuery.isEmpty) ...[
+                    HomeSectionHeader(
+                      title: 'Booking Terakhir',
+                      actionLabel: 'Riwayat',
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const MyBookingPage()),
+                      ),
+                    ),
+                    SizedBox(height: 12.h),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      child: recentBooking != null
+                          ? RecentBookingCard(booking: recentBooking)
+                          : const EmptyStateView(
+                              icon: Icons.calendar_today_outlined,
+                              title: 'Belum ada jadwal',
+                              message: 'Cari lapangan dan mulai main!',
+                              compact: true,
+                            ),
+                    ),
+                    SizedBox(height: 32.h),
+                  ],
+
+                  // Section 4: Recommendations
+                  HomeSectionHeader(
+                    title: 'Rekomendasi Untukmu',
+                    actionLabel: 'Lihat Semua',
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const VenueListPage()),
+                    ),
+                  ),
+                  SizedBox(height: 12.h),
+                  _buildRecommendedList(filteredRecommended),
+
+                  SizedBox(height: 32.h),
+
+                  // Section 5: Nearby Venues
+                  const HomeSectionHeader(title: 'Disekitar Kamu'),
+                  SizedBox(height: 12.h),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    child: _buildNearbyList(filteredNearby),
+                  ),
+                ]),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  // Widget Helper agar kode build tidak terlalu gemuk
+  // --- Refactored Helper Widgets ---
+
   Widget _buildRecommendedList(List<VenueModel> venues) {
     if (venues.isEmpty) {
-      return const EmptyStateView(
-        icon: Icons.search_off,
-        title: 'Tidak ada hasil',
-        message: 'Coba kata kunci lain',
-        compact: true,
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
+        child: const EmptyStateView(
+          icon: Icons.search_off,
+          title: 'Tidak ada hasil',
+          message: 'Coba kata kunci atau kategori lain',
+          compact: true,
+        ),
       );
     }
     return SizedBox(
       height: 270.h,
       child: ListView.builder(
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
         itemCount: venues.length,
-        itemBuilder: (context, index) => VenueCardRecommended(
-          venue: venues[index],
-          onTap: () {
-            // NAVIGASI KE DETAIL VENUE
-            Navigator.push(
+        itemBuilder: (context, index) => Padding(
+          padding: EdgeInsets.symmetric(horizontal: 4.w),
+          child: VenueCardRecommended(
+            venue: venues[index],
+            onTap: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => VenueDetailPage(venue: venues[index])),
-            );
-          },
+              MaterialPageRoute(builder: (_) => VenueDetailPage(venue: venues[index])),
+            ),
+          ),
         ),
       ),
     );
@@ -274,34 +255,29 @@ class _HomePageState extends State<HomePage> {
         compact: true,
       );
     }
-    return ListView.builder(
+    return ListView.separated(
       padding: EdgeInsets.zero,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: venues.length,
+      separatorBuilder: (_, __) => SizedBox(height: 12.h),
       itemBuilder: (context, index) => VenueCardNearby(
         venue: venues[index],
-        onTap: () {
-          /* Ke Detail */
-        },
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => VenueDetailPage(venue: venues[index])),
+        ),
       ),
     );
   }
 
   IconData _getCategoryIcon(String name) {
-    switch (name.toLowerCase()) {
-      case 'futsal':
-        return Icons.sports_soccer;
-      case 'badminton':
-        return Icons.sports_tennis;
-      case 'basket':
-        return Icons.sports_basketball;
-      case 'voli':
-        return Icons.sports_volleyball;
-      case 'tennis':
-        return Icons.sports_baseball;
-      default:
-        return Icons.sports_outlined;
-    }
+    final lowerName = name.toLowerCase();
+    if (lowerName.contains('futsal')) return Icons.sports_soccer;
+    if (lowerName.contains('badminton')) return Icons.sports_tennis;
+    if (lowerName.contains('basket')) return Icons.sports_basketball;
+    if (lowerName.contains('voli')) return Icons.sports_volleyball;
+    if (lowerName.contains('tennis')) return Icons.sports_baseball;
+    return Icons.sports_outlined;
   }
 }

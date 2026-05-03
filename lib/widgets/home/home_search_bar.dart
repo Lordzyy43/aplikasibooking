@@ -18,53 +18,89 @@ class HomeSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
       child: Row(
         children: [
           Expanded(
             child: Container(
+              height: 52.h,
               decoration: BoxDecoration(
-                color: AppColors.surfaceLowest,
-                borderRadius: BorderRadius.circular(16.r),
+                borderRadius: BorderRadius.circular(16.r), // Tambahkan ini agar bayangan rapi
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
+                    color: AppColors.primary.withOpacity(0.06),
+                    blurRadius: 15,
+                    offset: const Offset(0, 8),
+                  ), // Bracket ini yang tadi bermasalah
                 ],
               ),
               child: TextField(
                 controller: controller,
                 onChanged: onChanged,
+                textAlignVertical: TextAlignVertical.center,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
                 decoration: InputDecoration(
-                  hintText: 'Cari lapangan atau lokasi...',
-                  hintStyle: TextStyle(color: AppColors.textMuted, fontSize: 14.sp),
-                  prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primary),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(vertical: 15.h),
+                  hintText: 'Cari lapangan favoritmu...',
+                  hintStyle: theme.textTheme.bodyMedium?.copyWith(color: AppColors.textMuted),
+                  prefixIcon: Icon(Icons.search_rounded, color: AppColors.primary, size: 22.sp),
+                  fillColor: AppColors.surfaceLow,
+                  filled: true,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16.w),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.r),
+                    borderSide: BorderSide(color: AppColors.primary.withOpacity(0.08)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.r),
+                    borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+                  ),
+                  suffixIcon: controller.text.isNotEmpty
+                      ? IconButton(
+                          onPressed: onClear,
+                          icon: Icon(Icons.cancel_rounded, color: AppColors.textMuted, size: 20.sp),
+                        )
+                      : null,
                 ),
               ),
             ),
           ),
           SizedBox(width: 12.w),
-          _buildFilterButton(),
+          _buildFilterButton(theme),
         ],
       ),
     );
   }
 
-  Widget _buildFilterButton() {
-    return InkWell(
-      onTap: onFilterTap,
-      child: Container(
-        padding: EdgeInsets.all(13.w),
-        decoration: BoxDecoration(
-          color: AppColors.primary,
+  Widget _buildFilterButton(ThemeData theme) {
+    return Container(
+      height: 52.h,
+      width: 52.h,
+      decoration: BoxDecoration(
+        color: AppColors.primary,
+        borderRadius: BorderRadius.circular(16.r),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onFilterTap,
           borderRadius: BorderRadius.circular(16.r),
+          child: Center(
+            child: Icon(Icons.tune_rounded, color: Colors.white, size: 22.sp),
+          ),
         ),
-        child: const Icon(Icons.tune_rounded, color: Colors.white, size: 22),
       ),
     );
   }

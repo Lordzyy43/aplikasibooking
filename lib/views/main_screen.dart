@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:apkbooking/core/app_colors.dart';
 import 'package:apkbooking/views/history/mybooking_page.dart';
 import 'package:apkbooking/views/home/home_page.dart';
@@ -25,64 +26,85 @@ class _MainScreenState extends State<MainScreen> {
     ProfilePage(),
   ];
 
+  void _onItemTapped(int index) {
+    if (_selectedIndex == index) return;
+    setState(() => _selectedIndex = index);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: IndexedStack(index: _selectedIndex, children: _pages),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: AppColors.surfaceLowest,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 24,
-              offset: const Offset(0, -6),
+              color: AppColors.primary.withOpacity(0.08),
+              blurRadius: 20,
+              offset: const Offset(0, -8),
             ),
           ],
         ),
         child: SafeArea(
-          child: BottomNavigationBar(
-            currentIndex: _selectedIndex,
-            onTap: (index) => setState(() => _selectedIndex = index),
-            selectedItemColor: AppColors.primary,
-            unselectedItemColor: AppColors.textMuted,
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            selectedLabelStyle: const TextStyle(
-              fontSize: 9,
-              fontWeight: FontWeight.w700,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+            child: BottomNavigationBar(
+              currentIndex: _selectedIndex,
+              onTap: _onItemTapped,
+              selectedItemColor: AppColors.primary,
+              unselectedItemColor: AppColors.textMuted.withOpacity(0.6),
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              type: BottomNavigationBarType.fixed,
+              showSelectedLabels: true,
+              showUnselectedLabels: true,
+              selectedLabelStyle: theme.textTheme.labelLarge?.copyWith(
+                fontSize: 10.sp,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.5,
+              ),
+              unselectedLabelStyle: theme.textTheme.labelLarge?.copyWith(
+                fontSize: 10.sp,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textMuted,
+              ),
+              items: [
+                _buildNavItem(FontAwesomeIcons.house, 'Home', 0),
+                _buildNavItem(FontAwesomeIcons.magnifyingGlass, 'Explore', 1),
+                _buildNavItem(FontAwesomeIcons.calendarCheck, 'Bookings', 2),
+                _buildNavItem(FontAwesomeIcons.bell, 'Alerts', 3),
+                _buildNavItem(FontAwesomeIcons.user, 'Profile', 4),
+              ],
             ),
-            unselectedLabelStyle: const TextStyle(
-              fontSize: 9,
-              fontWeight: FontWeight.w500,
-            ),
-            items: const [
-              BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.house, size: 18),
-                label: 'HOME',
-              ),
-              BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.magnifyingGlass, size: 18),
-                label: 'EXPLORE',
-              ),
-              BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.calendarCheck, size: 18),
-                label: 'BOOKINGS',
-              ),
-              BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.bell, size: 18),
-                label: 'ALERTS',
-              ),
-              BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.user, size: 18),
-                label: 'PROFILE',
-              ),
-            ],
           ),
         ),
       ),
+    );
+  }
+
+  BottomNavigationBarItem _buildNavItem(dynamic iconData, String label, int index) {
+    bool isActive = _selectedIndex == index;
+
+    return BottomNavigationBarItem(
+      icon: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 16.w),
+        decoration: BoxDecoration(
+          color: isActive ? AppColors.primary.withOpacity(0.1) : Colors.transparent,
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        child: FaIcon(
+          iconData, // Menggunakan FaIcon agar support FontAwesomeIcons
+          size: 18.sp,
+          color: isActive ? AppColors.primary : AppColors.textMuted,
+        ),
+      ),
+      label: label,
     );
   }
 }
