@@ -12,7 +12,7 @@ class AppColors {
   static const Color accentTeal = Color(0xFF11998E);
   static const Color accentGold = Color(0xFFFFB703);
 
-  static const Color background = Color(0xFFF8FAFF);
+  static const Color background = Color(0xFFF3F7FF);
   static const Color surface = Color(0xFFF8FAFF);
   static const Color surfaceLowest = Color(0xFFFFFFFF);
   static const Color surfaceLow = Color(0xFFF1F4FF);
@@ -38,4 +38,6 @@ class AppColors {
   static const Color warningContainer = Color(0xFFFFE7CC);
   static const Color errorContainer = Color(0xFFFFDAD6);
   static const Color infoContainer = Color(0xFFDFF4FF);
+
+  static const List<Color> primaryGradient = [Color(0xFF003D9B), Color(0xFF0052CC)];
 }

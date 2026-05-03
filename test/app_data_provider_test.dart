@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('app data provider loads seeded content and accepts new bookings', () {
-    final provider = AppDataProvider()..load();
+    final provider = AppDataProvider()..loadInitialData();
 
     expect(provider.venues, isNotEmpty);
     expect(provider.upcomingBookings, isNotEmpty);

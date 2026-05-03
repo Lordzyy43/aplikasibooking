@@ -11,33 +11,50 @@ class HomeSectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
+    // Mengambil referensi dari AppTheme yang sudah Sensei buat
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+
+    return Padding(
+      // Kita tambahkan padding horizontal di sini agar HomePage tidak perlu
+      // membungkus setiap header secara manual
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            title,
+            // Gunakan titleLarge dari theme (sudah Plus Jakarta Sans)
+            style: textTheme.titleLarge?.copyWith(
+              // Sedikit override untuk memastikan ketebalan premium
+              fontWeight: FontWeight.w800,
+              fontSize: 18.sp,
+              color: AppColors.textPrimary,
+            ),
           ),
-        ),
-        if (actionLabel != null)
-          InkWell(
-            onTap: onTap,
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 4.w),
+          if (actionLabel != null)
+            TextButton(
+              onPressed: onTap,
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
+              ),
               child: Text(
                 actionLabel!,
-                style: TextStyle(
+                // Gunakan labelLarge dari theme (sudah Inter)
+                style: textTheme.labelLarge?.copyWith(
                   fontSize: 13.sp,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.primary,
+                  color: colorScheme.primary,
                 ),
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 }

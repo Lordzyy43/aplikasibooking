@@ -17,58 +17,108 @@ class HomeCategoryList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Sekarang hanya menggunakan list yang dipassing dari parent (HomePage)
-    return SizedBox(
-      height: 95.h,
-      child: ListView.builder(
-        padding: EdgeInsets.only(left: 20.w),
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
-        itemCount: categories.length,
-        itemBuilder: (context, index) {
-          final category = categories[index];
-          final isSelected = selectedCategory == category.name;
+    final theme = Theme.of(context);
 
-          return Padding(
-            padding: EdgeInsets.only(right: 20.w),
-            child: GestureDetector(
-              onTap: () => onCategorySelected(category.name),
-              child: Column(
-                children: [
-                  _buildIcon(category, isSelected),
-                  SizedBox(height: 8.h),
-                  Text(
-                    category.name,
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                      color: isSelected ? AppColors.primary : AppColors.textSecondary,
-                    ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Text(
+              //   "Kategori Olahraga",
+              //   style: theme.textTheme.titleMedium?.copyWith(
+              //     fontWeight: FontWeight.w800,
+              //     color: AppColors.textPrimary,
+              //   ),
+              // ),
+              // TextButton(
+              //   onPressed: () {}, // Aksi lihat semua kategori
+              //   child: Text(
+              //     "Lihat Semua",
+              //     style: theme.textTheme.labelMedium?.copyWith(
+              //       color: AppColors.primary,
+              //       fontWeight: FontWeight.w700,
+              //     ),
+              //   ),
+              // ),
+            ],
+          ),
+        ),
+        SizedBox(height: 8.h),
+        SizedBox(
+          height: 105.h, // Sedikit lebih tinggi untuk menampung shadow
+          child: ListView.builder(
+            padding: EdgeInsets.only(left: 20.w, bottom: 10.h),
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              final category = categories[index];
+              final isSelected = selectedCategory == category.name;
+
+              return Padding(
+                padding: EdgeInsets.only(right: 18.w),
+                child: GestureDetector(
+                  onTap: () => onCategorySelected(category.name),
+                  child: Column(
+                    children: [
+                      _buildIcon(category, isSelected),
+                      SizedBox(height: 10.h),
+                      Text(
+                        category.name,
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          fontSize: 12.sp,
+                          fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                          color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
   Widget _buildIcon(CategoryModel category, bool isSelected) {
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      width: 56.w,
-      height: 56.w,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      width: 60.w,
+      height: 60.w,
       decoration: BoxDecoration(
         color: isSelected ? AppColors.primary : AppColors.surfaceLow,
         shape: BoxShape.circle,
-        border: isSelected ? Border.all(color: AppColors.primary.withOpacity(0.2), width: 4) : null,
+        boxShadow: [
+          if (isSelected)
+            BoxShadow(
+              color: AppColors.primary.withOpacity(0.3),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            )
+          else
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 5,
+              offset: const Offset(0, 2),
+            ),
+        ],
+        border: Border.all(
+          color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.transparent,
+          width: 4,
+        ),
       ),
       child: Center(
         child: Icon(
           category.icon,
           color: isSelected ? Colors.white : AppColors.primary,
-          size: 24.sp,
+          size: 26.sp,
         ),
       ),
     );
