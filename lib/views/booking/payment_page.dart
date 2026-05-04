@@ -32,7 +32,9 @@ class PaymentPage extends StatelessWidget {
           children: [
             _buildProgressHeader(),
             SizedBox(height: 22.h),
-            _buildQrisCard(bookingProvider.selectedVenueName ?? 'ArenaFlow Venue'),
+            _buildQrisCard(
+              bookingProvider.selectedVenueName ?? 'ArenaFlow Venue',
+            ),
             SizedBox(height: 20.h),
             _buildInstructionCard(),
             SizedBox(height: 20.h),
@@ -120,11 +122,7 @@ class PaymentPage extends StatelessWidget {
             ),
           ),
           SizedBox(height: 18.h),
-          Image.network(
-            'https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg',
-            height: 210.w,
-            width: 210.w,
-          ),
+          Image.asset('assets/Avatar/QR2.png', height: 210.w, width: 210.w),
           SizedBox(height: 14.h),
           Text(
             venueName,
@@ -170,7 +168,9 @@ class PaymentPage extends StatelessWidget {
           SizedBox(height: 12.h),
           ...List.generate(steps.length, (index) {
             return Padding(
-              padding: EdgeInsets.only(bottom: index == steps.length - 1 ? 0 : 10.h),
+              padding: EdgeInsets.only(
+                bottom: index == steps.length - 1 ? 0 : 10.h,
+              ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -221,7 +221,10 @@ class PaymentPage extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text('Total Tagihan', style: TextStyle(fontWeight: FontWeight.w600)),
+          const Text(
+            'Total Tagihan',
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
           Text(
             CurrencyFormatter.idr(total),
             style: TextStyle(
@@ -235,7 +238,11 @@ class PaymentPage extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomButton(BuildContext context, BookingProvider provider, int total) {
+  Widget _buildBottomButton(
+    BuildContext context,
+    BookingProvider provider,
+    int total,
+  ) {
     return SafeArea(
       top: false,
       child: Padding(
@@ -261,12 +268,16 @@ class PaymentPage extends StatelessWidget {
               context.read<AppDataProvider>().confirmBooking(booking);
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => PaymentSuccessPage(booking: booking)),
+                MaterialPageRoute(
+                  builder: (context) => PaymentSuccessPage(booking: booking),
+                ),
               );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.r),
+              ),
             ),
             child: const Text('Saya Sudah Bayar'),
           ),

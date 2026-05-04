@@ -19,9 +19,18 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
 
   @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      backgroundColor: AppColors.background, // Pakai background dari AppColors
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -31,7 +40,6 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               SizedBox(height: 50.h),
 
-              // Logo Section dengan Glow Effect
               Center(
                 child: Column(
                   children: [
@@ -58,11 +66,9 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(height: 24.h),
                     Text(
                       "Aerobook",
-                      style: TextStyle(
-                        fontSize: 24.sp,
-                        fontWeight: FontWeight.w900,
+                      style: textTheme.headlineLarge?.copyWith(
                         color: AppColors.primary,
-                        letterSpacing: 1,
+                        fontSize: 24.sp,
                       ),
                     ),
                   ],
@@ -73,16 +79,12 @@ class _LoginPageState extends State<LoginPage> {
 
               Text(
                 "Selamat Datang!",
-                style: TextStyle(
-                  fontSize: 28.sp,
-                  fontWeight: FontWeight.w900,
-                  color: AppColors.textPrimary,
-                ),
+                style: textTheme.displayMedium?.copyWith(fontSize: 28.sp),
               ),
               SizedBox(height: 8.h),
               Text(
                 "Silahkan masuk untuk mulai booking lapangan.",
-                style: TextStyle(fontSize: 14.sp, color: AppColors.textSecondary),
+                style: textTheme.bodyMedium?.copyWith(fontSize: 14.sp),
               ),
 
               SizedBox(height: 32.h),
@@ -111,11 +113,15 @@ class _LoginPageState extends State<LoginPage> {
                   prefixIcon: Icons.lock_person_outlined,
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _isPasswordVisible ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                      _isPasswordVisible
+                          ? Icons.visibility_off_rounded
+                          : Icons.visibility_rounded,
                       size: 22.sp,
                       color: AppColors.textMuted,
                     ),
-                    onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
+                    onPressed: () => setState(
+                      () => _isPasswordVisible = !_isPasswordVisible,
+                    ),
                   ),
                 ),
               ),
@@ -124,17 +130,21 @@ class _LoginPageState extends State<LoginPage> {
                 alignment: Alignment.centerLeft,
                 child: TextButton(
                   onPressed: () {},
-                  style: TextButton.styleFrom(foregroundColor: AppColors.primary),
+                  style: TextButton.styleFrom(
+                    foregroundColor: AppColors.primary,
+                  ),
                   child: Text(
                     "Lupa Password?",
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13.sp),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13.sp,
+                    ),
                   ),
                 ),
               ),
 
               SizedBox(height: 16.h),
 
-              // Login Button dengan Consumer
               Consumer<AuthProvider>(
                 builder: (context, auth, child) {
                   return SizedBox(
@@ -145,9 +155,10 @@ class _LoginPageState extends State<LoginPage> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16.r),
+                        ),
                         elevation: 0,
-                        shadowColor: AppColors.primary.withValues(alpha: 0.4),
                       ),
                       child: auth.isLoading
                           ? SizedBox(
@@ -173,24 +184,29 @@ class _LoginPageState extends State<LoginPage> {
 
               SizedBox(height: 24.h),
 
-              // Divider "Or continue with"
               Row(
                 children: [
-                  Expanded(child: Divider(color: AppColors.divider, thickness: 1)),
+                  Expanded(
+                    child: Divider(color: AppColors.divider, thickness: 1),
+                  ),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.w),
                     child: Text(
                       "Atau masuk dengan",
-                      style: TextStyle(color: AppColors.textMuted, fontSize: 12.sp),
+                      style: TextStyle(
+                        color: AppColors.textMuted,
+                        fontSize: 12.sp,
+                      ),
                     ),
                   ),
-                  Expanded(child: Divider(color: AppColors.divider, thickness: 1)),
+                  Expanded(
+                    child: Divider(color: AppColors.divider, thickness: 1),
+                  ),
                 ],
               ),
 
               SizedBox(height: 24.h),
 
-              // Social Login Button (UI Only for now)
               _buildSocialButton(
                 label: "Masuk dengan Google",
                 icon: Icons.g_mobiledata_rounded,
@@ -199,7 +215,6 @@ class _LoginPageState extends State<LoginPage> {
 
               SizedBox(height: 40.h),
 
-              // Register Link
               Center(
                 child: GestureDetector(
                   onTap: () => Navigator.push(
@@ -208,12 +223,18 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   child: RichText(
                     text: TextSpan(
-                      style: TextStyle(color: AppColors.textSecondary, fontSize: 14.sp),
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 14.sp,
+                      ),
                       children: [
                         const TextSpan(text: "Belum punya akun? "),
                         TextSpan(
                           text: "Daftar Sekarang",
-                          style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w800),
+                          style: TextStyle(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
                       ],
                     ),
@@ -231,11 +252,17 @@ class _LoginPageState extends State<LoginPage> {
   // Handle Login Logic
   Future<void> _handleLogin() async {
     final auth = Provider.of<AuthProvider>(context, listen: false);
-    bool success = await auth.login(_emailController.text, _passwordController.text);
+    final success = await auth.login(
+      _emailController.text.trim(),
+      _passwordController.text,
+    );
 
     if (success) {
       if (!mounted) return;
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const MainScreen()));
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const MainScreen()),
+      );
     } else {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -244,12 +271,16 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               const Icon(Icons.error_outline, color: Colors.white),
               SizedBox(width: 12.w),
-              Expanded(child: Text(auth.errorMessage ?? "Email atau Password salah!")),
+              Expanded(
+                child: Text(auth.errorMessage ?? "Email atau Password salah!"),
+              ),
             ],
           ),
           backgroundColor: AppColors.error,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.r),
+          ),
           margin: EdgeInsets.all(20.w),
         ),
       );
@@ -293,7 +324,10 @@ class _LoginPageState extends State<LoginPage> {
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16.r),
-        borderSide: BorderSide(color: AppColors.divider.withValues(alpha: 0.5), width: 1),
+        borderSide: BorderSide(
+          color: AppColors.divider.withValues(alpha: 0.5),
+          width: 1,
+        ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16.r),
