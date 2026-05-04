@@ -57,7 +57,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     SizedBox(height: 24.h),
                     Text(
-                      "ArenaFlow",
+                      "Aerobook",
                       style: TextStyle(
                         fontSize: 24.sp,
                         fontWeight: FontWeight.w900,
@@ -72,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(height: 40.h),
 
               Text(
-                "Selamat Datang! 👋",
+                "Selamat Datang!",
                 style: TextStyle(
                   fontSize: 28.sp,
                   fontWeight: FontWeight.w900,
@@ -121,7 +121,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
 
               Align(
-                alignment: Alignment.centerRight,
+                alignment: Alignment.centerLeft,
                 child: TextButton(
                   onPressed: () {},
                   style: TextButton.styleFrom(foregroundColor: AppColors.primary),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:apkbooking/core/app_colors.dart';
 import 'package:apkbooking/models/venue_model.dart';
+import 'package:apkbooking/widgets/common/app_remote_image.dart';
 import 'package:intl/intl.dart'; // Tambahkan intl di pubspec.yaml
 
 class VenueCardNearby extends StatelessWidget {
@@ -13,7 +14,11 @@ class VenueCardNearby extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Format harga ke Rupiah
-    final currencyFormat = NumberFormat.currency(locale: 'id', symbol: 'Rp', decimalDigits: 0);
+    final currencyFormat = NumberFormat.currency(
+      locale: 'id',
+      symbol: 'Rp',
+      decimalDigits: 0,
+    );
 
     return Container(
       margin: EdgeInsets.only(bottom: 16.h),
@@ -36,37 +41,20 @@ class VenueCardNearby extends StatelessWidget {
           child: InkWell(
             onTap: onTap,
             child: Padding(
-              padding: EdgeInsets.all(10.w), // Sedikit lebih rapat agar info lebih luas
+              padding: EdgeInsets.all(
+                10.w,
+              ), // Sedikit lebih rapat agar info lebih luas
               child: Row(
                 children: [
                   // --- AREA GAMBAR ---
                   Hero(
                     // Tambahkan Hero animation agar transisi ke Detail smooth
                     tag: 'venue-${venue.id}',
-                    child: ClipRRect(
+                    child: AppRemoteImage(
+                      imageUrl: venue.imageUrl,
+                      width: 95.w,
+                      height: 95.w,
                       borderRadius: BorderRadius.circular(12.r),
-                      child: Image.network(
-                        venue.imageUrl,
-                        width: 95.w, // Sedikit lebih besar
-                        height: 95.w,
-                        fit: BoxFit.cover,
-                        // Gunakan frameBuilder untuk loading smooth tanpa library tambahan
-                        frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-                          if (wasSynchronouslyLoaded) return child;
-                          return AnimatedOpacity(
-                            opacity: frame == null ? 0 : 1,
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.easeOut,
-                            child: child,
-                          );
-                        },
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          width: 95.w,
-                          height: 95.w,
-                          color: Colors.grey[100],
-                          child: Icon(Icons.broken_image_outlined, color: Colors.grey[400]),
-                        ),
-                      ),
                     ),
                   ),
                   SizedBox(width: 14.w),
@@ -92,14 +80,21 @@ class VenueCardNearby extends StatelessWidget {
                             ),
                             // Rating Badge yang lebih "pills" style
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 6.w,
+                                vertical: 2.h,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.orange.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(20.r),
                               ),
                               child: Row(
                                 children: [
-                                  Icon(Icons.star_rounded, size: 14.sp, color: Colors.orange),
+                                  Icon(
+                                    Icons.star_rounded,
+                                    size: 14.sp,
+                                    color: Colors.orange,
+                                  ),
                                   Text(
                                     ' ${venue.rating}',
                                     style: TextStyle(
@@ -118,12 +113,19 @@ class VenueCardNearby extends StatelessWidget {
                         // Lokasi
                         Row(
                           children: [
-                            Icon(Icons.location_on_outlined, size: 13.sp, color: Colors.grey),
+                            Icon(
+                              Icons.location_on_outlined,
+                              size: 13.sp,
+                              color: Colors.grey,
+                            ),
                             SizedBox(width: 4.w),
                             Expanded(
                               child: Text(
                                 venue.location,
-                                style: TextStyle(fontSize: 11.sp, color: AppColors.textSecondary),
+                                style: TextStyle(
+                                  fontSize: 11.sp,
+                                  color: AppColors.textSecondary,
+                                ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -159,7 +161,11 @@ class VenueCardNearby extends StatelessWidget {
                             ),
                             Row(
                               children: [
-                                Icon(Icons.near_me_rounded, size: 12.sp, color: Colors.blue),
+                                Icon(
+                                  Icons.near_me_rounded,
+                                  size: 12.sp,
+                                  color: Colors.blue,
+                                ),
                                 SizedBox(width: 4.w),
                                 Text(
                                   '${venue.distanceKm} km',

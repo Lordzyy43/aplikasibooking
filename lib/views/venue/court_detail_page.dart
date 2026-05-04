@@ -2,6 +2,7 @@ import 'package:apkbooking/core/app_colors.dart';
 import 'package:apkbooking/core/utils/currency_formatter.dart';
 import 'package:apkbooking/models/venue_model.dart';
 import 'package:apkbooking/providers/booking_provider.dart';
+import 'package:apkbooking/widgets/common/app_remote_image.dart';
 import 'package:apkbooking/widgets/common/media_gallery_carousel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,11 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:apkbooking/views/booking/checkout_page.dart';
 
 class CourtDetailPage extends StatelessWidget {
-  const CourtDetailPage({
-    super.key,
-    required this.venue,
-    required this.court,
-  });
+  const CourtDetailPage({super.key, required this.venue, required this.court});
 
   final VenueModel venue;
   final VenueCourtModel court;
@@ -56,7 +53,10 @@ class CourtDetailPage extends StatelessWidget {
                   _sectionTitle('Jam Tersedia'),
                   Text(
                     'Durasi sesi 60 menit',
-                    style: TextStyle(fontSize: 11.sp, color: AppColors.textMuted),
+                    style: TextStyle(
+                      fontSize: 11.sp,
+                      color: AppColors.textMuted,
+                    ),
                   ),
                   SizedBox(height: 15.h),
                   _buildTimeGrid(provider),
@@ -73,7 +73,11 @@ class CourtDetailPage extends StatelessWidget {
   Widget _sectionTitle(String title) {
     return Text(
       title,
-      style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+      style: TextStyle(
+        fontSize: 16.sp,
+        fontWeight: FontWeight.w800,
+        color: AppColors.textPrimary,
+      ),
     );
   }
 
@@ -87,7 +91,11 @@ class CourtDetailPage extends StatelessWidget {
       leading: IconButton(
         icon: CircleAvatar(
           backgroundColor: Colors.white.withValues(alpha: 0.9),
-          child: Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 18.sp),
+          child: Icon(
+            Icons.arrow_back_ios_new,
+            color: Colors.black,
+            size: 18.sp,
+          ),
         ),
         onPressed: () => Navigator.pop(context),
       ),
@@ -96,13 +104,20 @@ class CourtDetailPage extends StatelessWidget {
         background: Stack(
           fit: StackFit.expand,
           children: [
-            Image.network(court.imageUrl, fit: BoxFit.cover),
+            AppRemoteImage(
+              imageUrl: court.imageUrl,
+              width: double.infinity,
+              height: double.infinity,
+            ),
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.black.withValues(alpha: 0.3), Colors.transparent],
+                  colors: [
+                    Colors.black.withValues(alpha: 0.3),
+                    Colors.transparent,
+                  ],
                 ),
               ),
             ),
@@ -225,7 +240,8 @@ class CourtDetailPage extends StatelessWidget {
         itemBuilder: (context, index) {
           final date = DateTime.now().add(Duration(days: index));
           final isSelected =
-              DateFormat('dd-MM').format(date) == DateFormat('dd-MM').format(provider.selectedDate);
+              DateFormat('dd-MM').format(date) ==
+              DateFormat('dd-MM').format(provider.selectedDate);
 
           return GestureDetector(
             onTap: () => provider.setDate(date),
@@ -235,7 +251,9 @@ class CourtDetailPage extends StatelessWidget {
               margin: EdgeInsets.only(right: 12.w),
               decoration: BoxDecoration(
                 gradient: isSelected
-                    ? const LinearGradient(colors: [AppColors.primary, AppColors.accentTeal])
+                    ? const LinearGradient(
+                        colors: [AppColors.primary, AppColors.accentTeal],
+                      )
                     : null,
                 color: isSelected ? null : AppColors.surfaceLowest,
                 borderRadius: BorderRadius.circular(15.r),
@@ -299,7 +317,9 @@ class CourtDetailPage extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               gradient: isSelected
-                  ? const LinearGradient(colors: [AppColors.primary, AppColors.accentRose])
+                  ? const LinearGradient(
+                      colors: [AppColors.primary, AppColors.accentRose],
+                    )
                   : null,
               color: isSelected
                   ? null
@@ -317,7 +337,9 @@ class CourtDetailPage extends StatelessWidget {
                 style: TextStyle(
                   color: isSelected
                       ? Colors.white
-                      : (isBooked ? Colors.grey.shade400 : AppColors.textPrimary),
+                      : (isBooked
+                            ? Colors.grey.shade400
+                            : AppColors.textPrimary),
                   fontWeight: FontWeight.bold,
                   fontSize: 12.sp,
                   decoration: isBooked ? TextDecoration.lineThrough : null,
@@ -366,7 +388,10 @@ class CourtDetailPage extends StatelessWidget {
                   provider.selectedTime != null
                       ? '${DateFormat('dd MMM').format(provider.selectedDate)} • ${provider.selectedTime}'
                       : 'Pilih Jadwal',
-                  style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -390,14 +415,18 @@ class CourtDetailPage extends StatelessWidget {
 
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const CheckoutPage()),
+                        MaterialPageRoute(
+                          builder: (context) => const CheckoutPage(),
+                        ),
                       );
                     },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
                 disabledBackgroundColor: Colors.grey.shade300,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.r),
+                ),
                 elevation: 0,
               ),
               child: Text(

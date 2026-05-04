@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:apkbooking/core/app_colors.dart';
 import 'package:apkbooking/views/auth/login_page.dart';
+import 'package:apkbooking/widgets/common/app_remote_image.dart';
 
 class OnboardingPage extends StatelessWidget {
   const OnboardingPage({super.key});
+
+  static const _heroImageUrl = 'assets/images/onBoarding/OnBoarding.jpg';
 
   @override
   Widget build(BuildContext context) {
@@ -14,9 +17,10 @@ class OnboardingPage extends StatelessWidget {
         children: [
           // 1. Background Image
           Positioned.fill(
-            child: Image.network(
-              "https://images.unsplash.com/photo-1515037028865-0a2a82603f7c?q=80&w=1000",
-              fit: BoxFit.cover,
+            child: AppRemoteImage(
+              imageUrl: _heroImageUrl,
+              width: double.infinity,
+              height: double.infinity,
             ),
           ),
 
@@ -74,16 +78,25 @@ class OnboardingPage extends StatelessWidget {
 
                     // Badge
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12.w,
+                        vertical: 6.h,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(20.r),
-                        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.2),
+                        ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.stars_rounded, color: AppColors.primary, size: 14.sp),
+                          Icon(
+                            Icons.stars_rounded,
+                            color: AppColors.primary,
+                            size: 14.sp,
+                          ),
                           SizedBox(width: 6.w),
                           Text(
                             "Aplikasi Booking No. 1 di Solo",
@@ -233,11 +246,18 @@ class OnboardingPage extends StatelessWidget {
       children: [
         Text(
           value,
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16.sp),
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 16.sp,
+          ),
         ),
         Text(
           label,
-          style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 11.sp),
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.5),
+            fontSize: 11.sp,
+          ),
         ),
       ],
     );

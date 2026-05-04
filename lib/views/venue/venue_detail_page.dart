@@ -46,7 +46,10 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                   SizedBox(height: 24.h),
                   _buildQuickInfoRow(venue),
                   SizedBox(height: 24.h),
-                  _buildSectionHeader('Galeri Venue', 'Swipe untuk lihat semua'),
+                  _buildSectionHeader(
+                    'Galeri Venue',
+                    'Swipe untuk lihat semua',
+                  ),
                   SizedBox(height: 14.h),
                   MediaGalleryCarousel(
                     images: venue.galleryUrls,
@@ -73,7 +76,10 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                     ),
                   ),
                   SizedBox(height: 28.h),
-                  _buildSectionHeader('Review Pengguna', '${venue.reviewCount} ulasan'),
+                  _buildSectionHeader(
+                    'Review Pengguna',
+                    '${venue.reviewCount} ulasan',
+                  ),
                   SizedBox(height: 14.h),
                   _buildReviewSummary(venue),
                   SizedBox(height: 14.h),
@@ -134,7 +140,11 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
       leading: IconButton(
         icon: CircleAvatar(
           backgroundColor: AppColors.surfaceLowest.withValues(alpha: 0.9),
-          child: Icon(Icons.arrow_back, color: AppColors.textPrimary, size: 20.sp),
+          child: Icon(
+            Icons.arrow_back,
+            color: AppColors.textPrimary,
+            size: 20.sp,
+          ),
         ),
         onPressed: () => Navigator.pop(context),
       ),
@@ -189,12 +199,20 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
         SizedBox(height: 8.h),
         Text(
           venue.description,
-          style: TextStyle(color: AppColors.textSecondary, fontSize: 13.sp, height: 1.5),
+          style: TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: 13.sp,
+            height: 1.5,
+          ),
         ),
         SizedBox(height: 10.h),
         Row(
           children: [
-            Icon(Icons.location_on_rounded, color: AppColors.primary, size: 16.sp),
+            Icon(
+              Icons.location_on_rounded,
+              color: AppColors.primary,
+              size: 16.sp,
+            ),
             SizedBox(width: 4.w),
             Expanded(
               child: Text(
@@ -225,8 +243,16 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _infoItem(Icons.star_rounded, '${venue.rating} (${venue.reviewCount}+)', 'Rating'),
-          _infoItem(Icons.access_time_filled_rounded, '08:00 - 22:00', 'Jam Buka'),
+          _infoItem(
+            Icons.star_rounded,
+            '${venue.rating} (${venue.reviewCount}+)',
+            'Rating',
+          ),
+          _infoItem(
+            Icons.access_time_filled_rounded,
+            '08:00 - 22:00',
+            'Jam Buka',
+          ),
           _infoItem(
             Icons.directions_walk_rounded,
             '${venue.distanceKm.toStringAsFixed(1)} km',
@@ -251,7 +277,10 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                   value,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13.sp),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13.sp,
+                  ),
                 ),
               ),
             ],
@@ -317,7 +346,8 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => CourtDetailPage(venue: venue, court: court),
+                builder: (context) =>
+                    CourtDetailPage(venue: venue, court: court),
               ),
             );
           },
@@ -345,14 +375,20 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                         court.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16.sp),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 16.sp,
+                        ),
                       ),
                       SizedBox(height: 4.h),
                       Text(
                         '${court.surface} • ${court.environment}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 12.sp, color: AppColors.textMuted),
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: AppColors.textMuted,
+                        ),
                       ),
                       SizedBox(height: 12.h),
                       Row(
@@ -367,7 +403,10 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                           ),
                           Text(
                             '/jam',
-                            style: TextStyle(fontSize: 11.sp, color: AppColors.textMuted),
+                            style: TextStyle(
+                              fontSize: 11.sp,
+                              color: AppColors.textMuted,
+                            ),
                           ),
                         ],
                       ),
@@ -432,7 +471,10 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                 SizedBox(height: 8.h),
                 Text(
                   amenity,
-                  style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    fontSize: 11.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),
@@ -515,7 +557,7 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
             children: [
               CircleAvatar(
                 radius: 20.r,
-                backgroundImage: NetworkImage(review.avatarUrl),
+                backgroundImage: AppRemoteImage.imageProvider(review.avatarUrl),
               ),
               SizedBox(width: 12.w),
               Expanded(
@@ -524,11 +566,17 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                   children: [
                     Text(
                       review.author,
-                      style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w800),
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                     Text(
                       review.timeLabel,
-                      style: TextStyle(fontSize: 11.sp, color: AppColors.textMuted),
+                      style: TextStyle(
+                        fontSize: 11.sp,
+                        color: AppColors.textMuted,
+                      ),
                     ),
                   ],
                 ),
@@ -541,7 +589,11 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.star_rounded, size: 14.sp, color: AppColors.accent),
+                    Icon(
+                      Icons.star_rounded,
+                      size: 14.sp,
+                      color: AppColors.accent,
+                    ),
                     SizedBox(width: 4.w),
                     Text(
                       review.rating.toStringAsFixed(1),
@@ -569,7 +621,11 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
             SizedBox(height: 12.h),
             Row(
               children: [
-                Icon(Icons.photo_library_outlined, size: 14.sp, color: AppColors.accentRose),
+                Icon(
+                  Icons.photo_library_outlined,
+                  size: 14.sp,
+                  color: AppColors.accentRose,
+                ),
                 SizedBox(width: 6.w),
                 Text(
                   'Menyertakan foto venue',
@@ -613,11 +669,18 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
               children: [
                 Text(
                   title,
-                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13.sp),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 13.sp,
+                  ),
                 ),
                 Text(
                   desc,
-                  style: TextStyle(fontSize: 11.sp, color: AppColors.textMuted, height: 1.45),
+                  style: TextStyle(
+                    fontSize: 11.sp,
+                    color: AppColors.textMuted,
+                    height: 1.45,
+                  ),
                 ),
               ],
             ),

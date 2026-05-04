@@ -15,7 +15,9 @@ class ProfilePage extends StatelessWidget {
     final user = context.watch<AppDataProvider>().user;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF3F6F9), // Warna background lebih 'clean'
+      backgroundColor: const Color(
+        0xFFF3F6F9,
+      ), // Warna background lebih 'clean'
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Column(
@@ -107,8 +109,7 @@ class ProfilePage extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(100),
                   child: AppRemoteImage(
-                    imageUrl:
-                        avatarUrl ?? 'https://ui-avatars.com/api/?name=$name&background=random',
+                    imageUrl: avatarUrl ?? 'assets/Avatar/Avatar.png',
                     width: 100.w,
                     height: 100.w,
                   ),
@@ -211,13 +212,20 @@ class ProfilePage extends StatelessWidget {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 24.w),
       padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 10.w),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24.r)),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24.r),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _actionButton(Icons.history_rounded, "Riwayat", Colors.orange),
           _actionButton(Icons.favorite_outline_rounded, "Favorit", Colors.pink),
-          _actionButton(Icons.confirmation_number_outlined, "Promo", Colors.teal),
+          _actionButton(
+            Icons.confirmation_number_outlined,
+            "Promo",
+            Colors.teal,
+          ),
           _actionButton(Icons.star_outline_rounded, "Ulasan", Colors.purple),
         ],
       ),
@@ -230,7 +238,10 @@ class ProfilePage extends StatelessWidget {
         Container(
           width: 50.w,
           height: 50.w,
-          decoration: BoxDecoration(color: color.withOpacity(0.1), shape: BoxShape.circle),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            shape: BoxShape.circle,
+          ),
           child: Icon(icon, color: color, size: 24.sp),
         ),
         SizedBox(height: 8.h),
@@ -249,14 +260,21 @@ class ProfilePage extends StatelessWidget {
   Widget _buildMenuCard(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 24.w),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24.r)),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24.r),
+      ),
       child: Column(
         children: [
           _menuItem(FontAwesomeIcons.userPen, "Informasi Pribadi", Colors.blue),
           _menuDivider(),
           _menuItem(FontAwesomeIcons.shield, "Keamanan Akun", Colors.green),
           _menuDivider(),
-          _menuItem(FontAwesomeIcons.circleQuestion, "Pusat Bantuan", Colors.orange),
+          _menuItem(
+            FontAwesomeIcons.circleQuestion,
+            "Pusat Bantuan",
+            Colors.orange,
+          ),
         ],
       ),
     );
@@ -281,7 +299,11 @@ class ProfilePage extends StatelessWidget {
           color: const Color(0xFF2D3436),
         ),
       ),
-      trailing: Icon(Icons.arrow_forward_ios_rounded, size: 14.sp, color: Colors.grey.shade400),
+      trailing: Icon(
+        Icons.arrow_forward_ios_rounded,
+        size: 14.sp,
+        color: Colors.grey.shade400,
+      ),
       onTap: () {},
     );
   }
@@ -295,12 +317,18 @@ class ProfilePage extends StatelessWidget {
         style: TextButton.styleFrom(
           padding: EdgeInsets.symmetric(vertical: 16.h),
           backgroundColor: Colors.red.withOpacity(0.05),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.r),
+          ),
         ),
         icon: const Icon(Icons.logout_rounded, color: Colors.redAccent),
         label: Text(
           "Keluar dari Aplikasi",
-          style: TextStyle(color: Colors.redAccent, fontSize: 14.sp, fontWeight: FontWeight.w700),
+          style: TextStyle(
+            color: Colors.redAccent,
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ),
     );
@@ -323,6 +351,10 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _menuDivider() =>
-      Divider(height: 1, indent: 70.w, endIndent: 20.w, color: Colors.grey.shade50);
+  Widget _menuDivider() => Divider(
+    height: 1,
+    indent: 70.w,
+    endIndent: 20.w,
+    color: Colors.grey.shade50,
+  );
 }

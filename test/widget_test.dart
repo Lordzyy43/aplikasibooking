@@ -12,7 +12,7 @@ void main() {
       MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => BookingProvider()),
-          ChangeNotifierProvider(create: (_) => AppDataProvider()..load()),
+          ChangeNotifierProvider(create: (_) => AppDataProvider()..loadInitialData()),
         ],
         child: ScreenUtilInit(
           designSize: const Size(360, 800),
