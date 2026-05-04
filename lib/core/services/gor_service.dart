@@ -1,8 +1,19 @@
 import 'package:apkbooking/models/venue_model.dart';
 
 const _badmintonHallImage = 'assets/images/Venue/Venue1.jpg';
-const _badmintonActionImage = 'assets/images/Venue/Venue3.jpg';
 const _tennisCourtImage = 'assets/images/Venue/Venue2.jpg';
+const _badmintonActionImage = 'assets/images/Venue/Venue3.jpg';
+const _venueOneCanteenImage = 'assets/images/Venue/canteen1.jpg';
+const _venueOneBathroomImage = 'assets/images/Venue/kamarmandi1.jpg';
+const _venueOneParkingImage = 'assets/images/Venue/parking1.jpg';
+const _venueOneChangingRoomImage = 'assets/images/Venue/ruangganti1.jpg';
+const _venueTwoCanteenImage = 'assets/images/Venue/centeen2.jpg';
+const _venueTwoBathroomImage = 'assets/images/Venue/kamarmandi2.jpg';
+const _venueTwoParkingImage = 'assets/images/Venue/parking2.jpg';
+const _venueTwoChangingRoomImage = 'assets/images/Venue/ruangganti2.jpg';
+const _venueThreeCanteenImage = 'assets/images/Venue/centeen3.jpg';
+const _venueThreeBathroomImage = 'assets/images/Venue/kamarmandi3.jpg';
+const _venueThreeChangingRoomImage = 'assets/images/Venue/ruangganti3.jpg';
 const _tennisArenaImage = 'assets/images/Court/Indoor Tennis Court.jpg';
 const _tennisWindowImage =
     'assets/images/Court/Dalla Riva non ha rivali in Piemonte!.jpg';
@@ -40,9 +51,10 @@ class GorService {
         imageUrl: _badmintonHallImage,
         galleryUrls: [
           _badmintonHallImage,
-          _badmintonActionImage,
-          _badmintonCourtImage,
-          _indoorCourtImage,
+          _venueOneCanteenImage,
+          _venueOneBathroomImage,
+          _venueOneParkingImage,
+          _venueOneChangingRoomImage,
         ],
         rating: 4.8,
         reviewCount: 120,
@@ -149,7 +161,13 @@ class GorService {
         location: 'Solo Center District',
         distanceKm: 2.4,
         imageUrl: _tennisCourtImage,
-        galleryUrls: [_tennisCourtImage, _tennisArenaImage, _tennisWindowImage],
+        galleryUrls: [
+          _tennisCourtImage,
+          _venueTwoCanteenImage,
+          _venueTwoBathroomImage,
+          _venueTwoParkingImage,
+          _venueTwoChangingRoomImage,
+        ],
         rating: 4.9,
         reviewCount: 98,
         pricePerHour: 95000,
@@ -207,8 +225,9 @@ class GorService {
         imageUrl: _badmintonActionImage,
         galleryUrls: [
           _badmintonActionImage,
-          _badmintonHallImage,
-          _badmintonActionImage,
+          _venueThreeCanteenImage,
+          _venueThreeBathroomImage,
+          _venueThreeChangingRoomImage,
         ],
         rating: 4.7,
         reviewCount: 144,

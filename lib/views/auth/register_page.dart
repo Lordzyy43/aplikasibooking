@@ -17,7 +17,18 @@ class _RegisterPageState extends State<RegisterPage> {
   final _passwordController = TextEditingController();
 
   @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -30,9 +41,15 @@ class _RegisterPageState extends State<RegisterPage> {
             decoration: BoxDecoration(
               color: AppColors.surfaceLowest,
               shape: BoxShape.circle,
-              border: Border.all(color: AppColors.divider.withValues(alpha: 0.5)),
+              border: Border.all(
+                color: AppColors.divider.withValues(alpha: 0.5),
+              ),
             ),
-            child: Icon(Icons.arrow_back_ios_new, size: 14.sp, color: AppColors.textPrimary),
+            child: Icon(
+              Icons.arrow_back_ios_new,
+              size: 14.sp,
+              color: AppColors.textPrimary,
+            ),
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -54,18 +71,16 @@ class _RegisterPageState extends State<RegisterPage> {
             children: [
               SizedBox(height: 20.h),
               Text(
-                "Bergabung Bersama Kami! 🏅",
-                style: TextStyle(
+                "Bergabung Bersama Kami",
+                style: textTheme.displayMedium?.copyWith(
                   fontSize: 26.sp,
-                  fontWeight: FontWeight.w900,
-                  color: AppColors.textPrimary,
                   height: 1.2,
                 ),
               ),
               SizedBox(height: 8.h),
               Text(
                 "Mulai langkahmu untuk booking lapangan favorit dengan lebih mudah dan cepat.",
-                style: TextStyle(fontSize: 14.sp, color: AppColors.textSecondary),
+                style: textTheme.bodyMedium?.copyWith(fontSize: 14.sp),
               ),
 
               SizedBox(height: 32.h),
@@ -110,11 +125,15 @@ class _RegisterPageState extends State<RegisterPage> {
                   icon: Icons.lock_person_outlined,
                   suffix: IconButton(
                     icon: Icon(
-                      _isPasswordVisible ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                      _isPasswordVisible
+                          ? Icons.visibility_off_rounded
+                          : Icons.visibility_rounded,
                       size: 22.sp,
                       color: AppColors.textMuted,
                     ),
-                    onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
+                    onPressed: () => setState(
+                      () => _isPasswordVisible = !_isPasswordVisible,
+                    ),
                   ),
                 ),
               ),
@@ -133,7 +152,9 @@ class _RegisterPageState extends State<RegisterPage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16.r),
+                    ),
                     elevation: 0,
                   ),
                   child: Text(
@@ -155,12 +176,18 @@ class _RegisterPageState extends State<RegisterPage> {
                   onTap: () => Navigator.pop(context),
                   child: RichText(
                     text: TextSpan(
-                      style: TextStyle(color: AppColors.textSecondary, fontSize: 14.sp),
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 14.sp,
+                      ),
                       children: [
                         const TextSpan(text: "Sudah punya akun? "),
                         TextSpan(
                           text: "Masuk Disini",
-                          style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w800),
+                          style: TextStyle(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
                       ],
                     ),
@@ -222,11 +249,17 @@ class _RegisterPageState extends State<RegisterPage> {
       contentPadding: EdgeInsets.symmetric(vertical: 18.h, horizontal: 20.w),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16.r),
-        borderSide: BorderSide(color: AppColors.divider.withValues(alpha: 0.5), width: 1),
+        borderSide: BorderSide(
+          color: AppColors.divider.withValues(alpha: 0.5),
+          width: 1,
+        ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16.r),
-        borderSide: BorderSide(color: AppColors.divider.withValues(alpha: 0.5), width: 1),
+        borderSide: BorderSide(
+          color: AppColors.divider.withValues(alpha: 0.5),
+          width: 1,
+        ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16.r),
