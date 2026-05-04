@@ -1,5 +1,17 @@
 import 'package:apkbooking/models/venue_model.dart';
 
+const _badmintonHallImage = 'assets/images/Venue/Venue1.jpg';
+const _badmintonActionImage = 'assets/images/Venue/Venue3.jpg';
+const _tennisCourtImage = 'assets/images/Venue/Venue2.jpg';
+const _tennisArenaImage = 'assets/images/Court/Indoor Tennis Court.jpg';
+const _tennisWindowImage =
+    'assets/images/Court/Dalla Riva non ha rivali in Piemonte!.jpg';
+const _badmintonCourtImage =
+    'assets/images/Court/best badminton academy in chennai.jpg';
+const _badmintonCourtSideImage = 'assets/images/Court/download (1).jpg';
+const _indoorCourtImage = 'assets/images/Court/court.jpg';
+const _avatarImage = 'assets/Avatar/Avatar.png';
+
 class GorService {
   const GorService();
 
@@ -25,12 +37,12 @@ class GorService {
         name: 'Stadium Atelier',
         location: 'Olympic Sports Complex, Solo Baru, Sukoharjo',
         distanceKm: 1.2,
-        imageUrl: 'https://picsum.photos/seed/atelier-main/900/700',
+        imageUrl: _badmintonHallImage,
         galleryUrls: [
-          'https://picsum.photos/seed/atelier-main/900/700',
-          'https://picsum.photos/seed/atelier-lobby/900/700',
-          'https://picsum.photos/seed/atelier-court/900/700',
-          'https://picsum.photos/seed/atelier-night/900/700',
+          _badmintonHallImage,
+          _badmintonActionImage,
+          _badmintonCourtImage,
+          _indoorCourtImage,
         ],
         rating: 4.8,
         reviewCount: 120,
@@ -38,28 +50,32 @@ class GorService {
         sports: ['Badminton', 'Tennis'],
         amenities: ['WiFi', 'Shower', 'Socket', 'Mineral', 'Parkir'],
         statusLabel: 'OPEN',
-        description: 'Premium indoor venue with concierge-style service and clean modern courts.',
+        description:
+            'Premium indoor venue with concierge-style service and clean modern courts.',
         reviews: [
           VenueReviewModel(
             author: 'Alya',
-            avatarUrl: 'https://picsum.photos/seed/review1/100',
+            avatarUrl: _avatarImage,
             rating: 4.9,
-            comment: 'Venue bersih, lampu terang, dan staff cepat bantu waktu check-in.',
+            comment:
+                'Venue bersih, lampu terang, dan staff cepat bantu waktu check-in.',
             timeLabel: '2 hari lalu',
             hasPhoto: true,
           ),
           VenueReviewModel(
             author: 'Raka',
-            avatarUrl: 'https://picsum.photos/seed/review2/100',
+            avatarUrl: _avatarImage,
             rating: 4.7,
-            comment: 'Area tunggu nyaman dan parkir luas. Cocok buat sparring malam.',
+            comment:
+                'Area tunggu nyaman dan parkir luas. Cocok buat sparring malam.',
             timeLabel: '1 minggu lalu',
           ),
           VenueReviewModel(
             author: 'Nadia',
-            avatarUrl: 'https://picsum.photos/seed/review3/100',
+            avatarUrl: _avatarImage,
             rating: 4.8,
-            comment: 'Lantai court enak dipakai dan sirkulasi udara terasa adem.',
+            comment:
+                'Lantai court enak dipakai dan sirkulasi udara terasa adem.',
             timeLabel: '2 minggu lalu',
             hasPhoto: true,
           ),
@@ -68,48 +84,60 @@ class GorService {
           VenueCourtModel(
             id: 'court-01',
             name: 'Grand Court 01',
-            imageUrl: 'https://picsum.photos/seed/court0/800/600',
+            imageUrl: _badmintonCourtImage,
             galleryUrls: [
-              'https://picsum.photos/seed/court0/800/600',
-              'https://picsum.photos/seed/court0-side/800/600',
-              'https://picsum.photos/seed/court0-net/800/600',
+              _badmintonCourtImage,
+              _badmintonCourtSideImage,
+              _indoorCourtImage,
             ],
             surface: 'Vinyl Premium',
             environment: 'Indoor',
             pricePerHour: 100000,
-            specs: {'Lantai': 'Vinyl Premium', 'Lampu': 'LED High-Bay', 'Ventilasi': 'Exhaust Fan Pro'},
+            specs: {
+              'Lantai': 'Vinyl Premium',
+              'Lampu': 'LED High-Bay',
+              'Ventilasi': 'Exhaust Fan Pro',
+            },
             availableTimes: commonTimes,
             bookedTimes: ['10:00', '14:00'],
           ),
           VenueCourtModel(
             id: 'court-02',
             name: 'Grand Court 02',
-            imageUrl: 'https://picsum.photos/seed/court1/800/600',
+            imageUrl: _badmintonCourtSideImage,
             galleryUrls: [
-              'https://picsum.photos/seed/court1/800/600',
-              'https://picsum.photos/seed/court1-seats/800/600',
-              'https://picsum.photos/seed/court1-top/800/600',
+              _badmintonCourtSideImage,
+              _badmintonCourtImage,
+              _indoorCourtImage,
             ],
             surface: 'Interlock Pro',
             environment: 'Indoor',
             pricePerHour: 100000,
-            specs: {'Lantai': 'Interlock Pro', 'Lampu': 'LED Match', 'Ventilasi': 'Air Flow Plus'},
+            specs: {
+              'Lantai': 'Interlock Pro',
+              'Lampu': 'LED Match',
+              'Ventilasi': 'Air Flow Plus',
+            },
             availableTimes: commonTimes,
             bookedTimes: ['09:00', '20:00'],
           ),
           VenueCourtModel(
             id: 'court-03',
             name: 'Grand Court 03',
-            imageUrl: 'https://picsum.photos/seed/court2/800/600',
+            imageUrl: _indoorCourtImage,
             galleryUrls: [
-              'https://picsum.photos/seed/court2/800/600',
-              'https://picsum.photos/seed/court2-angle/800/600',
-              'https://picsum.photos/seed/court2-floor/800/600',
+              _indoorCourtImage,
+              _badmintonCourtImage,
+              _badmintonCourtSideImage,
             ],
             surface: 'Rubber Shock',
             environment: 'Indoor',
             pricePerHour: 110000,
-            specs: {'Lantai': 'Rubber Shock', 'Lampu': 'LED High-Bay', 'Ventilasi': 'Air Flow Plus'},
+            specs: {
+              'Lantai': 'Rubber Shock',
+              'Lampu': 'LED High-Bay',
+              'Ventilasi': 'Air Flow Plus',
+            },
             availableTimes: commonTimes,
             bookedTimes: ['11:00', '21:00'],
           ),
@@ -120,32 +148,30 @@ class GorService {
         name: 'Grand Slam Arena',
         location: 'Solo Center District',
         distanceKm: 2.4,
-        imageUrl: 'https://picsum.photos/seed/grandslam-main/900/700',
-        galleryUrls: [
-          'https://picsum.photos/seed/grandslam-main/900/700',
-          'https://picsum.photos/seed/grandslam-entry/900/700',
-          'https://picsum.photos/seed/grandslam-court/900/700',
-        ],
+        imageUrl: _tennisCourtImage,
+        galleryUrls: [_tennisCourtImage, _tennisArenaImage, _tennisWindowImage],
         rating: 4.9,
         reviewCount: 98,
         pricePerHour: 95000,
         sports: ['Tennis'],
         amenities: ['WiFi', 'Shower', 'Parkir'],
         statusLabel: 'OPEN',
-        description: 'Bright training courts with tournament-standard lighting.',
+        description:
+            'Bright training courts with tournament-standard lighting.',
         reviews: [
           VenueReviewModel(
             author: 'Kevin',
-            avatarUrl: 'https://picsum.photos/seed/review4/100',
+            avatarUrl: _avatarImage,
             rating: 5.0,
             comment: 'Permukaan lapangan mantap dan area venue terasa premium.',
             timeLabel: '3 hari lalu',
           ),
           VenueReviewModel(
             author: 'Sinta',
-            avatarUrl: 'https://picsum.photos/seed/review5/100',
+            avatarUrl: _avatarImage,
             rating: 4.8,
-            comment: 'Booking cepat dan layout venue enak buat datang bareng teman.',
+            comment:
+                'Booking cepat dan layout venue enak buat datang bareng teman.',
             timeLabel: '6 hari lalu',
             hasPhoto: true,
           ),
@@ -154,16 +180,20 @@ class GorService {
           VenueCourtModel(
             id: 'grand-a',
             name: 'Center Court',
-            imageUrl: 'https://picsum.photos/seed/tennis1/800/600',
+            imageUrl: _tennisCourtImage,
             galleryUrls: [
-              'https://picsum.photos/seed/tennis1/800/600',
-              'https://picsum.photos/seed/tennis1-fence/800/600',
-              'https://picsum.photos/seed/tennis1-light/800/600',
+              _tennisCourtImage,
+              _tennisArenaImage,
+              _tennisWindowImage,
             ],
             surface: 'Synthetic Acrylic',
             environment: 'Indoor',
             pricePerHour: 95000,
-            specs: {'Lantai': 'Synthetic Acrylic', 'Lampu': 'Focus LED', 'Ventilasi': 'Cross Flow'},
+            specs: {
+              'Lantai': 'Synthetic Acrylic',
+              'Lampu': 'Focus LED',
+              'Ventilasi': 'Cross Flow',
+            },
             availableTimes: commonTimes,
             bookedTimes: ['15:00'],
           ),
@@ -174,11 +204,11 @@ class GorService {
         name: 'The Smash Club',
         location: 'Kartasura Sports Hub',
         distanceKm: 3.1,
-        imageUrl: 'https://picsum.photos/seed/smash-main/900/700',
+        imageUrl: _badmintonActionImage,
         galleryUrls: [
-          'https://picsum.photos/seed/smash-main/900/700',
-          'https://picsum.photos/seed/smash-hall/900/700',
-          'https://picsum.photos/seed/smash-lounge/900/700',
+          _badmintonActionImage,
+          _badmintonHallImage,
+          _badmintonActionImage,
         ],
         rating: 4.7,
         reviewCount: 144,
@@ -186,18 +216,20 @@ class GorService {
         sports: ['Badminton'],
         amenities: ['WiFi', 'Mineral', 'Parkir'],
         statusLabel: 'OPEN',
-        description: 'Fast and friendly badminton club for weekly sparring and league nights.',
+        description:
+            'Fast and friendly badminton club for weekly sparring and league nights.',
         reviews: [
           VenueReviewModel(
             author: 'Dito',
-            avatarUrl: 'https://picsum.photos/seed/review6/100',
+            avatarUrl: _avatarImage,
             rating: 4.7,
-            comment: 'Tempatnya santai, gampang dicapai, dan admin cepat merespons.',
+            comment:
+                'Tempatnya santai, gampang dicapai, dan admin cepat merespons.',
             timeLabel: '1 hari lalu',
           ),
           VenueReviewModel(
             author: 'Mira',
-            avatarUrl: 'https://picsum.photos/seed/review7/100',
+            avatarUrl: _avatarImage,
             rating: 4.6,
             comment: 'Cocok untuk latihan rutin. Harga juga masih masuk akal.',
             timeLabel: '5 hari lalu',
@@ -207,16 +239,20 @@ class GorService {
           VenueCourtModel(
             id: 'smash-a',
             name: 'Court A',
-            imageUrl: 'https://picsum.photos/seed/badminton1/800/600',
+            imageUrl: _badmintonCourtSideImage,
             galleryUrls: [
-              'https://picsum.photos/seed/badminton1/800/600',
-              'https://picsum.photos/seed/badminton1-seat/800/600',
-              'https://picsum.photos/seed/badminton1-floor/800/600',
+              _badmintonCourtSideImage,
+              _badmintonCourtImage,
+              _indoorCourtImage,
             ],
             surface: 'Wood Finish',
             environment: 'Indoor',
             pricePerHour: 85000,
-            specs: {'Lantai': 'Wood Finish', 'Lampu': 'Daylight LED', 'Ventilasi': 'Smart Fan'},
+            specs: {
+              'Lantai': 'Wood Finish',
+              'Lampu': 'Daylight LED',
+              'Ventilasi': 'Smart Fan',
+            },
             availableTimes: commonTimes,
             bookedTimes: ['08:00', '16:00'],
           ),

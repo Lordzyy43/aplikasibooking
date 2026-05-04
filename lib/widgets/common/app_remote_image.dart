@@ -17,8 +17,36 @@ class AppRemoteImage extends StatelessWidget {
   final BorderRadius? borderRadius;
   final BoxFit fit;
 
+  static bool isAssetPath(String imageUrl) {
+    return imageUrl.startsWith('assets/');
+  }
+
+  static ImageProvider imageProvider(String imageUrl) {
+    if (isAssetPath(imageUrl)) {
+      return AssetImage(imageUrl);
+    }
+    return CachedNetworkImageProvider(imageUrl);
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (isAssetPath(imageUrl)) {
+      final image = Image.asset(
+        imageUrl,
+        width: width,
+        height: height,
+        fit: fit,
+        errorBuilder: (context, error, stackTrace) =>
+            _ImageFallback(width: width, height: height),
+      );
+
+      if (borderRadius == null) {
+        return image;
+      }
+
+      return ClipRRect(borderRadius: borderRadius!, child: image);
+    }
+
     final image = CachedNetworkImage(
       imageUrl: imageUrl,
       width: width,
@@ -40,7 +68,10 @@ class AppRemoteImage extends StatelessWidget {
         height: height,
         color: const Color(0xFFE7E8EB),
         alignment: Alignment.center,
-        child: const Icon(Icons.image_not_supported_outlined, color: Color(0xFF737685)),
+        child: const Icon(
+          Icons.image_not_supported_outlined,
+          color: Color(0xFF737685),
+        ),
       ),
     );
 
@@ -48,9 +79,27 @@ class AppRemoteImage extends StatelessWidget {
       return image;
     }
 
-    return ClipRRect(
-      borderRadius: borderRadius!,
-      child: image,
+    return ClipRRect(borderRadius: borderRadius!, child: image);
+  }
+}
+
+class _ImageFallback extends StatelessWidget {
+  const _ImageFallback({required this.width, required this.height});
+
+  final double width;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      color: const Color(0xFFE7E8EB),
+      alignment: Alignment.center,
+      child: const Icon(
+        Icons.image_not_supported_outlined,
+        color: Color(0xFF737685),
+      ),
     );
   }
 }

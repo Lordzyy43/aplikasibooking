@@ -93,7 +93,7 @@ class HomeHeader extends StatelessWidget {
                 style: TextStyle(color: AppColors.textPrimary),
               ),
               TextSpan(
-                text: "Book",
+                text: "book",
                 style: TextStyle(color: AppColors.primary),
               ),
             ],

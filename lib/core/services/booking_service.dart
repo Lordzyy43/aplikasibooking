@@ -3,6 +3,11 @@ import 'package:apkbooking/models/notification_model.dart';
 import 'package:apkbooking/models/promo_model.dart';
 import 'package:apkbooking/models/user_model.dart';
 
+const _badmintonHallImage = 'assets/images/Venue/Venue1.jpg';
+const _badmintonActionImage = 'assets/images/Venue/Venue3.jpg';
+const _tennisCourtImage = 'assets/images/Venue/Venue2.jpg';
+const _avatarImage = 'assets/Avatar/Avatar.png';
+
 class BookingService {
   const BookingService();
 
@@ -12,7 +17,7 @@ class BookingService {
       name: 'john doe',
       email: 'john@example.com',
       phone: '0812 3456 7890',
-      avatarUrl: 'https://picsum.photos/seed/john/200',
+      avatarUrl: _avatarImage,
       walletBalance: 250000,
       points: 320,
     );
@@ -33,7 +38,7 @@ class BookingService {
         id: 'BK-99210',
         venueName: 'Stadium Atelier',
         venueLocation: 'Olympic Sports Complex',
-        venueImageUrl: 'https://picsum.photos/id/101/800/600',
+        venueImageUrl: _badmintonHallImage,
         courtName: 'Court A',
         sport: 'Badminton',
         date: DateTime.now().add(const Duration(days: 1)),
@@ -46,7 +51,7 @@ class BookingService {
         id: 'BK-99211',
         venueName: 'The Smash Club',
         venueLocation: 'Kartasura Sports Hub',
-        venueImageUrl: 'https://picsum.photos/seed/52/800/600',
+        venueImageUrl: _badmintonActionImage,
         courtName: 'Court B',
         sport: 'Badminton',
         date: DateTime.now().subtract(const Duration(days: 2)),
@@ -59,7 +64,7 @@ class BookingService {
         id: 'BK-99212',
         venueName: 'Grand Slam Arena',
         venueLocation: 'Solo Center District',
-        venueImageUrl: 'https://picsum.photos/seed/51/800/600',
+        venueImageUrl: _tennisCourtImage,
         courtName: 'Center Court',
         sport: 'Tennis',
         date: DateTime.now().subtract(const Duration(days: 5)),

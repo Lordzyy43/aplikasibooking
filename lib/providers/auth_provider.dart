@@ -29,7 +29,7 @@ class AuthProvider extends ChangeNotifier {
           name: "John Doe",
           email: email,
           phone: "08123456789",
-          avatarUrl: "https://ui-avatars.com/api/?name=John+Doe", // Avatar otomatis dari nama
+          avatarUrl: "assets/Avatar/Avatar.png",
           walletBalance: 50000,
           points: 100,
         );

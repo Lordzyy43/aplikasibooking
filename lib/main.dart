@@ -48,7 +48,7 @@ class ArenaApp extends StatelessWidget {
       builder: (context, child) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          title: 'Arena', // Nama aplikasi simpel
+          title: 'Aerobook', // Nama aplikasi simpel
           // Menggunakan tema evolusi yang sudah kita buat
           theme: AppTheme.lightTheme,
 
