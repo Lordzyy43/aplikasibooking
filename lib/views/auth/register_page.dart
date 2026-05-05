@@ -146,8 +146,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 height: 56.h,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Logic registrasi nanti di sini
-                    Navigator.pop(context);
+                    _handleRegister();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
@@ -198,6 +197,48 @@ class _RegisterPageState extends State<RegisterPage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _handleRegister() {
+    final name = _nameController.text.trim();
+    final email = _emailController.text.trim();
+    final phone = _phoneController.text.trim();
+    final password = _passwordController.text;
+
+    if (name.isEmpty || email.isEmpty || phone.isEmpty || password.isEmpty) {
+      _showSnackBar(
+        "Lengkapi semua data pendaftaran terlebih dahulu.",
+        isError: true,
+      );
+      return;
+    }
+
+    if (!email.contains('@') || !email.contains('.')) {
+      _showSnackBar("Masukkan alamat email yang valid.", isError: true);
+      return;
+    }
+
+    if (password.length < 6) {
+      _showSnackBar("Password minimal 6 karakter.", isError: true);
+      return;
+    }
+
+    _showSnackBar("Akun demo berhasil dibuat. Silakan masuk.");
+    Navigator.pop(context);
+  }
+
+  void _showSnackBar(String message, {bool isError = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: isError ? AppColors.error : AppColors.primary,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        margin: EdgeInsets.all(20.w),
       ),
     );
   }

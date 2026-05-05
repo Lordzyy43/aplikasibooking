@@ -1,6 +1,8 @@
 import 'package:apkbooking/core/app_colors.dart';
 import 'package:apkbooking/core/utils/currency_formatter.dart';
 import 'package:apkbooking/providers/app_data_provider.dart';
+import 'package:apkbooking/providers/auth_provider.dart';
+import 'package:apkbooking/views/auth/onboarding_page.dart';
 import 'package:apkbooking/widgets/common/app_remote_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -27,12 +29,12 @@ class ProfilePage extends StatelessWidget {
             _buildStatSection(user.walletBalance, user.points),
             SizedBox(height: 28.h),
             _buildSectionTitle("Aktivitas Saya"),
-            _buildQuickActions(),
+            _buildQuickActions(context),
             SizedBox(height: 28.h),
             _buildSectionTitle("Pengaturan Akun"),
             _buildMenuCard(context),
             SizedBox(height: 40.h),
-            _buildLogoutButton(),
+            _buildLogoutButton(context),
             SizedBox(height: 20.h),
             Text(
               'Versi 1.0.0',
@@ -208,7 +210,7 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildQuickActions() {
+  Widget _buildQuickActions(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 24.w),
       padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 10.w),
@@ -219,41 +221,85 @@ class ProfilePage extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _actionButton(Icons.history_rounded, "Riwayat", Colors.orange),
-          _actionButton(Icons.favorite_outline_rounded, "Favorit", Colors.pink),
           _actionButton(
+            context,
+            Icons.history_rounded,
+            "Riwayat",
+            Colors.orange,
+            () => _showInfoDialog(
+              context,
+              "Riwayat Aktivitas",
+              "Riwayat booking lengkap bisa dibuka dari tab Booking.",
+            ),
+          ),
+          _actionButton(
+            context,
+            Icons.favorite_outline_rounded,
+            "Favorit",
+            Colors.pink,
+            () => _showSnackBar(
+              context,
+              "Venue favorit berhasil disinkronkan untuk demo.",
+            ),
+          ),
+          _actionButton(
+            context,
             Icons.confirmation_number_outlined,
             "Promo",
             Colors.teal,
+            () => _showInfoDialog(
+              context,
+              "Promo Tersedia",
+              "Gunakan kode ARENA30 untuk simulasi promo 30%.",
+            ),
           ),
-          _actionButton(Icons.star_outline_rounded, "Ulasan", Colors.purple),
+          _actionButton(
+            context,
+            Icons.star_outline_rounded,
+            "Ulasan",
+            Colors.purple,
+            () => _showSnackBar(context, "Kamu belum memiliki ulasan aktif."),
+          ),
         ],
       ),
     );
   }
 
-  Widget _actionButton(IconData icon, String label, Color color) {
-    return Column(
-      children: [
-        Container(
-          width: 50.w,
-          height: 50.w,
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(icon, color: color, size: 24.sp),
+  Widget _actionButton(
+    BuildContext context,
+    IconData icon,
+    String label,
+    Color color,
+    VoidCallback onTap,
+  ) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(18.r),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
+        child: Column(
+          children: [
+            Container(
+              width: 50.w,
+              height: 50.w,
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: color, size: 24.sp),
+            ),
+            SizedBox(height: 8.h),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF636E72),
+              ),
+            ),
+          ],
         ),
-        SizedBox(height: 8.h),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12.sp,
-            fontWeight: FontWeight.w600,
-            color: const Color(0xFF636E72),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -266,21 +312,49 @@ class ProfilePage extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _menuItem(FontAwesomeIcons.userPen, "Informasi Pribadi", Colors.blue),
+          _menuItem(
+            FontAwesomeIcons.userPen,
+            "Informasi Pribadi",
+            Colors.blue,
+            () => _showInfoDialog(
+              context,
+              "Informasi Pribadi",
+              "Data profil masih menggunakan akun demo.",
+            ),
+          ),
           _menuDivider(),
-          _menuItem(FontAwesomeIcons.shield, "Keamanan Akun", Colors.green),
+          _menuItem(
+            FontAwesomeIcons.shield,
+            "Keamanan Akun",
+            Colors.green,
+            () => _showInfoDialog(
+              context,
+              "Keamanan Akun",
+              "PIN dan verifikasi akun akan tersedia saat login backend aktif.",
+            ),
+          ),
           _menuDivider(),
           _menuItem(
             FontAwesomeIcons.circleQuestion,
             "Pusat Bantuan",
             Colors.orange,
+            () => _showInfoDialog(
+              context,
+              "Pusat Bantuan",
+              "Hubungi admin venue jika perlu bantuan booking atau pembayaran.",
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _menuItem(dynamic icon, String title, Color color) {
+  Widget _menuItem(
+    dynamic icon,
+    String title,
+    Color color,
+    VoidCallback onTap,
+  ) {
     return ListTile(
       contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 4.h),
       leading: Container(
@@ -304,16 +378,16 @@ class ProfilePage extends StatelessWidget {
         size: 14.sp,
         color: Colors.grey.shade400,
       ),
-      onTap: () {},
+      onTap: onTap,
     );
   }
 
-  Widget _buildLogoutButton() {
+  Widget _buildLogoutButton(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 24.w),
       width: double.infinity,
       child: TextButton.icon(
-        onPressed: () {},
+        onPressed: () => _confirmLogout(context),
         style: TextButton.styleFrom(
           padding: EdgeInsets.symmetric(vertical: 16.h),
           backgroundColor: Colors.red.withOpacity(0.05),
@@ -357,4 +431,62 @@ class ProfilePage extends StatelessWidget {
     endIndent: 20.w,
     color: Colors.grey.shade50,
   );
+
+  void _showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: AppColors.primary,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        margin: EdgeInsets.all(20.w),
+      ),
+    );
+  }
+
+  void _showInfoDialog(BuildContext context, String title, String message) {
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Tutup"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmLogout(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text("Keluar dari akun?"),
+        content: const Text("Kamu akan kembali ke halaman awal aplikasi."),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text("Batal"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              context.read<AuthProvider>().logout();
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => const OnboardingPage()),
+                (route) => false,
+              );
+            },
+            child: const Text("Keluar"),
+          ),
+        ],
+      ),
+    );
+  }
 }

@@ -22,31 +22,6 @@ class HomeCategoryList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.w),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Text(
-              //   "Kategori Olahraga",
-              //   style: theme.textTheme.titleMedium?.copyWith(
-              //     fontWeight: FontWeight.w800,
-              //     color: AppColors.textPrimary,
-              //   ),
-              // ),
-              // TextButton(
-              //   onPressed: () {}, // Aksi lihat semua kategori
-              //   child: Text(
-              //     "Lihat Semua",
-              //     style: theme.textTheme.labelMedium?.copyWith(
-              //       color: AppColors.primary,
-              //       fontWeight: FontWeight.w700,
-              //     ),
-              //   ),
-              // ),
-            ],
-          ),
-        ),
         SizedBox(height: 8.h),
         SizedBox(
           height: 105.h, // Sedikit lebih tinggi untuk menampung shadow
@@ -71,8 +46,12 @@ class HomeCategoryList extends StatelessWidget {
                         category.name,
                         style: theme.textTheme.labelMedium?.copyWith(
                           fontSize: 12.sp,
-                          fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                          color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                          fontWeight: isSelected
+                              ? FontWeight.w800
+                              : FontWeight.w600,
+                          color: isSelected
+                              ? AppColors.primary
+                              : AppColors.textSecondary,
                         ),
                       ),
                     ],
@@ -110,7 +89,9 @@ class HomeCategoryList extends StatelessWidget {
             ),
         ],
         border: Border.all(
-          color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.transparent,
+          color: isSelected
+              ? AppColors.primary.withOpacity(0.1)
+              : Colors.transparent,
           width: 4,
         ),
       ),
