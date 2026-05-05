@@ -6,21 +6,33 @@ const _badmintonActionImage = 'assets/images/Venue/Venue3.jpg';
 const _venueOneCanteenImage = 'assets/images/Venue/canteen1.jpg';
 const _venueOneBathroomImage = 'assets/images/Venue/kamarmandi1.jpg';
 const _venueOneParkingImage = 'assets/images/Venue/parking1.jpg';
-const _venueOneChangingRoomImage = 'assets/images/Venue/ruangganti1.jpg';
+const _venueOneChangingRoomImage = 'assets/images/Venue/lokerroom1.jpg';
 const _venueTwoCanteenImage = 'assets/images/Venue/centeen2.jpg';
 const _venueTwoBathroomImage = 'assets/images/Venue/kamarmandi2.jpg';
 const _venueTwoParkingImage = 'assets/images/Venue/parking2.jpg';
-const _venueTwoChangingRoomImage = 'assets/images/Venue/ruangganti2.jpg';
+const _venueTwoChangingRoomImage = 'assets/images/Venue/lokkerroom2.jpg';
 const _venueThreeCanteenImage = 'assets/images/Venue/centeen3.jpg';
 const _venueThreeBathroomImage = 'assets/images/Venue/kamarmandi3.jpg';
-const _venueThreeChangingRoomImage = 'assets/images/Venue/ruangganti3.jpg';
-const _tennisArenaImage = 'assets/images/Court/Indoor Tennis Court.jpg';
-const _tennisWindowImage =
-    'assets/images/Court/Dalla Riva non ha rivali in Piemonte!.jpg';
-const _badmintonCourtImage =
-    'assets/images/Court/best badminton academy in chennai.jpg';
-const _badmintonCourtSideImage = 'assets/images/Court/download (1).jpg';
-const _indoorCourtImage = 'assets/images/Court/court.jpg';
+const _venueThreeChangingRoomImage = 'assets/images/Venue/lokerroom3.jpg';
+const _stadiumCourtOneImage = 'assets/images/Court/badminton1.jpg';
+const _stadiumCourtOneSideImage = 'assets/images/Court/badminton2.jpg';
+const _stadiumCourtOneDetailImage = 'assets/images/Court/badminton3.jpg';
+const _stadiumCourtTwoImage = 'assets/images/Court/badminton4.jpg';
+const _stadiumCourtTwoSideImage = 'assets/images/Court/badminton5.jpg';
+const _stadiumCourtTwoDetailImage = 'assets/images/Court/badminton6.jpg';
+const _stadiumCourtThreeImage = 'assets/images/Court/badminton7.jpg';
+const _stadiumCourtThreeSideImage = 'assets/images/Court/badminton8.jpg';
+const _grandSlamCourtImage = 'assets/images/Court/tennis1.jpg';
+const _grandSlamCourtSideImage = 'assets/images/Court/tennis2.jpg';
+const _grandSlamCourtDetailImage = 'assets/images/Court/tennis3.jpg';
+const _grandSlamCourtGalleryImage = 'assets/images/Court/tennis4.jpg';
+const _grandSlamCourtLightImage = 'assets/images/Court/tennis5.jpg';
+const _grandSlamCourtBaselineImage = 'assets/images/Court/tennis6.jpg';
+const _grandSlamCourtNetImage = 'assets/images/Court/tennis7.jpg';
+const _grandSlamCourtWideImage = 'assets/images/Court/tennis8.jpg';
+const _smashCourtImage = 'assets/images/Court/badminton5.jpg';
+const _smashCourtSideImage = 'assets/images/Court/badminton6.jpg';
+const _smashCourtDetailImage = 'assets/images/Court/badminton8.jpg';
 const _avatarImage = 'assets/Avatar/Avatar.png';
 
 class GorService {
@@ -96,11 +108,11 @@ class GorService {
           VenueCourtModel(
             id: 'court-01',
             name: 'Grand Court 01',
-            imageUrl: _badmintonCourtImage,
+            imageUrl: _stadiumCourtOneImage,
             galleryUrls: [
-              _badmintonCourtImage,
-              _badmintonCourtSideImage,
-              _indoorCourtImage,
+              _stadiumCourtOneImage,
+              _stadiumCourtOneSideImage,
+              _stadiumCourtOneDetailImage,
             ],
             surface: 'Vinyl Premium',
             environment: 'Indoor',
@@ -116,11 +128,11 @@ class GorService {
           VenueCourtModel(
             id: 'court-02',
             name: 'Grand Court 02',
-            imageUrl: _badmintonCourtSideImage,
+            imageUrl: _stadiumCourtTwoImage,
             galleryUrls: [
-              _badmintonCourtSideImage,
-              _badmintonCourtImage,
-              _indoorCourtImage,
+              _stadiumCourtTwoImage,
+              _stadiumCourtTwoSideImage,
+              _stadiumCourtTwoDetailImage,
             ],
             surface: 'Interlock Pro',
             environment: 'Indoor',
@@ -136,11 +148,11 @@ class GorService {
           VenueCourtModel(
             id: 'court-03',
             name: 'Grand Court 03',
-            imageUrl: _indoorCourtImage,
+            imageUrl: _stadiumCourtThreeImage,
             galleryUrls: [
-              _indoorCourtImage,
-              _badmintonCourtImage,
-              _badmintonCourtSideImage,
+              _stadiumCourtThreeImage,
+              _stadiumCourtThreeSideImage,
+              _stadiumCourtOneDetailImage,
             ],
             surface: 'Rubber Shock',
             environment: 'Indoor',
@@ -198,11 +210,16 @@ class GorService {
           VenueCourtModel(
             id: 'grand-a',
             name: 'Center Court',
-            imageUrl: _tennisCourtImage,
+            imageUrl: _grandSlamCourtImage,
             galleryUrls: [
-              _tennisCourtImage,
-              _tennisArenaImage,
-              _tennisWindowImage,
+              _grandSlamCourtImage,
+              _grandSlamCourtSideImage,
+              _grandSlamCourtDetailImage,
+              _grandSlamCourtGalleryImage,
+              _grandSlamCourtLightImage,
+              _grandSlamCourtBaselineImage,
+              _grandSlamCourtNetImage,
+              _grandSlamCourtWideImage,
             ],
             surface: 'Synthetic Acrylic',
             environment: 'Indoor',
@@ -258,11 +275,11 @@ class GorService {
           VenueCourtModel(
             id: 'smash-a',
             name: 'Court A',
-            imageUrl: _badmintonCourtSideImage,
+            imageUrl: _smashCourtImage,
             galleryUrls: [
-              _badmintonCourtSideImage,
-              _badmintonCourtImage,
-              _indoorCourtImage,
+              _smashCourtImage,
+              _smashCourtSideImage,
+              _smashCourtDetailImage,
             ],
             surface: 'Wood Finish',
             environment: 'Indoor',

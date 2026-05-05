@@ -47,7 +47,7 @@ class _LoginPageState extends State<LoginPage> {
                       height: 80.h,
                       width: 80.h,
                       decoration: BoxDecoration(
-                        color: AppColors.primary,
+                        color: AppColors.surfaceLowest,
                         borderRadius: BorderRadius.circular(24.r),
                         boxShadow: [
                           BoxShadow(
@@ -57,10 +57,12 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ],
                       ),
-                      child: Icon(
-                        Icons.sports_basketball_rounded,
-                        color: Colors.white,
-                        size: 45.sp,
+                      child: Padding(
+                        padding: EdgeInsets.all(10.w),
+                        child: Image.asset(
+                          'assets/logos/logo.png',
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     ),
                     SizedBox(height: 24.h),
