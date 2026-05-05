@@ -129,7 +129,7 @@ class _LoginPageState extends State<LoginPage> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: _showForgotPasswordDialog,
                   style: TextButton.styleFrom(
                     foregroundColor: AppColors.primary,
                   ),
@@ -210,7 +210,9 @@ class _LoginPageState extends State<LoginPage> {
               _buildSocialButton(
                 label: "Masuk dengan Google",
                 icon: Icons.g_mobiledata_rounded,
-                onTap: () {},
+                onTap: () => _showFeatureSnackBar(
+                  "Login Google akan tersedia pada versi backend.",
+                ),
               ),
 
               SizedBox(height: 40.h),
@@ -285,6 +287,40 @@ class _LoginPageState extends State<LoginPage> {
         ),
       );
     }
+  }
+
+  void _showForgotPasswordDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Reset Password"),
+          content: const Text(
+            "Link reset password akan dikirim ke email kamu saat fitur backend tersedia.",
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Mengerti"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showFeatureSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: AppColors.primary,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        margin: EdgeInsets.all(20.w),
+      ),
+    );
   }
 
   Widget _buildLabel(String text) {

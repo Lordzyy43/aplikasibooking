@@ -313,7 +313,16 @@ class CourtDetailPage extends StatelessWidget {
         final isBooked = court.bookedTimes.contains(time);
 
         return GestureDetector(
-          onTap: isBooked ? null : () => provider.setTime(time),
+          onTap: () {
+            if (isBooked) {
+              _showSnackBar(
+                context,
+                'Jam $time sudah dibooking. Pilih jam lain.',
+              );
+              return;
+            }
+            provider.setTime(time);
+          },
           child: Container(
             decoration: BoxDecoration(
               gradient: isSelected
@@ -400,26 +409,27 @@ class CourtDetailPage extends StatelessWidget {
             width: 150.w,
             height: 52.h,
             child: ElevatedButton(
-              onPressed: provider.selectedTime == null
-                  ? null
-                  : () {
-                      provider.setVenueSelection(
-                        venueId: venue.id,
-                        venueName: venue.name,
-                        venueLocation: venue.location,
-                        venueImageUrl: venue.imageUrl,
-                        sport: venue.sports.first,
-                        fieldName: court.name,
-                        price: court.pricePerHour,
-                      );
+              onPressed: () {
+                if (provider.selectedTime == null) {
+                  _showSnackBar(context, 'Pilih jam tersedia terlebih dahulu.');
+                  return;
+                }
 
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const CheckoutPage(),
-                        ),
-                      );
-                    },
+                provider.setVenueSelection(
+                  venueId: venue.id,
+                  venueName: venue.name,
+                  venueLocation: venue.location,
+                  venueImageUrl: venue.imageUrl,
+                  sport: venue.sports.first,
+                  fieldName: court.name,
+                  price: court.pricePerHour,
+                );
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const CheckoutPage()),
+                );
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
@@ -436,6 +446,20 @@ class CourtDetailPage extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: AppColors.primary,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        margin: EdgeInsets.all(20.w),
       ),
     );
   }

@@ -26,13 +26,21 @@ class CheckoutPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'Checkout',
-          style: TextStyle(color: Colors.black, fontSize: 16.sp, fontWeight: FontWeight.w800),
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 16.sp,
+            fontWeight: FontWeight.w800,
+          ),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 18.sp),
+          icon: Icon(
+            Icons.arrow_back_ios_new,
+            color: Colors.black,
+            size: 18.sp,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -52,9 +60,12 @@ class CheckoutPage extends StatelessWidget {
             SizedBox(height: 25.h),
             _buildSectionLabel('Metode Pembayaran', FontAwesomeIcons.wallet),
             SizedBox(height: 12.h),
-            _buildPaymentMethodSelector(),
+            _buildPaymentMethodSelector(context),
             SizedBox(height: 25.h),
-            _buildSectionLabel('Rincian Biaya', FontAwesomeIcons.fileInvoiceDollar),
+            _buildSectionLabel(
+              'Rincian Biaya',
+              FontAwesomeIcons.fileInvoiceDollar,
+            ),
             SizedBox(height: 12.h),
             _buildPriceDetail(subtotal, fee, total),
             SizedBox(height: 120.h),
@@ -81,7 +92,11 @@ class CheckoutPage extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _summaryItem(FontAwesomeIcons.hospital, 'Venue', provider.selectedVenueName ?? '-'),
+          _summaryItem(
+            FontAwesomeIcons.hospital,
+            'Venue',
+            provider.selectedVenueName ?? '-',
+          ),
           Padding(
             padding: EdgeInsets.symmetric(vertical: 12.h),
             child: Divider(color: Colors.grey.shade100, thickness: 1),
@@ -181,13 +196,18 @@ class CheckoutPage extends StatelessWidget {
             color: AppColors.surfaceLow,
             borderRadius: BorderRadius.circular(12.r),
           ),
-          child: Center(child: FaIcon(icon, color: AppColors.primary, size: 14.sp)),
+          child: Center(
+            child: FaIcon(icon, color: AppColors.primary, size: 14.sp),
+          ),
         ),
         SizedBox(width: 12.w),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: TextStyle(fontSize: 11.sp, color: AppColors.textMuted)),
+            Text(
+              label,
+              style: TextStyle(fontSize: 11.sp, color: AppColors.textMuted),
+            ),
             Text(
               value,
               style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w700),
@@ -198,45 +218,50 @@ class CheckoutPage extends StatelessWidget {
     );
   }
 
-  Widget _buildPaymentMethodSelector() {
-    return Container(
-      padding: EdgeInsets.all(15.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
-            decoration: BoxDecoration(
-              color: AppColors.surfaceLow,
-              borderRadius: BorderRadius.circular(8.r),
+  Widget _buildPaymentMethodSelector(BuildContext context) {
+    return InkWell(
+      onTap: () =>
+          _showSnackBar(context, 'QRIS dipilih sebagai metode pembayaran.'),
+      borderRadius: BorderRadius.circular(20.r),
+      child: Container(
+        padding: EdgeInsets.all(15.w),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 15,
+              offset: const Offset(0, 5),
             ),
-            child: Text(
-              'QRIS',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 12.sp,
-                color: AppColors.primary,
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceLow,
+                borderRadius: BorderRadius.circular(8.r),
+              ),
+              child: Text(
+                'QRIS',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12.sp,
+                  color: AppColors.primary,
+                ),
               ),
             ),
-          ),
-          SizedBox(width: 15.w),
-          Text(
-            'Bayar Cepat via QRIS',
-            style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w600),
-          ),
-          const Spacer(),
-          Icon(Icons.arrow_forward_ios, size: 12.sp, color: Colors.grey),
-        ],
+            SizedBox(width: 15.w),
+            Text(
+              'Bayar Cepat via QRIS',
+              style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w600),
+            ),
+            const Spacer(),
+            Icon(Icons.arrow_forward_ios, size: 12.sp, color: Colors.grey),
+          ],
+        ),
       ),
     );
   }
@@ -393,7 +418,9 @@ class CheckoutPage extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.r),
+                ),
                 elevation: 0,
               ),
               child: Text(
@@ -403,6 +430,20 @@ class CheckoutPage extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: AppColors.primary,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        margin: EdgeInsets.all(20.w),
       ),
     );
   }
