@@ -101,11 +101,11 @@ class _HomePromoBannerState extends State<HomePromoBanner> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [promo['color'], promo['color'].withOpacity(0.8)],
+          colors: [promo['color'], promo['color'].withValues(alpha: 0.8)],
         ),
         boxShadow: [
           BoxShadow(
-            color: promo['color'].withOpacity(0.3),
+            color: promo['color'].withValues(alpha: 0.3),
             blurRadius: 10,
             offset: const Offset(0, 6),
           ),
@@ -128,7 +128,11 @@ class _HomePromoBannerState extends State<HomePromoBanner> {
                 Positioned(
                   right: -10.w,
                   bottom: -15.h,
-                  child: Icon(promo['icon'], size: 140.sp, color: Colors.white.withOpacity(0.1)),
+                  child: Icon(
+                    promo['icon'],
+                    size: 140.sp,
+                    color: Colors.white.withValues(alpha: 0.1),
+                  ),
                 ),
 
                 // Konten Teks
@@ -141,9 +145,9 @@ class _HomePromoBannerState extends State<HomePromoBanner> {
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(8.r),
-                          border: Border.all(color: Colors.white.withOpacity(0.2)),
+                          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
                         ),
                         child: Text(
                           promo['tag'],
@@ -170,7 +174,7 @@ class _HomePromoBannerState extends State<HomePromoBanner> {
                           promo['subtitle'],
                           maxLines: 2,
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                             height: 1.3,
                           ),
                         ),
@@ -208,7 +212,7 @@ class _HomePromoBannerState extends State<HomePromoBanner> {
           height: 6.h,
           width: isActive ? 18.w : 6.w,
           decoration: BoxDecoration(
-            color: isActive ? AppColors.primary : AppColors.primary.withOpacity(0.2),
+            color: isActive ? AppColors.primary : AppColors.primary.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(10.r),
           ),
         );

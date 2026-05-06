@@ -17,9 +17,7 @@ class ProfilePage extends StatelessWidget {
     final user = context.watch<AppDataProvider>().user;
 
     return Scaffold(
-      backgroundColor: const Color(
-        0xFFF3F6F9,
-      ), // Warna background lebih 'clean'
+      backgroundColor: const Color(0xFFF3F6F9), // Warna background lebih 'clean'
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Column(
@@ -65,7 +63,7 @@ class ProfilePage extends StatelessWidget {
             gradient: LinearGradient(
               colors: [
                 AppColors.primary,
-                AppColors.primary.withOpacity(0.9),
+                AppColors.primary.withValues(alpha: 0.9),
                 const Color(0xFF4A90E2), // Aksen warna biru modern
               ],
               begin: Alignment.topLeft,
@@ -102,7 +100,7 @@ class ProfilePage extends StatelessWidget {
                   border: Border.all(color: Colors.white, width: 4.w),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),
@@ -151,7 +149,7 @@ class ProfilePage extends StatelessWidget {
         border: Border.all(color: Colors.white, width: 1),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFE0E5EC).withOpacity(0.5),
+            color: const Color(0xFFE0E5EC).withValues(alpha: 0.5),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -184,7 +182,7 @@ class ProfilePage extends StatelessWidget {
         Container(
           padding: EdgeInsets.all(8.w),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10.r),
           ),
           child: FaIcon(icon, size: 14.sp, color: color),
@@ -214,10 +212,7 @@ class ProfilePage extends StatelessWidget {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 24.w),
       padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 10.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24.r),
-      ),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24.r)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
@@ -237,10 +232,7 @@ class ProfilePage extends StatelessWidget {
             Icons.favorite_outline_rounded,
             "Favorit",
             Colors.pink,
-            () => _showSnackBar(
-              context,
-              "Venue favorit berhasil disinkronkan untuk demo.",
-            ),
+            () => _showSnackBar(context, "Venue favorit berhasil disinkronkan untuk demo."),
           ),
           _actionButton(
             context,
@@ -283,7 +275,7 @@ class ProfilePage extends StatelessWidget {
               width: 50.w,
               height: 50.w,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: color, size: 24.sp),
@@ -306,10 +298,7 @@ class ProfilePage extends StatelessWidget {
   Widget _buildMenuCard(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 24.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24.r),
-      ),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24.r)),
       child: Column(
         children: [
           _menuItem(
@@ -349,18 +338,13 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _menuItem(
-    dynamic icon,
-    String title,
-    Color color,
-    VoidCallback onTap,
-  ) {
+  Widget _menuItem(dynamic icon, String title, Color color, VoidCallback onTap) {
     return ListTile(
       contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 4.h),
       leading: Container(
         padding: EdgeInsets.all(10.w),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12.r),
         ),
         child: FaIcon(icon, size: 16.sp, color: color),
@@ -373,11 +357,7 @@ class ProfilePage extends StatelessWidget {
           color: const Color(0xFF2D3436),
         ),
       ),
-      trailing: Icon(
-        Icons.arrow_forward_ios_rounded,
-        size: 14.sp,
-        color: Colors.grey.shade400,
-      ),
+      trailing: Icon(Icons.arrow_forward_ios_rounded, size: 14.sp, color: Colors.grey.shade400),
       onTap: onTap,
     );
   }
@@ -390,19 +370,13 @@ class ProfilePage extends StatelessWidget {
         onPressed: () => _confirmLogout(context),
         style: TextButton.styleFrom(
           padding: EdgeInsets.symmetric(vertical: 16.h),
-          backgroundColor: Colors.red.withOpacity(0.05),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.r),
-          ),
+          backgroundColor: Colors.red.withValues(alpha: 0.05),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
         ),
         icon: const Icon(Icons.logout_rounded, color: Colors.redAccent),
         label: Text(
           "Keluar dari Aplikasi",
-          style: TextStyle(
-            color: Colors.redAccent,
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w700,
-          ),
+          style: TextStyle(color: Colors.redAccent, fontSize: 14.sp, fontWeight: FontWeight.w700),
         ),
       ),
     );
@@ -425,12 +399,8 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _menuDivider() => Divider(
-    height: 1,
-    indent: 70.w,
-    endIndent: 20.w,
-    color: Colors.grey.shade50,
-  );
+  Widget _menuDivider() =>
+      Divider(height: 1, indent: 70.w, endIndent: 20.w, color: Colors.grey.shade50);
 
   void _showSnackBar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -438,9 +408,7 @@ class ProfilePage extends StatelessWidget {
         content: Text(message),
         behavior: SnackBarBehavior.floating,
         backgroundColor: AppColors.primary,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.r),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
         margin: EdgeInsets.all(20.w),
       ),
     );
@@ -452,12 +420,7 @@ class ProfilePage extends StatelessWidget {
       builder: (context) => AlertDialog(
         title: Text(title),
         content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Tutup"),
-          ),
-        ],
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("Tutup"))],
       ),
     );
   }
@@ -469,10 +432,7 @@ class ProfilePage extends StatelessWidget {
         title: const Text("Keluar dari akun?"),
         content: const Text("Kamu akan kembali ke halaman awal aplikasi."),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text("Batal"),
-          ),
+          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text("Batal")),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(dialogContext);

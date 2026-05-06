@@ -46,12 +46,8 @@ class HomeCategoryList extends StatelessWidget {
                         category.name,
                         style: theme.textTheme.labelMedium?.copyWith(
                           fontSize: 12.sp,
-                          fontWeight: isSelected
-                              ? FontWeight.w800
-                              : FontWeight.w600,
-                          color: isSelected
-                              ? AppColors.primary
-                              : AppColors.textSecondary,
+                          fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                          color: isSelected ? AppColors.primary : AppColors.textSecondary,
                         ),
                       ),
                     ],
@@ -77,21 +73,19 @@ class HomeCategoryList extends StatelessWidget {
         boxShadow: [
           if (isSelected)
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.3),
+              color: AppColors.primary.withValues(alpha: 0.3),
               blurRadius: 10,
               offset: const Offset(0, 5),
             )
           else
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
+              color: Colors.black.withValues(alpha: 0.03),
               blurRadius: 5,
               offset: const Offset(0, 2),
             ),
         ],
         border: Border.all(
-          color: isSelected
-              ? AppColors.primary.withOpacity(0.1)
-              : Colors.transparent,
+          color: isSelected ? AppColors.primary.withValues(alpha: 0.1) : Colors.transparent,
           width: 4,
         ),
       ),

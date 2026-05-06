@@ -14,11 +14,7 @@ class VenueCardNearby extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Format harga ke Rupiah
-    final currencyFormat = NumberFormat.currency(
-      locale: 'id',
-      symbol: 'Rp',
-      decimalDigits: 0,
-    );
+    final currencyFormat = NumberFormat.currency(locale: 'id', symbol: 'Rp', decimalDigits: 0);
 
     return Container(
       margin: EdgeInsets.only(bottom: 16.h),
@@ -27,7 +23,7 @@ class VenueCardNearby extends StatelessWidget {
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 15,
             offset: const Offset(0, 6),
           ),
@@ -41,9 +37,7 @@ class VenueCardNearby extends StatelessWidget {
           child: InkWell(
             onTap: onTap,
             child: Padding(
-              padding: EdgeInsets.all(
-                10.w,
-              ), // Sedikit lebih rapat agar info lebih luas
+              padding: EdgeInsets.all(10.w), // Sedikit lebih rapat agar info lebih luas
               child: Row(
                 children: [
                   // --- AREA GAMBAR ---
@@ -80,21 +74,14 @@ class VenueCardNearby extends StatelessWidget {
                             ),
                             // Rating Badge yang lebih "pills" style
                             Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 6.w,
-                                vertical: 2.h,
-                              ),
+                              padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
                               decoration: BoxDecoration(
-                                color: Colors.orange.withOpacity(0.1),
+                                color: Colors.orange.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(20.r),
                               ),
                               child: Row(
                                 children: [
-                                  Icon(
-                                    Icons.star_rounded,
-                                    size: 14.sp,
-                                    color: Colors.orange,
-                                  ),
+                                  Icon(Icons.star_rounded, size: 14.sp, color: Colors.orange),
                                   Text(
                                     ' ${venue.rating}',
                                     style: TextStyle(
@@ -113,19 +100,12 @@ class VenueCardNearby extends StatelessWidget {
                         // Lokasi
                         Row(
                           children: [
-                            Icon(
-                              Icons.location_on_outlined,
-                              size: 13.sp,
-                              color: Colors.grey,
-                            ),
+                            Icon(Icons.location_on_outlined, size: 13.sp, color: Colors.grey),
                             SizedBox(width: 4.w),
                             Expanded(
                               child: Text(
                                 venue.location,
-                                style: TextStyle(
-                                  fontSize: 11.sp,
-                                  color: AppColors.textSecondary,
-                                ),
+                                style: TextStyle(fontSize: 11.sp, color: AppColors.textSecondary),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -161,11 +141,7 @@ class VenueCardNearby extends StatelessWidget {
                             ),
                             Row(
                               children: [
-                                Icon(
-                                  Icons.near_me_rounded,
-                                  size: 12.sp,
-                                  color: Colors.blue,
-                                ),
+                                Icon(Icons.near_me_rounded, size: 12.sp, color: Colors.blue),
                                 SizedBox(width: 4.w),
                                 Text(
                                   '${venue.distanceKm} km',

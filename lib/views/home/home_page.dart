@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 // Core & Providers
-import 'package:apkbooking/core/app_colors.dart';
 import 'package:apkbooking/providers/app_data_provider.dart';
 
 // Models
@@ -260,7 +259,7 @@ class _HomePageState extends State<HomePage> {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: venues.length,
-      separatorBuilder: (_, __) => SizedBox(height: 12.h),
+      separatorBuilder: (_, _) => SizedBox(height: 12.h),
       itemBuilder: (context, index) => VenueCardNearby(
         venue: venues[index],
         onTap: () => Navigator.push(

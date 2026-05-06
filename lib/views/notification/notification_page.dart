@@ -129,7 +129,7 @@ class _NotificationPageState extends State<NotificationPage> {
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.2),
+                    color: AppColors.primary.withValues(alpha: 0.2),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
@@ -152,8 +152,8 @@ class _NotificationPageState extends State<NotificationPage> {
                 padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? Colors.white.withOpacity(0.2)
-                      : AppColors.accent.withOpacity(0.1),
+                      ? Colors.white.withValues(alpha: 0.2)
+                      : AppColors.accent.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(6.r),
                 ),
                 child: Text(
@@ -220,10 +220,12 @@ class _NotificationCard extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(16.w),
         decoration: BoxDecoration(
-          color: item.isUnread ? AppColors.surfaceLowest : AppColors.surfaceLowest.withOpacity(0.5),
+          color: item.isUnread
+              ? AppColors.surfaceLowest
+              : AppColors.surfaceLowest.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(20.r),
           border: Border.all(
-            color: item.isUnread ? AppColors.primary.withOpacity(0.05) : Colors.transparent,
+            color: item.isUnread ? AppColors.primary.withValues(alpha: 0.05) : Colors.transparent,
             width: 1.5,
           ),
         ),
@@ -283,7 +285,7 @@ class _NotificationCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 12.sp,
                       height: 1.5,
-                      color: AppColors.textSecondary.withOpacity(0.8),
+                      color: AppColors.textSecondary.withValues(alpha: 0.8),
                     ),
                   ),
                 ],

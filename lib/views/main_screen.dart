@@ -44,7 +44,7 @@ class _MainScreenState extends State<MainScreen> {
           borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.08),
+              color: AppColors.primary.withValues(alpha: 0.08),
               blurRadius: 20,
               offset: const Offset(0, -8),
             ),
@@ -57,7 +57,7 @@ class _MainScreenState extends State<MainScreen> {
               currentIndex: _selectedIndex,
               onTap: _onItemTapped,
               selectedItemColor: AppColors.primary,
-              unselectedItemColor: AppColors.textMuted.withOpacity(0.6),
+              unselectedItemColor: AppColors.textMuted.withValues(alpha: 0.6),
               backgroundColor: Colors.transparent,
               elevation: 0,
               type: BottomNavigationBarType.fixed,
@@ -95,7 +95,7 @@ class _MainScreenState extends State<MainScreen> {
         duration: const Duration(milliseconds: 300),
         padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 16.w),
         decoration: BoxDecoration(
-          color: isActive ? AppColors.primary.withOpacity(0.1) : Colors.transparent,
+          color: isActive ? AppColors.primary.withValues(alpha: 0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(12.r),
         ),
         child: FaIcon(
