@@ -31,7 +31,7 @@ class HomeSearchBar extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16.r), // Tambahkan ini agar bayangan rapi
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.06),
+                    color: AppColors.primary.withValues(alpha: 0.06),
                     blurRadius: 15,
                     offset: const Offset(0, 8),
                   ), // Bracket ini yang tadi bermasalah
@@ -54,7 +54,7 @@ class HomeSearchBar extends StatelessWidget {
                   contentPadding: EdgeInsets.symmetric(horizontal: 16.w),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16.r),
-                    borderSide: BorderSide(color: AppColors.primary.withOpacity(0.08)),
+                    borderSide: BorderSide(color: AppColors.primary.withValues(alpha: 0.08)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16.r),
@@ -86,7 +86,7 @@ class HomeSearchBar extends StatelessWidget {
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
+            color: AppColors.primary.withValues(alpha: 0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),

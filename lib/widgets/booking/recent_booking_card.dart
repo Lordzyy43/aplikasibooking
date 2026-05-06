@@ -28,7 +28,7 @@ class RecentBookingCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20.r), // Lebih round agar modern
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
+            color: AppColors.primary.withValues(alpha: 0.3),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -41,7 +41,10 @@ class RecentBookingCard extends StatelessWidget {
           Positioned(
             right: -20.w,
             top: -20.h,
-            child: CircleAvatar(radius: 60.r, backgroundColor: Colors.white.withOpacity(0.05)),
+            child: CircleAvatar(
+              radius: 60.r,
+              backgroundColor: Colors.white.withValues(alpha: 0.05),
+            ),
           ),
 
           Padding(
@@ -55,7 +58,7 @@ class RecentBookingCard extends StatelessWidget {
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
+                        color: Colors.white.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(30.r),
                         border: Border.all(color: Colors.white24),
                       ),
@@ -104,14 +107,14 @@ class RecentBookingCard extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: 16.h),
-                Divider(color: Colors.white.withOpacity(0.1), thickness: 1),
+                Divider(color: Colors.white.withValues(alpha: 0.1), thickness: 1),
                 SizedBox(height: 12.h),
                 Row(
                   children: [
                     Container(
                       padding: EdgeInsets.all(6.w),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
+                        color: Colors.white.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -124,7 +127,7 @@ class RecentBookingCard extends StatelessWidget {
                     Text(
                       'ID: #${booking.id}',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                         fontSize: 13.sp,
                         fontWeight: FontWeight.w600,
                       ),
@@ -136,7 +139,7 @@ class RecentBookingCard extends StatelessWidget {
                       },
                       style: TextButton.styleFrom(
                         padding: EdgeInsets.symmetric(horizontal: 12.w),
-                        backgroundColor: Colors.white.withOpacity(0.1),
+                        backgroundColor: Colors.white.withValues(alpha: 0.1),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
                       ),
                       child: Text(

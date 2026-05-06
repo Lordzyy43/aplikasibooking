@@ -16,19 +16,13 @@ class VenueCardRecommended extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: 220.w,
-        margin: EdgeInsets.only(
-          right: 16.w,
-          bottom: 8.h,
-          top: 4.h,
-        ), // Memberi ruang untuk shadow
+        margin: EdgeInsets.only(right: 16.w, bottom: 8.h, top: 4.h), // Memberi ruang untuk shadow
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(
-            20.r,
-          ), // Lebih rounded agar modern
+          borderRadius: BorderRadius.circular(20.r), // Lebih rounded agar modern
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
+              color: Colors.black.withValues(alpha: 0.06),
               blurRadius: 15,
               offset: const Offset(0, 8),
             ),
@@ -42,9 +36,7 @@ class VenueCardRecommended extends StatelessWidget {
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(20.r),
-                  ),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
                   child: AppRemoteImage(
                     imageUrl: venue.imageUrl,
                     height: 130.h,
@@ -56,28 +48,18 @@ class VenueCardRecommended extends StatelessWidget {
                   top: 10.h,
                   right: 10.w,
                   child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 8.w,
-                      vertical: 4.h,
-                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withValues(alpha: 0.9),
                       borderRadius: BorderRadius.circular(12.r),
                     ),
                     child: Row(
                       children: [
-                        Icon(
-                          Icons.star_rounded,
-                          size: 14.sp,
-                          color: Colors.orange,
-                        ),
+                        Icon(Icons.star_rounded, size: 14.sp, color: Colors.orange),
                         SizedBox(width: 2.w),
                         Text(
                           venue.rating.toString(),
-                          style: TextStyle(
-                            fontSize: 11.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -95,8 +77,7 @@ class VenueCardRecommended extends StatelessWidget {
                     venue.name,
                     style: TextStyle(
                       fontSize: 15.sp,
-                      fontWeight:
-                          FontWeight.w800, // Lebih tebal sesuai tren UI terbaru
+                      fontWeight: FontWeight.w800, // Lebih tebal sesuai tren UI terbaru
                       color: AppColors.textPrimary,
                       letterSpacing: -0.3,
                     ),
@@ -108,11 +89,7 @@ class VenueCardRecommended extends StatelessWidget {
                   // Lokasi
                   Row(
                     children: [
-                      Icon(
-                        Icons.location_on_outlined,
-                        size: 13.sp,
-                        color: AppColors.textSecondary,
-                      ),
+                      Icon(Icons.location_on_outlined, size: 13.sp, color: AppColors.textSecondary),
                       SizedBox(width: 4.w),
                       Expanded(
                         child: Text(
@@ -161,7 +138,7 @@ class VenueCardRecommended extends StatelessWidget {
                       Container(
                         padding: EdgeInsets.all(4.r),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1),
+                          color: AppColors.primary.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(

@@ -1,54 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:apkbooking/models/user_model.dart';
-// import 'package:apkbooking/services/api_client.dart'; // Nanti diaktifkan kalau sudah konek API
+// import 'package:apkbooking/services/api_client.dart'; // Aktifkan nanti kalau sudah konek API
 
 class AuthProvider extends ChangeNotifier {
   UserModel? _user;
   bool _isLoading = false;
   String? _errorMessage;
 
-  // Getters
   UserModel? get user => _user;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get isAuthenticated => _user != null;
 
-  // Fungsi Login
+  /// Login dummy.
+  /// Untuk sementara, semua email dan password dianggap berhasil.
   Future<bool> login(String email, String password) async {
     _setLoading(true);
-    _errorMessage = null;
+    _clearError();
 
     try {
-      // --- SIMULASI API CALL ---
-      // Nantinya kamu ganti dengan: await _apiClient.post('/login', ...)
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 1));
 
-      if (email == "john@example.com" && password == "password123") {
-        _user = UserModel(
-          id: "USR-001", // ID unik untuk John
-          name: "John Doe",
-          email: email,
-          phone: "08123456789",
-          avatarUrl: "assets/Avatar/Avatar.png",
-          walletBalance: 50000,
-          points: 100,
-        );
+      final cleanEmail = email.trim();
 
-        _setLoading(false);
-        return true;
-      } else {
-        _errorMessage = "Email atau password salah!";
-        _setLoading(false);
-        return false;
-      }
-    } catch (e) {
-      _errorMessage = "Terjadi kesalahan jaringan.";
-      _setLoading(false);
+      _user = UserModel(
+        id: _generateDummyUserId(),
+        name: _getNameFromEmail(cleanEmail),
+        email: cleanEmail.isNotEmpty ? cleanEmail : 'user@example.com',
+        phone: '08123456789',
+        avatarUrl: 'assets/Avatar/Avatar.png',
+        walletBalance: 50000,
+        points: 100,
+      );
+
+      return true;
+    } catch (_) {
+      _errorMessage = 'Terjadi kesalahan saat login.';
       return false;
+    } finally {
+      _setLoading(false);
     }
   }
 
-  // Fungsi Register
+  /// Register dummy.
+  /// Setelah register berhasil, user langsung dianggap login.
   Future<bool> register({
     required String name,
     required String email,
@@ -56,30 +51,111 @@ class AuthProvider extends ChangeNotifier {
     required String password,
   }) async {
     _setLoading(true);
+    _clearError();
 
     try {
-      // Simulasi delay daftar
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 1));
 
-      // Logika simpan ke database (simulasi)
-      _setLoading(false);
+      _user = UserModel(
+        id: _generateDummyUserId(),
+        name: name.trim().isNotEmpty ? name.trim() : 'User Aerobook',
+        email: email.trim().isNotEmpty ? email.trim() : 'user@example.com',
+        phone: phone.trim().isNotEmpty ? phone.trim() : '08123456789',
+        avatarUrl: 'assets/Avatar/Avatar.png',
+        walletBalance: 0,
+        points: 0,
+      );
+
       return true;
-    } catch (e) {
-      _errorMessage = e.toString();
-      _setLoading(false);
+    } catch (_) {
+      _errorMessage = 'Terjadi kesalahan saat register.';
       return false;
+    } finally {
+      _setLoading(false);
     }
   }
 
-  // Fungsi Logout
+  /// Update profile dummy.
+  /// Berguna kalau nanti ada halaman edit profil.
+  Future<bool> updateProfile({
+    required String name,
+    required String email,
+    required String phone,
+  }) async {
+    if (_user == null) {
+      _errorMessage = 'User belum login.';
+      notifyListeners();
+      return false;
+    }
+
+    _setLoading(true);
+    _clearError();
+
+    try {
+      await Future.delayed(const Duration(milliseconds: 800));
+
+      _user = UserModel(
+        id: _user!.id,
+        name: name.trim().isNotEmpty ? name.trim() : _user!.name,
+        email: email.trim().isNotEmpty ? email.trim() : _user!.email,
+        phone: phone.trim().isNotEmpty ? phone.trim() : _user!.phone,
+        avatarUrl: _user!.avatarUrl,
+        walletBalance: _user!.walletBalance,
+        points: _user!.points,
+      );
+
+      return true;
+    } catch (_) {
+      _errorMessage = 'Terjadi kesalahan saat update profil.';
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  /// Logout user.
   void logout() {
     _user = null;
+    _clearError();
     notifyListeners();
   }
 
-  // Helper untuk set loading state
+  /// Hapus pesan error secara manual.
+  void clearError() {
+    _clearError();
+    notifyListeners();
+  }
+
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
+  }
+
+  void _clearError() {
+    _errorMessage = null;
+  }
+
+  String _generateDummyUserId() {
+    return 'USR-${DateTime.now().millisecondsSinceEpoch}';
+  }
+
+  String _getNameFromEmail(String email) {
+    if (email.isEmpty || !email.contains('@')) {
+      return 'User Aerobook';
+    }
+
+    final username = email.split('@').first;
+
+    if (username.isEmpty) {
+      return 'User Aerobook';
+    }
+
+    return username
+        .split(RegExp(r'[._-]'))
+        .where((part) => part.isNotEmpty)
+        .map((part) {
+          return part[0].toUpperCase() + part.substring(1).toLowerCase();
+        })
+        .join(' ');
   }
 }
