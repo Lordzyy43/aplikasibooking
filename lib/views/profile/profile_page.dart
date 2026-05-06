@@ -17,191 +17,328 @@ class ProfilePage extends StatelessWidget {
     final user = context.watch<AppDataProvider>().user;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF3F6F9), // Warna background lebih 'clean'
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          children: [
-            _buildHeader(user.name, user.email, user.avatarUrl),
-            SizedBox(height: 55.h),
-            _buildStatSection(user.walletBalance, user.points),
-            SizedBox(height: 28.h),
-            _buildSectionTitle("Aktivitas Saya"),
-            _buildQuickActions(context),
-            SizedBox(height: 28.h),
-            _buildSectionTitle("Pengaturan Akun"),
-            _buildMenuCard(context),
-            SizedBox(height: 40.h),
-            _buildLogoutButton(context),
-            SizedBox(height: 20.h),
-            Text(
-              'Versi 1.0.0',
-              style: TextStyle(
-                color: Colors.grey.shade400,
-                fontSize: 11.sp,
-                fontWeight: FontWeight.w500,
-                letterSpacing: 0.5,
-              ),
-            ),
-            SizedBox(height: 30.h),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader(String name, String email, String? avatarUrl) {
-    return Stack(
-      alignment: Alignment.center,
-      clipBehavior: Clip.none,
-      children: [
-        // Premium Mesh Gradient Header
-        Container(
-          width: double.infinity,
-          height: 200.h,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                AppColors.primary,
-                AppColors.primary.withValues(alpha: 0.9),
-                const Color(0xFF4A90E2), // Aksen warna biru modern
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(40.r),
-              bottomRight: Radius.circular(40.r),
-            ),
-          ),
-          child: SafeArea(
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: Text(
-                "Profil",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20.sp,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1,
-                ),
-              ),
-            ),
-          ),
-        ),
-        // Profile Image with Glow effect
-        Positioned(
-          bottom: -45.h,
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        bottom: false,
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: EdgeInsets.fromLTRB(20.w, 14.h, 20.w, 128.h),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 4.w),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(100),
-                  child: AppRemoteImage(
-                    imageUrl: avatarUrl ?? 'assets/Avatar/Avatar.png',
-                    width: 100.w,
-                    height: 100.w,
-                  ),
-                ),
+              _buildProfileHero(
+                context,
+                name: user.name,
+                email: user.email,
+                avatarUrl: user.avatarUrl,
+                balance: user.walletBalance,
+                points: user.points,
               ),
+              SizedBox(height: 22.h),
+              _buildSectionHeader(context, 'Aktivitas Saya'),
               SizedBox(height: 12.h),
-              Text(
-                name,
-                style: TextStyle(
-                  fontSize: 22.sp,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFF2D3436),
-                ),
-              ),
-              Text(
-                email,
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: Colors.grey.shade500,
-                  fontWeight: FontWeight.w400,
+              _buildQuickActions(context),
+              SizedBox(height: 22.h),
+              _buildSectionHeader(context, 'Pengaturan Akun'),
+              SizedBox(height: 12.h),
+              _buildMenuCard(context),
+              SizedBox(height: 22.h),
+              _buildLogoutButton(context),
+              SizedBox(height: 18.h),
+              Center(
+                child: Text(
+                  'Aerobook • Versi 1.0.0',
+                  style: TextStyle(
+                    color: AppColors.textMuted.withValues(alpha: 0.65),
+                    fontSize: 11.sp,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.3,
+                  ),
                 ),
               ),
             ],
           ),
         ),
-      ],
+      ),
     );
   }
 
-  Widget _buildStatSection(int balance, int points) {
+  Widget _buildProfileHero(
+    BuildContext context, {
+    required String name,
+    required String email,
+    required String? avatarUrl,
+    required int balance,
+    required int points,
+  }) {
+    final theme = Theme.of(context);
+    final safeAvatar = avatarUrl == null || avatarUrl.trim().isEmpty
+        ? 'assets/Avatar/Avatar.png'
+        : avatarUrl;
+
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 24.w),
-      padding: EdgeInsets.all(20.w),
+      width: double.infinity,
+      padding: EdgeInsets.all(18.w),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24.r),
-        border: Border.all(color: Colors.white, width: 1),
+        gradient: const LinearGradient(
+          colors: AppColors.primaryGradient,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(30.r),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFE0E5EC).withValues(alpha: 0.5),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+            color: AppColors.primary.withValues(alpha: 0.24),
+            blurRadius: 26,
+            offset: const Offset(0, 14),
           ),
         ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+      child: Stack(
         children: [
-          _buildStatItem(
-            "Saldo Anda",
-            CurrencyFormatter.idr(balance),
-            FontAwesomeIcons.wallet,
-            Colors.indigo,
+          Positioned(
+            right: -42.w,
+            top: -42.h,
+            child: _buildGlowCircle(size: 132.h, color: Colors.white.withValues(alpha: 0.10)),
           ),
-          Container(width: 1.5, height: 40.h, color: Colors.grey.shade100),
-          _buildStatItem(
-            "Poin Member",
-            points.toString(),
-            FontAwesomeIcons.crown,
-            Colors.amber.shade700,
+          Positioned(
+            left: -44.w,
+            bottom: -46.h,
+            child: _buildGlowCircle(
+              size: 124.h,
+              color: AppColors.accentGold.withValues(alpha: 0.16),
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    height: 46.h,
+                    width: 46.h,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.16),
+                      borderRadius: BorderRadius.circular(16.r),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
+                    ),
+                    child: Icon(Icons.person_rounded, color: Colors.white, size: 24.sp),
+                  ),
+                  SizedBox(width: 12.w),
+                  Expanded(
+                    child: Text(
+                      'Profil Saya',
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        color: Colors.white,
+                        fontSize: 22.sp,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 7.h),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.16),
+                      borderRadius: BorderRadius.circular(999.r),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.20)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.verified_rounded, color: AppColors.accentGold, size: 14.sp),
+                        SizedBox(width: 5.w),
+                        Text(
+                          'Demo User',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: Colors.white,
+                            fontSize: 10.5.sp,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 22.h),
+              Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(4.w),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.10),
+                          blurRadius: 18,
+                          offset: const Offset(0, 9),
+                        ),
+                      ],
+                    ),
+                    child: ClipOval(
+                      child: AppRemoteImage(imageUrl: safeAvatar, width: 82.w, height: 82.w),
+                    ),
+                  ),
+                  SizedBox(width: 15.w),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name.trim().isEmpty ? 'User Aerobook' : name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            color: Colors.white,
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: -0.4,
+                          ),
+                        ),
+                        SizedBox(height: 5.h),
+                        Text(
+                          email.trim().isEmpty ? 'user@example.com' : email,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: Colors.white.withValues(alpha: 0.82),
+                            fontSize: 12.5.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(height: 10.h),
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 7.h),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.14),
+                            borderRadius: BorderRadius.circular(999.r),
+                            border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
+                          ),
+                          child: Text(
+                            'Member Aerobook',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: Colors.white,
+                              fontSize: 11.sp,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20.h),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildStatPill(
+                      context,
+                      label: 'Saldo',
+                      value: CurrencyFormatter.idr(balance),
+                      icon: FontAwesomeIcons.wallet,
+                      color: AppColors.accentGold,
+                    ),
+                  ),
+                  SizedBox(width: 10.w),
+                  Expanded(
+                    child: _buildStatPill(
+                      context,
+                      label: 'Poin',
+                      value: points.toString(),
+                      icon: FontAwesomeIcons.crown,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  Widget _buildStatItem(String label, String value, dynamic icon, Color color) {
-    return Column(
+  Widget _buildStatPill(
+    BuildContext context, {
+    required String label,
+    required String value,
+    required FaIconData icon,
+    required Color color,
+  }) {
+    final theme = Theme.of(context);
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.13),
+        borderRadius: BorderRadius.circular(18.r),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.16)),
+      ),
+      child: Row(
+        children: [
+          FaIcon(icon, color: color, size: 17.sp),
+          SizedBox(width: 8.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: Colors.white.withValues(alpha: 0.72),
+                    fontSize: 10.5.sp,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                SizedBox(height: 2.h),
+                Text(
+                  value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: Colors.white,
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(BuildContext context, String title) {
+    final theme = Theme.of(context);
+
+    return Row(
       children: [
         Container(
-          padding: EdgeInsets.all(8.w),
+          height: 22.h,
+          width: 5.w,
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(10.r),
-          ),
-          child: FaIcon(icon, size: 14.sp, color: color),
-        ),
-        SizedBox(height: 10.h),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 11.sp,
-            color: Colors.grey.shade400,
-            fontWeight: FontWeight.w600,
+            gradient: const LinearGradient(
+              colors: AppColors.primaryGradient,
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+            borderRadius: BorderRadius.circular(999.r),
           ),
         ),
+        SizedBox(width: 9.w),
         Text(
-          value,
-          style: TextStyle(
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w800,
-            color: const Color(0xFF2D3436),
+          title,
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontSize: 18.sp,
+            fontWeight: FontWeight.w900,
+            color: AppColors.textPrimary,
+            letterSpacing: -0.2,
           ),
         ),
       ],
@@ -210,47 +347,70 @@ class ProfilePage extends StatelessWidget {
 
   Widget _buildQuickActions(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 24.w),
-      padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 10.w),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24.r)),
+      width: double.infinity,
+      padding: EdgeInsets.all(12.w),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceLowest,
+        borderRadius: BorderRadius.circular(26.r),
+        border: Border.all(color: AppColors.divider.withValues(alpha: 0.28)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.055),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _actionButton(
-            context,
-            Icons.history_rounded,
-            "Riwayat",
-            Colors.orange,
-            () => _showInfoDialog(
+          Expanded(
+            child: _actionButton(
               context,
-              "Riwayat Aktivitas",
-              "Riwayat booking lengkap bisa dibuka dari tab Booking.",
+              icon: Icons.history_rounded,
+              label: 'Riwayat',
+              color: AppColors.warning,
+              onTap: () => _showInfoSheet(
+                context,
+                icon: Icons.history_rounded,
+                color: AppColors.warning,
+                title: 'Riwayat Aktivitas',
+                message: 'Riwayat booking lengkap bisa dibuka dari tab Bookings.',
+              ),
             ),
           ),
-          _actionButton(
-            context,
-            Icons.favorite_outline_rounded,
-            "Favorit",
-            Colors.pink,
-            () => _showSnackBar(context, "Venue favorit berhasil disinkronkan untuk demo."),
-          ),
-          _actionButton(
-            context,
-            Icons.confirmation_number_outlined,
-            "Promo",
-            Colors.teal,
-            () => _showInfoDialog(
+          Expanded(
+            child: _actionButton(
               context,
-              "Promo Tersedia",
-              "Gunakan kode ARENA30 untuk simulasi promo 30%.",
+              icon: Icons.favorite_outline_rounded,
+              label: 'Favorit',
+              color: AppColors.accentRose,
+              onTap: () =>
+                  _showSnackBar(context, 'Venue favorit berhasil disinkronkan untuk demo.'),
             ),
           ),
-          _actionButton(
-            context,
-            Icons.star_outline_rounded,
-            "Ulasan",
-            Colors.purple,
-            () => _showSnackBar(context, "Kamu belum memiliki ulasan aktif."),
+          Expanded(
+            child: _actionButton(
+              context,
+              icon: Icons.confirmation_number_outlined,
+              label: 'Promo',
+              color: AppColors.accentTeal,
+              onTap: () => _showInfoSheet(
+                context,
+                icon: Icons.confirmation_number_outlined,
+                color: AppColors.accentTeal,
+                title: 'Promo Tersedia',
+                message: 'Gunakan kode ARENA30 untuk simulasi promo 30%.',
+              ),
+            ),
+          ),
+          Expanded(
+            child: _actionButton(
+              context,
+              icon: Icons.star_outline_rounded,
+              label: 'Ulasan',
+              color: const Color(0xFF8B5CF6),
+              onTap: () => _showSnackBar(context, 'Kamu belum memiliki ulasan aktif.'),
+            ),
           ),
         ],
       ),
@@ -258,38 +418,49 @@ class ProfilePage extends StatelessWidget {
   }
 
   Widget _actionButton(
-    BuildContext context,
-    IconData icon,
-    String label,
-    Color color,
-    VoidCallback onTap,
-  ) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(18.r),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 4.h),
-        child: Column(
-          children: [
-            Container(
-              width: 50.w,
-              height: 50.w,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(20.r),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20.r),
+        splashColor: color.withValues(alpha: 0.08),
+        highlightColor: color.withValues(alpha: 0.04),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 8.h),
+          child: Column(
+            children: [
+              Container(
+                width: 48.w,
+                height: 48.w,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(17.r),
+                  border: Border.all(color: color.withValues(alpha: 0.12)),
+                ),
+                child: Icon(icon, color: color, size: 23.sp),
               ),
-              child: Icon(icon, color: color, size: 24.sp),
-            ),
-            SizedBox(height: 8.h),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12.sp,
-                fontWeight: FontWeight.w600,
-                color: const Color(0xFF636E72),
+              SizedBox(height: 8.h),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  fontSize: 11.5.sp,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textSecondary,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -297,40 +468,59 @@ class ProfilePage extends StatelessWidget {
 
   Widget _buildMenuCard(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 24.w),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24.r)),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceLowest,
+        borderRadius: BorderRadius.circular(26.r),
+        border: Border.all(color: AppColors.divider.withValues(alpha: 0.28)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.055),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
       child: Column(
         children: [
-          _menuItem(
-            FontAwesomeIcons.userPen,
-            "Informasi Pribadi",
-            Colors.blue,
-            () => _showInfoDialog(
+          _ProfileMenuTile(
+            icon: FontAwesomeIcons.userPen,
+            title: 'Informasi Pribadi',
+            subtitle: 'Nama, email, dan data akun demo',
+            color: AppColors.primary,
+            onTap: () => _showInfoSheet(
               context,
-              "Informasi Pribadi",
-              "Data profil masih menggunakan akun demo.",
+              icon: Icons.person_outline_rounded,
+              color: AppColors.primary,
+              title: 'Informasi Pribadi',
+              message: 'Data profil masih menggunakan akun demo.',
             ),
           ),
           _menuDivider(),
-          _menuItem(
-            FontAwesomeIcons.shield,
-            "Keamanan Akun",
-            Colors.green,
-            () => _showInfoDialog(
+          _ProfileMenuTile(
+            icon: FontAwesomeIcons.shield,
+            title: 'Keamanan Akun',
+            subtitle: 'PIN dan verifikasi akun',
+            color: AppColors.success,
+            onTap: () => _showInfoSheet(
               context,
-              "Keamanan Akun",
-              "PIN dan verifikasi akun akan tersedia saat login backend aktif.",
+              icon: Icons.shield_outlined,
+              color: AppColors.success,
+              title: 'Keamanan Akun',
+              message: 'PIN dan verifikasi akun akan tersedia saat login backend aktif.',
             ),
           ),
           _menuDivider(),
-          _menuItem(
-            FontAwesomeIcons.circleQuestion,
-            "Pusat Bantuan",
-            Colors.orange,
-            () => _showInfoDialog(
+          _ProfileMenuTile(
+            icon: FontAwesomeIcons.circleQuestion,
+            title: 'Pusat Bantuan',
+            subtitle: 'Bantuan booking dan pembayaran',
+            color: AppColors.warning,
+            onTap: () => _showInfoSheet(
               context,
-              "Pusat Bantuan",
-              "Hubungi admin venue jika perlu bantuan booking atau pembayaran.",
+              icon: Icons.support_agent_rounded,
+              color: AppColors.warning,
+              title: 'Pusat Bantuan',
+              message: 'Hubungi admin venue jika perlu bantuan booking atau pembayaran.',
             ),
           ),
         ],
@@ -338,114 +528,345 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _menuItem(dynamic icon, String title, Color color, VoidCallback onTap) {
-    return ListTile(
-      contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 4.h),
-      leading: Container(
-        padding: EdgeInsets.all(10.w),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(12.r),
-        ),
-        child: FaIcon(icon, size: 16.sp, color: color),
-      ),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontSize: 14.sp,
-          fontWeight: FontWeight.w600,
-          color: const Color(0xFF2D3436),
-        ),
-      ),
-      trailing: Icon(Icons.arrow_forward_ios_rounded, size: 14.sp, color: Colors.grey.shade400),
-      onTap: onTap,
+  Widget _menuDivider() {
+    return Divider(
+      height: 1,
+      indent: 72.w,
+      endIndent: 18.w,
+      color: AppColors.divider.withValues(alpha: 0.25),
     );
   }
 
   Widget _buildLogoutButton(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 24.w),
-      width: double.infinity,
-      child: TextButton.icon(
-        onPressed: () => _confirmLogout(context),
-        style: TextButton.styleFrom(
-          padding: EdgeInsets.symmetric(vertical: 16.h),
-          backgroundColor: Colors.red.withValues(alpha: 0.05),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-        ),
-        icon: const Icon(Icons.logout_rounded, color: Colors.redAccent),
-        label: Text(
-          "Keluar dari Aplikasi",
-          style: TextStyle(color: Colors.redAccent, fontSize: 14.sp, fontWeight: FontWeight.w700),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: EdgeInsets.only(left: 30.w, bottom: 12.h),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Text(
-          title,
-          style: TextStyle(
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w800,
-            color: const Color(0xFF2D3436),
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(20.r),
+      child: InkWell(
+        onTap: () => _confirmLogout(context),
+        borderRadius: BorderRadius.circular(20.r),
+        splashColor: AppColors.error.withValues(alpha: 0.08),
+        highlightColor: AppColors.error.withValues(alpha: 0.04),
+        child: Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 15.h),
+          decoration: BoxDecoration(
+            color: AppColors.error.withValues(alpha: 0.06),
+            borderRadius: BorderRadius.circular(20.r),
+            border: Border.all(color: AppColors.error.withValues(alpha: 0.12)),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.logout_rounded, color: AppColors.error, size: 19.sp),
+              SizedBox(width: 8.w),
+              Text(
+                'Keluar dari Aplikasi',
+                style: TextStyle(
+                  color: AppColors.error,
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _menuDivider() =>
-      Divider(height: 1, indent: 70.w, endIndent: 20.w, color: Colors.grey.shade50);
-
   void _showSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: AppColors.primary,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-        margin: EdgeInsets.all(20.w),
-      ),
-    );
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: AppColors.primary,
+          margin: EdgeInsets.all(20.w),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.r)),
+        ),
+      );
   }
 
-  void _showInfoDialog(BuildContext context, String title, String message) {
-    showDialog<void>(
+  void _showInfoSheet(
+    BuildContext context, {
+    required IconData icon,
+    required Color color,
+    required String title,
+    required String message,
+  }) {
+    final theme = Theme.of(context);
+
+    showModalBottomSheet<void>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(title),
-        content: Text(message),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("Tutup"))],
-      ),
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) {
+        return SafeArea(
+          child: Container(
+            width: double.infinity,
+            padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 24.h),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceLowest,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 24,
+                  offset: const Offset(0, -8),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: 4.h,
+                  width: 44.w,
+                  decoration: BoxDecoration(
+                    color: AppColors.divider,
+                    borderRadius: BorderRadius.circular(99.r),
+                  ),
+                ),
+                SizedBox(height: 22.h),
+                Container(
+                  height: 58.h,
+                  width: 58.h,
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(20.r),
+                  ),
+                  child: Icon(icon, color: color, size: 27.sp),
+                ),
+                SizedBox(height: 16.h),
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontSize: 19.sp,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.textPrimary,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+                SizedBox(height: 8.h),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontSize: 13.sp,
+                    height: 1.45,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                SizedBox(height: 22.h),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Mengerti'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
   void _confirmLogout(BuildContext context) {
-    showDialog<void>(
+    final theme = Theme.of(context);
+
+    showModalBottomSheet<void>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text("Keluar dari akun?"),
-        content: const Text("Kamu akan kembali ke halaman awal aplikasi."),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text("Batal")),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              context.read<AuthProvider>().logout();
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (_) => const OnboardingPage()),
-                (route) => false,
-              );
-            },
-            child: const Text("Keluar"),
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Container(
+            width: double.infinity,
+            padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 24.h),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceLowest,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 24,
+                  offset: const Offset(0, -8),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: 4.h,
+                  width: 44.w,
+                  decoration: BoxDecoration(
+                    color: AppColors.divider,
+                    borderRadius: BorderRadius.circular(99.r),
+                  ),
+                ),
+                SizedBox(height: 22.h),
+                Container(
+                  height: 58.h,
+                  width: 58.h,
+                  decoration: BoxDecoration(
+                    color: AppColors.error.withValues(alpha: 0.10),
+                    borderRadius: BorderRadius.circular(20.r),
+                  ),
+                  child: Icon(Icons.logout_rounded, color: AppColors.error, size: 27.sp),
+                ),
+                SizedBox(height: 16.h),
+                Text(
+                  'Keluar dari akun?',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontSize: 19.sp,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.textPrimary,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+                SizedBox(height: 8.h),
+                Text(
+                  'Kamu akan kembali ke halaman awal aplikasi.',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontSize: 13.sp,
+                    height: 1.45,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                SizedBox(height: 22.h),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(sheetContext),
+                        child: const Text('Batal'),
+                      ),
+                    ),
+                    SizedBox(width: 12.w),
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.error,
+                          shadowColor: AppColors.error.withValues(alpha: 0.28),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(sheetContext);
+
+                          context.read<AuthProvider>().logout();
+
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (_) => const OnboardingPage()),
+                            (route) => false,
+                          );
+                        },
+                        child: const Text('Keluar'),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ],
+        );
+      },
+    );
+  }
+
+  Widget _buildGlowCircle({required double size, required Color color}) {
+    return Container(
+      height: size,
+      width: size,
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+    );
+  }
+}
+
+class _ProfileMenuTile extends StatelessWidget {
+  final FaIconData icon;
+  final String title;
+  final String subtitle;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _ProfileMenuTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        splashColor: color.withValues(alpha: 0.08),
+        highlightColor: color.withValues(alpha: 0.04),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 13.h),
+          child: Row(
+            children: [
+              Container(
+                height: 44.h,
+                width: 44.h,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.11),
+                  borderRadius: BorderRadius.circular(16.r),
+                  border: Border.all(color: color.withValues(alpha: 0.10)),
+                ),
+                child: Center(
+                  child: FaIcon(icon, color: color, size: 16.sp),
+                ),
+              ),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontSize: 14.5.sp,
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.textPrimary,
+                        letterSpacing: -0.2,
+                      ),
+                    ),
+                    SizedBox(height: 3.h),
+                    Text(
+                      subtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        fontSize: 11.5.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(width: 8.w),
+              Icon(Icons.arrow_forward_ios_rounded, size: 13.sp, color: AppColors.textMuted),
+            ],
+          ),
+        ),
       ),
     );
   }

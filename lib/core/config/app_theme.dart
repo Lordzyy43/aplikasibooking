@@ -9,7 +9,7 @@ class AppTheme {
         fontSize: 34,
         fontWeight: FontWeight.w800,
         color: AppColors.textPrimary,
-        letterSpacing: -1, // Menambah kesan premium pada judul besar
+        letterSpacing: -1,
       ),
       displayMedium: GoogleFonts.plusJakartaSans(
         fontSize: 28,
@@ -41,22 +41,42 @@ class AppTheme {
       ),
     );
 
+    OutlineInputBorder inputBorder(Color color, {double width = 1}) {
+      return OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: color, width: width),
+      );
+    }
+
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
       primaryColor: AppColors.primary,
-      scaffoldBackgroundColor: AppColors.background, // Background yang lebih bluish
-      // Evolusi ColorScheme agar komponen M3 lebih hidup
+      scaffoldBackgroundColor: AppColors.background,
+
       colorScheme: const ColorScheme.light(
         primary: AppColors.primary,
         onPrimary: Colors.white,
         primaryContainer: AppColors.primaryLight,
         onPrimaryContainer: AppColors.primary,
+
         secondary: AppColors.secondary,
         onSecondary: Colors.white,
-        surface: AppColors.surfaceLowest, // Card & Dialog pakai putih bersih
+        secondaryContainer: AppColors.secondaryContainer,
+        onSecondaryContainer: AppColors.primary,
+
+        tertiary: AppColors.accent,
+        onTertiary: Colors.white,
+
+        surface: AppColors.surfaceLowest,
         surfaceContainerHighest: AppColors.surfaceVariant,
         onSurface: AppColors.textPrimary,
+
+        error: AppColors.error,
+        onError: Colors.white,
+        errorContainer: AppColors.errorContainer,
+        onErrorContainer: AppColors.error,
+
         outline: AppColors.divider,
       ),
 
@@ -64,7 +84,7 @@ class AppTheme {
       dividerColor: AppColors.divider,
 
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.background, // Selaras dengan scaffold
+        backgroundColor: AppColors.background,
         elevation: 0,
         centerTitle: false,
         surfaceTintColor: Colors.transparent,
@@ -76,37 +96,71 @@ class AppTheme {
         ),
       ),
 
-      // Evolusi Input: Lebih "Depth" dan tidak kaku
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.surfaceLowest, // Putih agar kontras dengan background biru
+        fillColor: AppColors.surfaceLowest,
         hintStyle: GoogleFonts.inter(color: AppColors.textMuted, fontSize: 14),
+        labelStyle: GoogleFonts.inter(
+          color: AppColors.textSecondary,
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
+        errorStyle: GoogleFonts.inter(
+          color: AppColors.error,
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+        ),
+        prefixIconColor: AppColors.textMuted,
+        suffixIconColor: AppColors.textMuted,
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: AppColors.divider.withValues(alpha: 0.5)),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: AppColors.divider.withValues(alpha: 0.5)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
-        ),
+        border: inputBorder(AppColors.divider.withValues(alpha: 0.5)),
+        enabledBorder: inputBorder(AppColors.divider.withValues(alpha: 0.5)),
+        focusedBorder: inputBorder(AppColors.primary, width: 1.5),
+        errorBorder: inputBorder(AppColors.error, width: 1.2),
+        focusedErrorBorder: inputBorder(AppColors.error, width: 1.5),
       ),
 
-      // Evolusi Button: Menambah shadow berwarna agar tidak flat
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
+          disabledBackgroundColor: AppColors.divider,
+          disabledForegroundColor: AppColors.textMuted,
           elevation: 8,
-          shadowColor: AppColors.primary.withValues(alpha: 0.4), // Shadow sesuai warna button
+          shadowColor: AppColors.primary.withValues(alpha: 0.4),
           textStyle: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
         ),
+      ),
+
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: AppColors.primary,
+          textStyle: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ),
+
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.primary,
+          side: const BorderSide(color: AppColors.primary),
+          textStyle: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+        ),
+      ),
+
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: AppColors.textPrimary,
+        contentTextStyle: GoogleFonts.inter(
+          color: Colors.white,
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
 
       chipTheme: ChipThemeData(
@@ -127,23 +181,20 @@ class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
 
-      // Evolusi Card: Mempertegas shadow halus
       cardTheme: CardThemeData(
         color: AppColors.surfaceLowest,
-        elevation: 2, // Beri sedikit elevation
+        elevation: 2,
         shadowColor: AppColors.primary.withValues(alpha: 0.05),
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          side: BorderSide(
-            color: AppColors.divider.withValues(alpha: 0.2),
-          ), // Border tipis untuk definisi
+          side: BorderSide(color: AppColors.divider.withValues(alpha: 0.2)),
         ),
       ),
 
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: AppColors.surfaceLowest,
-        elevation: 20, // Agar terlihat terpisah dari konten
+        elevation: 20,
         selectedItemColor: AppColors.primary,
         unselectedItemColor: AppColors.textMuted,
         selectedLabelStyle: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700),

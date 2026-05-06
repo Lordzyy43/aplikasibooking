@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:apkbooking/core/app_colors.dart';
 import 'package:apkbooking/views/history/mybooking_page.dart';
 import 'package:apkbooking/views/home/home_page.dart';
@@ -26,6 +27,14 @@ class _MainScreenState extends State<MainScreen> {
     ProfilePage(),
   ];
 
+  final List<_BottomNavItem> _navItems = const [
+    _BottomNavItem(icon: FontAwesomeIcons.house, label: 'Home'),
+    _BottomNavItem(icon: FontAwesomeIcons.magnifyingGlass, label: 'Explore'),
+    _BottomNavItem(icon: FontAwesomeIcons.calendarCheck, label: 'Bookings'),
+    _BottomNavItem(icon: FontAwesomeIcons.bell, label: 'Alerts'),
+    _BottomNavItem(icon: FontAwesomeIcons.user, label: 'Profile'),
+  ];
+
   void _onItemTapped(int index) {
     if (_selectedIndex == index) return;
     setState(() => _selectedIndex = index);
@@ -33,78 +42,143 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: AppColors.background,
+
+      // Membuat bottom nav terasa floating di atas body.
+      extendBody: true,
+
       body: IndexedStack(index: _selectedIndex, children: _pages),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: AppColors.surfaceLowest,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.08),
-              blurRadius: 20,
-              offset: const Offset(0, -8),
-            ),
-          ],
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-            child: BottomNavigationBar(
-              currentIndex: _selectedIndex,
-              onTap: _onItemTapped,
-              selectedItemColor: AppColors.primary,
-              unselectedItemColor: AppColors.textMuted.withValues(alpha: 0.6),
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              type: BottomNavigationBarType.fixed,
-              showSelectedLabels: true,
-              showUnselectedLabels: true,
-              selectedLabelStyle: theme.textTheme.labelLarge?.copyWith(
-                fontSize: 10.sp,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 0.5,
+
+      bottomNavigationBar: SafeArea(
+        minimum: EdgeInsets.only(left: 14.w, right: 14.w, bottom: 10.h),
+        child: Container(
+          height: 82.h,
+          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 7.h),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceLowest.withValues(alpha: 0.98),
+            borderRadius: BorderRadius.circular(28.r),
+            border: Border.all(color: AppColors.divider.withValues(alpha: 0.45)),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.10),
+                blurRadius: 24,
+                offset: const Offset(0, 10),
               ),
-              unselectedLabelStyle: theme.textTheme.labelLarge?.copyWith(
-                fontSize: 10.sp,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textMuted,
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 18,
+                offset: const Offset(0, -6),
               ),
-              items: [
-                _buildNavItem(FontAwesomeIcons.house, 'Home', 0),
-                _buildNavItem(FontAwesomeIcons.magnifyingGlass, 'Explore', 1),
-                _buildNavItem(FontAwesomeIcons.calendarCheck, 'Bookings', 2),
-                _buildNavItem(FontAwesomeIcons.bell, 'Alerts', 3),
-                _buildNavItem(FontAwesomeIcons.user, 'Profile', 4),
-              ],
-            ),
+            ],
+          ),
+          child: Row(
+            children: List.generate(_navItems.length, (index) {
+              final item = _navItems[index];
+              final isActive = _selectedIndex == index;
+
+              return Expanded(
+                child: _NavButton(
+                  icon: item.icon,
+                  label: item.label,
+                  isActive: isActive,
+                  onTap: () => _onItemTapped(index),
+                ),
+              );
+            }),
           ),
         ),
       ),
     );
   }
+}
 
-  BottomNavigationBarItem _buildNavItem(dynamic iconData, String label, int index) {
-    bool isActive = _selectedIndex == index;
+class _BottomNavItem {
+  final FaIconData icon;
+  final String label;
 
-    return BottomNavigationBarItem(
-      icon: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 16.w),
-        decoration: BoxDecoration(
-          color: isActive ? AppColors.primary.withValues(alpha: 0.1) : Colors.transparent,
-          borderRadius: BorderRadius.circular(12.r),
-        ),
-        child: FaIcon(
-          iconData, // Menggunakan FaIcon agar support FontAwesomeIcons
-          size: 18.sp,
-          color: isActive ? AppColors.primary : AppColors.textMuted,
+  const _BottomNavItem({required this.icon, required this.label});
+}
+
+class _NavButton extends StatelessWidget {
+  final FaIconData icon;
+  final String label;
+  final bool isActive;
+  final VoidCallback onTap;
+
+  const _NavButton({
+    required this.icon,
+    required this.label,
+    required this.isActive,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(22.r),
+        splashColor: AppColors.primary.withValues(alpha: 0.08),
+        highlightColor: AppColors.primary.withValues(alpha: 0.04),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 240),
+          curve: Curves.easeOutCubic,
+          padding: EdgeInsets.symmetric(vertical: 4.h),
+          decoration: BoxDecoration(
+            color: isActive ? AppColors.primary.withValues(alpha: 0.10) : Colors.transparent,
+            borderRadius: BorderRadius.circular(22.r),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 240),
+                curve: Curves.easeOutCubic,
+                height: 28.h,
+                width: isActive ? 42.w : 34.w,
+                decoration: BoxDecoration(
+                  color: isActive ? AppColors.primary : Colors.transparent,
+                  borderRadius: BorderRadius.circular(16.r),
+                  boxShadow: isActive
+                      ? [
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.28),
+                            blurRadius: 12,
+                            offset: const Offset(0, 6),
+                          ),
+                        ]
+                      : [],
+                ),
+                child: Center(
+                  child: FaIcon(
+                    icon,
+                    size: 15.sp,
+                    color: isActive ? Colors.white : AppColors.textMuted,
+                  ),
+                ),
+              ),
+              SizedBox(height: 3.h),
+              Flexible(
+                child: AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 220),
+                  curve: Curves.easeOutCubic,
+                  style: TextStyle(
+                    fontSize: 9.5.sp,
+                    fontWeight: isActive ? FontWeight.w900 : FontWeight.w600,
+                    color: isActive ? AppColors.primary : AppColors.textMuted,
+                    letterSpacing: isActive ? 0.1 : 0,
+                    height: 1.0,
+                  ),
+                  child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-      label: label,
     );
   }
 }

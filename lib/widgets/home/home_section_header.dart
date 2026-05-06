@@ -11,48 +11,74 @@ class HomeSectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Mengambil referensi dari AppTheme yang sudah Sensei buat
     final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
-    final colorScheme = theme.colorScheme;
 
     return Padding(
-      // Kita tambahkan padding horizontal di sini agar HomePage tidak perlu
-      // membungkus setiap header secara manual
       padding: EdgeInsets.symmetric(horizontal: 20.w),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            title,
-            // Gunakan titleLarge dari theme (sudah Plus Jakarta Sans)
-            style: textTheme.titleLarge?.copyWith(
-              // Sedikit override untuk memastikan ketebalan premium
-              fontWeight: FontWeight.w800,
-              fontSize: 18.sp,
-              color: AppColors.textPrimary,
+          Container(
+            height: 22.h,
+            width: 5.w,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: AppColors.primaryGradient,
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+              borderRadius: BorderRadius.circular(99.r),
             ),
           ),
-          if (actionLabel != null)
-            TextButton(
-              onPressed: onTap,
-              style: TextButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
+          SizedBox(width: 9.w),
+          Expanded(
+            child: Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w900,
+                fontSize: 18.sp,
+                color: AppColors.textPrimary,
+                letterSpacing: -0.2,
               ),
-              child: Text(
-                actionLabel!,
-                // Gunakan labelLarge dari theme (sudah Inter)
-                style: textTheme.labelLarge?.copyWith(
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w700,
-                  color: colorScheme.primary,
+            ),
+          ),
+          if (actionLabel != null) ...[
+            SizedBox(width: 10.w),
+            Material(
+              color: AppColors.primaryLight.withValues(alpha: 0.55),
+              borderRadius: BorderRadius.circular(999.r),
+              child: InkWell(
+                onTap: onTap,
+                borderRadius: BorderRadius.circular(999.r),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 7.h),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        actionLabel!,
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          fontSize: 12.5.sp,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                      SizedBox(width: 3.w),
+                      Icon(
+                        actionLabel!.toLowerCase().contains('reset')
+                            ? Icons.refresh_rounded
+                            : Icons.arrow_forward_ios_rounded,
+                        color: AppColors.primary,
+                        size: 11.sp,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
+          ],
         ],
       ),
     );
