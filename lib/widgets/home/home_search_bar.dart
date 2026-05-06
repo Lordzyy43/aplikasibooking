@@ -18,77 +18,110 @@ class HomeSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+      padding: EdgeInsets.fromLTRB(20.w, 14.h, 20.w, 0),
       child: Row(
         children: [
-          Expanded(
-            child: Container(
-              height: 52.h,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16.r), // Tambahkan ini agar bayangan rapi
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.06),
-                    blurRadius: 15,
-                    offset: const Offset(0, 8),
-                  ), // Bracket ini yang tadi bermasalah
-                ],
-              ),
-              child: TextField(
-                controller: controller,
-                onChanged: onChanged,
-                textAlignVertical: TextAlignVertical.center,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
-                decoration: InputDecoration(
-                  hintText: 'Cari lapangan favoritmu...',
-                  hintStyle: theme.textTheme.bodyMedium?.copyWith(color: AppColors.textMuted),
-                  prefixIcon: Icon(Icons.search_rounded, color: AppColors.primary, size: 22.sp),
-                  fillColor: AppColors.surfaceLow,
-                  filled: true,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16.w),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16.r),
-                    borderSide: BorderSide(color: AppColors.primary.withValues(alpha: 0.08)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16.r),
-                    borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
-                  ),
-                  suffixIcon: controller.text.isNotEmpty
-                      ? IconButton(
-                          onPressed: onClear,
-                          icon: Icon(Icons.cancel_rounded, color: AppColors.textMuted, size: 20.sp),
-                        )
-                      : null,
-                ),
-              ),
-            ),
-          ),
+          Expanded(child: _buildSearchField(context)),
           SizedBox(width: 12.w),
-          _buildFilterButton(theme),
+          _buildFilterButton(context),
         ],
       ),
     );
   }
 
-  Widget _buildFilterButton(ThemeData theme) {
+  Widget _buildSearchField(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
-      height: 52.h,
-      width: 52.h,
+      height: 56.h,
       decoration: BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: BorderRadius.circular(16.r),
+        color: AppColors.surfaceLowest,
+        borderRadius: BorderRadius.circular(19.r),
+        border: Border.all(color: AppColors.divider.withValues(alpha: 0.38)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.3),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: AppColors.primary.withValues(alpha: 0.06),
+            blurRadius: 18,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: ValueListenableBuilder<TextEditingValue>(
+        valueListenable: controller,
+        builder: (context, value, child) {
+          final hasText = value.text.trim().isNotEmpty;
+
+          return TextField(
+            controller: controller,
+            onChanged: onChanged,
+            keyboardType: TextInputType.text,
+            textInputAction: TextInputAction.search,
+            textAlignVertical: TextAlignVertical.center,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
+            decoration: InputDecoration(
+              hintText: 'Cari lapangan, venue, atau olahraga...',
+              hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                color: AppColors.textMuted,
+                fontSize: 13.sp,
+                fontWeight: FontWeight.w500,
+              ),
+              prefixIcon: Padding(
+                padding: EdgeInsets.only(left: 4.w),
+                child: Icon(Icons.search_rounded, color: AppColors.primary, size: 23.sp),
+              ),
+              suffixIcon: hasText
+                  ? IconButton(
+                      onPressed: onClear,
+                      splashRadius: 20.r,
+                      icon: Icon(Icons.cancel_rounded, color: AppColors.textMuted, size: 20.sp),
+                    )
+                  : null,
+              filled: true,
+              fillColor: Colors.transparent,
+              contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(19.r),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(19.r),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(19.r),
+                borderSide: BorderSide(
+                  color: AppColors.primary.withValues(alpha: 0.85),
+                  width: 1.4,
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildFilterButton(BuildContext context) {
+    return Container(
+      height: 56.h,
+      width: 56.h,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: AppColors.primaryGradient,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(19.r),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.30),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -96,9 +129,28 @@ class HomeSearchBar extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onFilterTap,
-          borderRadius: BorderRadius.circular(16.r),
-          child: Center(
-            child: Icon(Icons.tune_rounded, color: Colors.white, size: 22.sp),
+          borderRadius: BorderRadius.circular(19.r),
+          splashColor: Colors.white.withValues(alpha: 0.16),
+          highlightColor: Colors.white.withValues(alpha: 0.08),
+          child: Stack(
+            children: [
+              Center(
+                child: Icon(Icons.tune_rounded, color: Colors.white, size: 23.sp),
+              ),
+              Positioned(
+                top: 12.h,
+                right: 12.w,
+                child: Container(
+                  height: 7.h,
+                  width: 7.h,
+                  decoration: BoxDecoration(
+                    color: AppColors.accentGold,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 1.2),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
