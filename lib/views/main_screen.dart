@@ -10,14 +10,16 @@ import 'package:apkbooking/views/profile/profile_page.dart';
 import 'package:apkbooking/views/venue/venue_list_page.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  final int initialIndex;
+
+  const MainScreen({super.key, this.initialIndex = 0});
 
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0;
+  late int _selectedIndex;
 
   final List<Widget> _pages = const [
     HomePage(),
@@ -35,6 +37,27 @@ class _MainScreenState extends State<MainScreen> {
     _BottomNavItem(icon: FontAwesomeIcons.user, label: 'Profile'),
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = _normalizeIndex(widget.initialIndex);
+  }
+
+  @override
+  void didUpdateWidget(covariant MainScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.initialIndex != widget.initialIndex) {
+      _selectedIndex = _normalizeIndex(widget.initialIndex);
+    }
+  }
+
+  int _normalizeIndex(int index) {
+    if (index < 0) return 0;
+    if (index >= _pages.length) return _pages.length - 1;
+    return index;
+  }
+
   void _onItemTapped(int index) {
     if (_selectedIndex == index) return;
     setState(() => _selectedIndex = index);
@@ -44,12 +67,8 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-
-      // Membuat bottom nav terasa floating di atas body.
       extendBody: true,
-
       body: IndexedStack(index: _selectedIndex, children: _pages),
-
       bottomNavigationBar: SafeArea(
         minimum: EdgeInsets.only(left: 14.w, right: 14.w, bottom: 10.h),
         child: Container(
@@ -117,6 +136,7 @@ class _NavButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
+      borderRadius: BorderRadius.circular(22.r),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(22.r),
@@ -125,7 +145,7 @@ class _NavButton extends StatelessWidget {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 240),
           curve: Curves.easeOutCubic,
-          padding: EdgeInsets.symmetric(vertical: 4.h),
+          padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 2.w),
           decoration: BoxDecoration(
             color: isActive ? AppColors.primary.withValues(alpha: 0.10) : Colors.transparent,
             borderRadius: BorderRadius.circular(22.r),
@@ -160,7 +180,7 @@ class _NavButton extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 3.h),
+              SizedBox(height: 4.h),
               Flexible(
                 child: AnimatedDefaultTextStyle(
                   duration: const Duration(milliseconds: 220),
@@ -170,9 +190,12 @@ class _NavButton extends StatelessWidget {
                     fontWeight: isActive ? FontWeight.w900 : FontWeight.w600,
                     color: isActive ? AppColors.primary : AppColors.textMuted,
                     letterSpacing: isActive ? 0.1 : 0,
-                    height: 1.0,
+                    height: 1,
                   ),
-                  child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+                  ),
                 ),
               ),
             ],

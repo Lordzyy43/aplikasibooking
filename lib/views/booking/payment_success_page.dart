@@ -2,7 +2,6 @@ import 'package:apkbooking/core/app_colors.dart';
 import 'package:apkbooking/core/utils/currency_formatter.dart';
 import 'package:apkbooking/models/booking_model.dart';
 import 'package:apkbooking/providers/booking_provider.dart';
-import 'package:apkbooking/views/history/mybooking_page.dart';
 import 'package:apkbooking/views/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -459,7 +458,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                 onPressed: () {
                   Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (context) => const MyBookingPage()),
+                    MaterialPageRoute(builder: (context) => const MainScreen(initialIndex: 2)),
                     (route) => false,
                   );
                 },
@@ -484,7 +483,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                 onPressed: () {
                   Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (context) => const MainScreen()),
+                    MaterialPageRoute(builder: (context) => const MainScreen(initialIndex: 0)),
                     (route) => false,
                   );
                 },
