@@ -19,6 +19,15 @@ class _NotificationPageState extends State<NotificationPage> {
   bool showUnreadOnly = false;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<AppDataProvider>().refreshNotifications();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final provider = context.watch<AppDataProvider>();
 
@@ -34,9 +43,16 @@ class _NotificationPageState extends State<NotificationPage> {
         bottom: false,
         child: Column(
           children: [
-            _buildHeader(context, totalCount: allNotifications.length, unreadCount: unreadCount),
+            _buildHeader(
+              context,
+              totalCount: allNotifications.length,
+              unreadCount: unreadCount,
+            ),
             SizedBox(height: 14.h),
-            _buildFilterSection(unreadCount: unreadCount, totalCount: allNotifications.length),
+            _buildFilterSection(
+              unreadCount: unreadCount,
+              totalCount: allNotifications.length,
+            ),
             SizedBox(height: 10.h),
             Expanded(
               child: AnimatedSwitcher(
@@ -49,14 +65,18 @@ class _NotificationPageState extends State<NotificationPage> {
                           icon: showUnreadOnly
                               ? Icons.mark_email_read_outlined
                               : Icons.notifications_off_outlined,
-                          title: showUnreadOnly ? 'Semua sudah dibaca' : 'Tidak ada notifikasi',
+                          title: showUnreadOnly
+                              ? 'Semua sudah dibaca'
+                              : 'Tidak ada notifikasi',
                           message: showUnreadOnly
                               ? 'Notifikasi yang belum dibaca akan muncul di sini.'
                               : 'Update booking, promo, dan pengingat jadwal akan muncul di sini.',
                         ),
                       )
                     : ListView.separated(
-                        key: ValueKey('list-$showUnreadOnly-${notifications.length}'),
+                        key: ValueKey(
+                          'list-$showUnreadOnly-${notifications.length}',
+                        ),
                         padding: EdgeInsets.fromLTRB(20.w, 4.h, 20.w, 128.h),
                         physics: const BouncingScrollPhysics(),
                         itemCount: notifications.length,
@@ -80,7 +100,11 @@ class _NotificationPageState extends State<NotificationPage> {
     );
   }
 
-  Widget _buildHeader(BuildContext context, {required int totalCount, required int unreadCount}) {
+  Widget _buildHeader(
+    BuildContext context, {
+    required int totalCount,
+    required int unreadCount,
+  }) {
     final theme = Theme.of(context);
 
     return Padding(
@@ -108,7 +132,10 @@ class _NotificationPageState extends State<NotificationPage> {
             Positioned(
               right: -36.w,
               top: -38.h,
-              child: _buildGlowCircle(size: 122.h, color: Colors.white.withValues(alpha: 0.10)),
+              child: _buildGlowCircle(
+                size: 122.h,
+                color: Colors.white.withValues(alpha: 0.10),
+              ),
             ),
             Positioned(
               left: -42.w,
@@ -129,7 +156,9 @@ class _NotificationPageState extends State<NotificationPage> {
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.16),
                         borderRadius: BorderRadius.circular(16.r),
-                        border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.22),
+                        ),
                       ),
                       child: Icon(
                         Icons.notifications_active_rounded,
@@ -173,7 +202,10 @@ class _NotificationPageState extends State<NotificationPage> {
                           onTap: () => _markAllAsRead(context),
                           borderRadius: BorderRadius.circular(14.r),
                           child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 10.w,
+                              vertical: 8.h,
+                            ),
                             child: Text(
                               'Baca',
                               style: theme.textTheme.labelMedium?.copyWith(
@@ -265,7 +297,10 @@ class _NotificationPageState extends State<NotificationPage> {
     );
   }
 
-  Widget _buildFilterSection({required int unreadCount, required int totalCount}) {
+  Widget _buildFilterSection({
+    required int unreadCount,
+    required int totalCount,
+  }) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.w),
       child: Container(
@@ -351,7 +386,11 @@ class _NotificationPageState extends State<NotificationPage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, color: isSelected ? Colors.white : AppColors.textMuted, size: 16.sp),
+              Icon(
+                icon,
+                color: isSelected ? Colors.white : AppColors.textMuted,
+                size: 16.sp,
+              ),
               SizedBox(width: 6.w),
               Flexible(
                 child: Text(
@@ -393,21 +432,24 @@ class _NotificationPageState extends State<NotificationPage> {
   }
 
   void _handleNotificationTap(BuildContext context, NotificationModel item) {
+    context.read<AppDataProvider>().markNotificationRead(item.id);
     _showNotificationDetail(context, item);
   }
 
   void _markAllAsRead(BuildContext context) {
+    context.read<AppDataProvider>().markAllNotificationsRead();
+
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
-          content: const Text(
-            'Fitur tandai semua dibaca akan aktif saat backend/provider sudah disambungkan.',
-          ),
+          content: const Text('Semua notifikasi ditandai sudah dibaca.'),
           behavior: SnackBarBehavior.floating,
           backgroundColor: AppColors.primary,
           margin: EdgeInsets.all(20.w),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.r)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14.r),
+          ),
         ),
       );
   }
@@ -456,7 +498,11 @@ class _NotificationPageState extends State<NotificationPage> {
                     borderRadius: BorderRadius.circular(20.r),
                   ),
                   child: Center(
-                    child: FaIcon(palette.icon, size: 22.sp, color: palette.color),
+                    child: FaIcon(
+                      palette.icon,
+                      size: 22.sp,
+                      color: palette.color,
+                    ),
                   ),
                 ),
                 SizedBox(height: 16.h),
@@ -483,7 +529,10 @@ class _NotificationPageState extends State<NotificationPage> {
                 ),
                 SizedBox(height: 14.h),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 8.h,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.surfaceLow,
                     borderRadius: BorderRadius.circular(999.r),
@@ -533,6 +582,12 @@ class _NotificationPageState extends State<NotificationPage> {
           color: Color(0xFF6366F1),
           background: Color(0xFFEEF2FF),
         );
+      case NotificationType.payment:
+        return const _NotificationPalette(
+          icon: FontAwesomeIcons.wallet,
+          color: AppColors.success,
+          background: AppColors.successContainer,
+        );
     }
   }
 
@@ -550,7 +605,11 @@ class _NotificationCard extends StatelessWidget {
   final _NotificationPalette palette;
   final VoidCallback onTap;
 
-  const _NotificationCard({required this.item, required this.palette, required this.onTap});
+  const _NotificationCard({
+    required this.item,
+    required this.palette,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -578,7 +637,9 @@ class _NotificationCard extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withValues(alpha: item.isUnread ? 0.065 : 0.035),
+                color: AppColors.primary.withValues(
+                  alpha: item.isUnread ? 0.065 : 0.035,
+                ),
                 blurRadius: 18,
                 offset: const Offset(0, 9),
               ),
@@ -671,7 +732,9 @@ class _NotificationCard extends StatelessWidget {
           style: theme.textTheme.titleMedium?.copyWith(
             fontSize: 14.5.sp,
             fontWeight: item.isUnread ? FontWeight.w900 : FontWeight.w800,
-            color: item.isUnread ? AppColors.textPrimary : AppColors.textSecondary,
+            color: item.isUnread
+                ? AppColors.textPrimary
+                : AppColors.textSecondary,
             letterSpacing: -0.2,
             height: 1.25,
           ),
@@ -700,6 +763,8 @@ class _NotificationCard extends StatelessWidget {
         return 'PROMO';
       case NotificationType.reminder:
         return 'REMINDER';
+      case NotificationType.payment:
+        return 'PAYMENT';
     }
   }
 }
@@ -709,5 +774,9 @@ class _NotificationPalette {
   final Color color;
   final Color background;
 
-  const _NotificationPalette({required this.icon, required this.color, required this.background});
+  const _NotificationPalette({
+    required this.icon,
+    required this.color,
+    required this.background,
+  });
 }

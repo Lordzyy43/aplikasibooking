@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'package:apkbooking/core/app_colors.dart';
 import 'package:apkbooking/providers/app_data_provider.dart';
+import 'package:apkbooking/providers/auth_provider.dart';
 
 import 'package:apkbooking/models/venue_model.dart';
 import 'package:apkbooking/models/category_model.dart';
@@ -62,12 +63,19 @@ class _HomePageState extends State<HomePage> {
   }
 
   List<CategoryModel> _buildCategories(AppDataProvider appData) {
-    final sportNames = <String>['All', ...appData.sportsCategories.map((item) => item.toString())];
+    final sportNames = <String>[
+      'All',
+      ...appData.sportsCategories.map((item) => item.toString()),
+    ];
 
     final uniqueSportNames = sportNames.toSet().take(6).toList();
 
     return uniqueSportNames.map((name) {
-      return CategoryModel(id: name.hashCode, name: name, icon: _getCategoryIcon(name));
+      return CategoryModel(
+        id: name.hashCode,
+        name: name,
+        icon: _getCategoryIcon(name),
+      );
     }).toList();
   }
 
@@ -94,15 +102,24 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _openVenueList() {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => const VenueListPage()));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const VenueListPage()),
+    );
   }
 
   void _openBookingHistory() {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => const MyBookingPage()));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const MyBookingPage()),
+    );
   }
 
   void _openVenueDetail(VenueModel venue) {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => VenueDetailPage(venue: venue)));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => VenueDetailPage(venue: venue)),
+    );
   }
 
   void _showCategoryFilterSheet(List<CategoryModel> categories) {
@@ -121,7 +138,9 @@ class _HomePageState extends State<HomePage> {
                 padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 24.h),
                 decoration: BoxDecoration(
                   color: AppColors.surfaceLowest,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(28.r),
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.08),
@@ -166,7 +185,8 @@ class _HomePageState extends State<HomePage> {
                       spacing: 10.w,
                       runSpacing: 10.h,
                       children: categories.map((category) {
-                        final isSelected = tempSelectedCategory == category.name;
+                        final isSelected =
+                            tempSelectedCategory == category.name;
 
                         return ChoiceChip(
                           selected: isSelected,
@@ -176,7 +196,9 @@ class _HomePageState extends State<HomePage> {
                               Icon(
                                 category.icon,
                                 size: 16.sp,
-                                color: isSelected ? Colors.white : AppColors.textSecondary,
+                                color: isSelected
+                                    ? Colors.white
+                                    : AppColors.textSecondary,
                               ),
                               SizedBox(width: 6.w),
                               Text(category.name),
@@ -185,7 +207,9 @@ class _HomePageState extends State<HomePage> {
                           labelStyle: TextStyle(
                             fontSize: 13.sp,
                             fontWeight: FontWeight.w800,
-                            color: isSelected ? Colors.white : AppColors.textSecondary,
+                            color: isSelected
+                                ? Colors.white
+                                : AppColors.textSecondary,
                           ),
                           selectedColor: AppColors.primary,
                           backgroundColor: AppColors.surfaceLow,
@@ -194,7 +218,9 @@ class _HomePageState extends State<HomePage> {
                                 ? AppColors.primary
                                 : AppColors.divider.withValues(alpha: 0.55),
                           ),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16.r),
+                          ),
                           onSelected: (_) {
                             modalSetState(() {
                               tempSelectedCategory = category.name;
@@ -249,6 +275,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final appData = context.watch<AppDataProvider>();
+    final authUser = context.watch<AuthProvider>().user;
 
     if (!appData.isLoaded) {
       return Scaffold(
@@ -272,16 +299,18 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
-    final user = appData.user;
+    final user = authUser ?? appData.user;
     final categories = _buildCategories(appData);
 
     final filteredRecommended = _filterVenues(appData.recommendedVenues);
     final filteredNearby = _filterVenues(appData.nearbyVenues);
 
-    final totalFilteredVenues = filteredRecommended.length + filteredNearby.length;
+    final totalFilteredVenues =
+        filteredRecommended.length + filteredNearby.length;
 
     final recentBooking =
-        appData.upcomingBookings.firstOrNull ?? appData.completedBookings.firstOrNull;
+        appData.upcomingBookings.firstOrNull ??
+        appData.completedBookings.firstOrNull;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -293,7 +322,9 @@ class _HomePageState extends State<HomePage> {
           color: theme.colorScheme.primary,
           backgroundColor: theme.cardColor,
           child: CustomScrollView(
-            physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+            physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics(),
+            ),
             slivers: [
               SliverToBoxAdapter(
                 child: Column(
@@ -356,7 +387,9 @@ class _HomePageState extends State<HomePage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (_) => BookingDetailPage(booking: recentBooking),
+                                      builder: (_) => BookingDetailPage(
+                                        booking: recentBooking,
+                                      ),
                                     ),
                                   );
                                 },
@@ -364,7 +397,9 @@ class _HomePageState extends State<HomePage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (_) => BookingDetailPage(booking: recentBooking),
+                                      builder: (_) => BookingDetailPage(
+                                        booking: recentBooking,
+                                      ),
                                     ),
                                   );
                                 },
@@ -380,7 +415,9 @@ class _HomePageState extends State<HomePage> {
                     ],
 
                     HomeSectionHeader(
-                      title: _hasActiveFilter ? 'Hasil Rekomendasi' : 'Rekomendasi Untukmu',
+                      title: _hasActiveFilter
+                          ? 'Hasil Rekomendasi'
+                          : 'Rekomendasi Untukmu',
                       actionLabel: 'Lihat Semua',
                       onTap: _openVenueList,
                     ),
@@ -411,11 +448,13 @@ class _HomePageState extends State<HomePage> {
     String message;
 
     if (keyword.isNotEmpty && _selectedCategory != 'All') {
-      message = 'Menampilkan $totalVenues venue untuk "$keyword" di kategori $_selectedCategory.';
+      message =
+          'Menampilkan $totalVenues venue untuk "$keyword" di kategori $_selectedCategory.';
     } else if (keyword.isNotEmpty) {
       message = 'Menampilkan $totalVenues venue untuk pencarian "$keyword".';
     } else {
-      message = 'Menampilkan $totalVenues venue untuk kategori $_selectedCategory.';
+      message =
+          'Menampilkan $totalVenues venue untuk kategori $_selectedCategory.';
     }
 
     return Padding(
@@ -437,7 +476,11 @@ class _HomePageState extends State<HomePage> {
                 color: AppColors.surfaceLowest,
                 borderRadius: BorderRadius.circular(14.r),
               ),
-              child: Icon(Icons.tune_rounded, color: AppColors.primary, size: 20.sp),
+              child: Icon(
+                Icons.tune_rounded,
+                color: AppColors.primary,
+                size: 20.sp,
+              ),
             ),
             SizedBox(width: 12.w),
             Expanded(
@@ -461,7 +504,11 @@ class _HomePageState extends State<HomePage> {
                   color: AppColors.primary.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.close_rounded, color: AppColors.primary, size: 18.sp),
+                child: Icon(
+                  Icons.close_rounded,
+                  color: AppColors.primary,
+                  size: 18.sp,
+                ),
               ),
             ),
           ],
@@ -494,7 +541,10 @@ class _HomePageState extends State<HomePage> {
         itemBuilder: (context, index) {
           final venue = venues[index];
 
-          return VenueCardRecommended(venue: venue, onTap: () => _openVenueDetail(venue));
+          return VenueCardRecommended(
+            venue: venue,
+            onTap: () => _openVenueDetail(venue),
+          );
         },
       ),
     );
@@ -519,7 +569,10 @@ class _HomePageState extends State<HomePage> {
       itemBuilder: (context, index) {
         final venue = venues[index];
 
-        return VenueCardNearby(venue: venue, onTap: () => _openVenueDetail(venue));
+        return VenueCardNearby(
+          venue: venue,
+          onTap: () => _openVenueDetail(venue),
+        );
       },
     );
   }

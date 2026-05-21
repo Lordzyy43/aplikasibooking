@@ -3,14 +3,21 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:apkbooking/core/config/app_theme.dart'; // Sesuaikan dengan nama file tema baru
+import 'package:apkbooking/core/config/supabase_config.dart';
 import 'package:apkbooking/providers/app_data_provider.dart';
 import 'package:apkbooking/providers/booking_provider.dart';
 import 'package:apkbooking/providers/auth_provider.dart';
 import 'package:apkbooking/views/auth/onboarding_page.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() {
+Future<void> main() async {
   // Pastikan binding terinisialisasi sebelum melakukan konfigurasi sistem
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Supabase.initialize(
+    url: SupabaseConfig.url,
+    anonKey: SupabaseConfig.anonKey,
+  );
 
   // Set status bar jadi transparan agar menyatu dengan AppBar tema baru
   SystemChrome.setSystemUIOverlayStyle(
@@ -21,14 +28,16 @@ void main() {
   );
 
   // Kunci orientasi ke portrait
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => BookingProvider()),
-        ChangeNotifierProvider(create: (_) => AppDataProvider()..loadInitialData()),
+        ChangeNotifierProvider(
+          create: (_) => AppDataProvider()..loadInitialData(),
+        ),
       ],
       child: const ArenaApp(), // Nama diubah jadi lebih simple
     ),
@@ -55,7 +64,9 @@ class ArenaApp extends StatelessWidget {
           // Memastikan font scaling tidak merusak UI jika user mengubah font size di HP
           builder: (context, child) {
             return MediaQuery(
-              data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.0)),
+              data: MediaQuery.of(
+                context,
+              ).copyWith(textScaler: const TextScaler.linear(1.0)),
               child: child!,
             );
           },

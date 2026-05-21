@@ -1,7 +1,10 @@
 import 'package:apkbooking/core/app_colors.dart';
+import 'package:apkbooking/core/services/supabase_booking_service.dart';
 import 'package:apkbooking/core/utils/currency_formatter.dart';
 import 'package:apkbooking/providers/app_data_provider.dart';
+import 'package:apkbooking/providers/auth_provider.dart';
 import 'package:apkbooking/providers/booking_provider.dart';
+import 'package:apkbooking/views/auth/login_page.dart';
 import 'package:apkbooking/views/booking/payment_page.dart';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
@@ -10,15 +13,24 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class CheckoutPage extends StatelessWidget {
+class CheckoutPage extends StatefulWidget {
   const CheckoutPage({super.key});
 
+  @override
+  State<CheckoutPage> createState() => _CheckoutPageState();
+}
+
+class _CheckoutPageState extends State<CheckoutPage> {
   static const int _serviceFee = 2500;
+  final SupabaseBookingService _bookingService = SupabaseBookingService();
+  bool _isSubmitting = false;
 
   @override
   Widget build(BuildContext context) {
     final bookingProvider = context.watch<BookingProvider>();
-    final user = context.watch<AppDataProvider>().user;
+    final appUser = context.watch<AppDataProvider>().user;
+    final authUser = context.watch<AuthProvider>().user;
+    final user = authUser ?? appUser;
 
     final subtotal = bookingProvider.selectedPrice;
     final fee = _serviceFee;
@@ -85,7 +97,7 @@ class CheckoutPage extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomAction(context, total),
+      bottomNavigationBar: _buildBottomAction(context, total, bookingProvider),
     );
   }
 
@@ -115,7 +127,10 @@ class CheckoutPage extends StatelessWidget {
           Positioned(
             right: -38.w,
             top: -38.h,
-            child: _buildGlowCircle(size: 122.h, color: Colors.white.withValues(alpha: 0.10)),
+            child: _buildGlowCircle(
+              size: 122.h,
+              color: Colors.white.withValues(alpha: 0.10),
+            ),
           ),
           Positioned(
             left: -42.w,
@@ -154,9 +169,15 @@ class CheckoutPage extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.16),
                       borderRadius: BorderRadius.circular(16.r),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.22),
+                      ),
                     ),
-                    child: Icon(Icons.shopping_bag_rounded, color: Colors.white, size: 24.sp),
+                    child: Icon(
+                      Icons.shopping_bag_rounded,
+                      color: Colors.white,
+                      size: 24.sp,
+                    ),
                   ),
                   SizedBox(width: 12.w),
                   Expanded(
@@ -272,7 +293,10 @@ class CheckoutPage extends StatelessWidget {
     );
   }
 
-  Widget _buildFinalSummaryCard(BuildContext context, BookingProvider provider) {
+  Widget _buildFinalSummaryCard(
+    BuildContext context,
+    BookingProvider provider,
+  ) {
     return _buildCard(
       child: Column(
         children: [
@@ -354,11 +378,26 @@ class CheckoutPage extends StatelessWidget {
     return _buildCard(
       child: Column(
         children: [
-          _infoRow(context, label: 'Nama Lengkap', value: name, icon: FontAwesomeIcons.user),
+          _infoRow(
+            context,
+            label: 'Nama Lengkap',
+            value: name,
+            icon: FontAwesomeIcons.user,
+          ),
           SizedBox(height: 15.h),
-          _infoRow(context, label: 'WhatsApp', value: phone, icon: FontAwesomeIcons.whatsapp),
+          _infoRow(
+            context,
+            label: 'WhatsApp',
+            value: phone,
+            icon: FontAwesomeIcons.whatsapp,
+          ),
           SizedBox(height: 15.h),
-          _infoRow(context, label: 'Email', value: email, icon: FontAwesomeIcons.envelope),
+          _infoRow(
+            context,
+            label: 'Email',
+            value: email,
+            icon: FontAwesomeIcons.envelope,
+          ),
         ],
       ),
     );
@@ -424,7 +463,9 @@ class CheckoutPage extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.surfaceLowest,
             borderRadius: BorderRadius.circular(24.r),
-            border: Border.all(color: AppColors.primary.withValues(alpha: 0.12)),
+            border: Border.all(
+              color: AppColors.primary.withValues(alpha: 0.12),
+            ),
             boxShadow: [
               BoxShadow(
                 color: AppColors.primary.withValues(alpha: 0.055),
@@ -508,15 +549,28 @@ class CheckoutPage extends StatelessWidget {
     );
   }
 
-  Widget _buildPriceDetail(BuildContext context, int subtotal, int fee, int total) {
+  Widget _buildPriceDetail(
+    BuildContext context,
+    int subtotal,
+    int fee,
+    int total,
+  ) {
     final theme = Theme.of(context);
 
     return _buildCard(
       child: Column(
         children: [
-          _priceRow(context, label: 'Biaya Sewa (1 Sesi)', price: CurrencyFormatter.idr(subtotal)),
+          _priceRow(
+            context,
+            label: 'Biaya Sewa (1 Sesi)',
+            price: CurrencyFormatter.idr(subtotal),
+          ),
           SizedBox(height: 12.h),
-          _priceRow(context, label: 'Pajak & Layanan', price: CurrencyFormatter.idr(fee)),
+          _priceRow(
+            context,
+            label: 'Pajak & Layanan',
+            price: CurrencyFormatter.idr(fee),
+          ),
           Padding(
             padding: EdgeInsets.symmetric(vertical: 14.h),
             child: DottedLine(
@@ -553,7 +607,11 @@ class CheckoutPage extends StatelessWidget {
     );
   }
 
-  Widget _priceRow(BuildContext context, {required String label, required String price}) {
+  Widget _priceRow(
+    BuildContext context, {
+    required String label,
+    required String price,
+  }) {
     final theme = Theme.of(context);
 
     return Row(
@@ -623,7 +681,11 @@ class CheckoutPage extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomAction(BuildContext context, int total) {
+  Widget _buildBottomAction(
+    BuildContext context,
+    int total,
+    BookingProvider provider,
+  ) {
     final theme = Theme.of(context);
 
     return SafeArea(
@@ -676,21 +738,36 @@ class CheckoutPage extends StatelessWidget {
               height: 54.h,
               width: 166.w,
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const PaymentPage()),
-                  );
-                },
+                onPressed: _isSubmitting
+                    ? null
+                    : () => _handleSubmitBooking(context, provider),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      'Bayar',
-                      style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp),
-                    ),
-                    SizedBox(width: 7.w),
-                    Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 18.sp),
+                    if (_isSubmitting)
+                      SizedBox(
+                        height: 18.w,
+                        width: 18.w,
+                        child: const CircularProgressIndicator(
+                          strokeWidth: 2.4,
+                          color: Colors.white,
+                        ),
+                      )
+                    else ...[
+                      Text(
+                        'Bayar',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 14.sp,
+                        ),
+                      ),
+                      SizedBox(width: 7.w),
+                      Icon(
+                        Icons.arrow_forward_rounded,
+                        color: Colors.white,
+                        size: 18.sp,
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -724,11 +801,18 @@ class CheckoutPage extends StatelessWidget {
   Widget _cardDivider() {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 14.h),
-      child: Divider(height: 1, color: AppColors.divider.withValues(alpha: 0.35)),
+      child: Divider(
+        height: 1,
+        color: AppColors.divider.withValues(alpha: 0.35),
+      ),
     );
   }
 
-  Widget _iconBox({required FaIconData icon, required Color color, bool muted = false}) {
+  Widget _iconBox({
+    required FaIconData icon,
+    required Color color,
+    bool muted = false,
+  }) {
     return Container(
       width: 40.w,
       height: 40.w,
@@ -760,8 +844,81 @@ class CheckoutPage extends StatelessWidget {
           behavior: SnackBarBehavior.floating,
           backgroundColor: AppColors.primary,
           margin: EdgeInsets.all(20.w),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.r)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14.r),
+          ),
         ),
       );
+  }
+
+  Future<void> _handleSubmitBooking(
+    BuildContext context,
+    BookingProvider provider,
+  ) async {
+    final courtId = provider.selectedCourtId;
+    final slotId = provider.selectedSlotId;
+
+    if (courtId == null || slotId == null || !_isUuid(courtId)) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const PaymentPage()),
+      );
+      return;
+    }
+
+    final auth = context.read<AuthProvider>();
+    if (!auth.isAuthenticated) {
+      _showSnackBar(context, 'Masuk dulu sebelum membuat booking.');
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
+
+    try {
+      final booking = await _bookingService.createBooking(
+        courtId: courtId,
+        date: provider.selectedDate,
+        timeSlotIds: [slotId],
+      );
+
+      final payment = await _bookingService.createPayment(
+        bookingId: booking.bookingId,
+        amount: booking.totalPrice,
+      );
+
+      if (!context.mounted) return;
+
+      provider.setRemoteBooking(
+        bookingId: booking.bookingId,
+        bookingCode: booking.bookingCode,
+        totalPrice: booking.totalPrice,
+        paymentId: payment.paymentId,
+      );
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const PaymentPage()),
+      );
+    } catch (_) {
+      if (!context.mounted) return;
+      _showSnackBar(
+        context,
+        'Booking belum bisa dibuat. Cek login dan ketersediaan slot.',
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
+    }
+  }
+
+  bool _isUuid(String value) {
+    return RegExp(
+      r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+    ).hasMatch(value);
   }
 }

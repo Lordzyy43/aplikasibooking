@@ -79,7 +79,10 @@ class _PaymentPageState extends State<PaymentPage> {
             children: [
               _buildPaymentHero(context, total),
               SizedBox(height: 22.h),
-              _buildQrisCard(context, bookingProvider.selectedVenueName ?? 'Aerobook Venue'),
+              _buildQrisCard(
+                context,
+                bookingProvider.selectedVenueName ?? 'Aerobook Venue',
+              ),
               SizedBox(height: 22.h),
               _buildInstructionCard(context),
               SizedBox(height: 22.h),
@@ -96,6 +99,7 @@ class _PaymentPageState extends State<PaymentPage> {
 
   Widget _buildPaymentHero(BuildContext context, int total) {
     final theme = Theme.of(context);
+    final bookingCode = context.watch<BookingProvider>().remoteBookingCode;
 
     return Container(
       width: double.infinity,
@@ -120,7 +124,10 @@ class _PaymentPageState extends State<PaymentPage> {
           Positioned(
             right: -38.w,
             top: -38.h,
-            child: _buildGlowCircle(size: 122.h, color: Colors.white.withValues(alpha: 0.10)),
+            child: _buildGlowCircle(
+              size: 122.h,
+              color: Colors.white.withValues(alpha: 0.10),
+            ),
           ),
           Positioned(
             left: -42.w,
@@ -159,9 +166,15 @@ class _PaymentPageState extends State<PaymentPage> {
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.16),
                       borderRadius: BorderRadius.circular(16.r),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.22),
+                      ),
                     ),
-                    child: Icon(Icons.qr_code_2_rounded, color: Colors.white, size: 25.sp),
+                    child: Icon(
+                      Icons.qr_code_2_rounded,
+                      color: Colors.white,
+                      size: 25.sp,
+                    ),
                   ),
                   SizedBox(width: 12.w),
                   Expanded(
@@ -179,7 +192,9 @@ class _PaymentPageState extends State<PaymentPage> {
                         ),
                         SizedBox(height: 3.h),
                         Text(
-                          'Scan QRIS dan konfirmasi pembayaranmu',
+                          bookingCode == null
+                              ? 'Scan QRIS dan konfirmasi pembayaranmu'
+                              : 'Kode booking #$bookingCode menunggu pembayaran',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.bodySmall?.copyWith(
@@ -201,8 +216,12 @@ class _PaymentPageState extends State<PaymentPage> {
                       context,
                       label: _isExpired ? 'Status' : 'Sisa Waktu',
                       value: _isExpired ? 'Kadaluarsa' : _countdownText(),
-                      icon: _isExpired ? Icons.timer_off_rounded : Icons.timer_outlined,
-                      color: _isExpired ? AppColors.errorContainer : AppColors.accentGold,
+                      icon: _isExpired
+                          ? Icons.timer_off_rounded
+                          : Icons.timer_outlined,
+                      color: _isExpired
+                          ? AppColors.errorContainer
+                          : AppColors.accentGold,
                     ),
                   ),
                   SizedBox(width: 10.w),
@@ -307,12 +326,18 @@ class _PaymentPageState extends State<PaymentPage> {
             decoration: BoxDecoration(
               color: AppColors.primaryLight.withValues(alpha: 0.55),
               borderRadius: BorderRadius.circular(18.r),
-              border: Border.all(color: AppColors.primary.withValues(alpha: 0.10)),
+              border: Border.all(
+                color: AppColors.primary.withValues(alpha: 0.10),
+              ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.qr_code_scanner_rounded, color: AppColors.primary, size: 18.sp),
+                Icon(
+                  Icons.qr_code_scanner_rounded,
+                  color: AppColors.primary,
+                  size: 18.sp,
+                ),
                 SizedBox(width: 8.w),
                 Text(
                   'QRIS Pembayaran',
@@ -331,7 +356,9 @@ class _PaymentPageState extends State<PaymentPage> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(26.r),
-              border: Border.all(color: AppColors.divider.withValues(alpha: 0.35)),
+              border: Border.all(
+                color: AppColors.divider.withValues(alpha: 0.35),
+              ),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.035),
@@ -408,7 +435,11 @@ class _PaymentPageState extends State<PaymentPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionTitle(context, icon: Icons.list_alt_rounded, title: 'Langkah Pembayaran'),
+          _buildSectionTitle(
+            context,
+            icon: Icons.list_alt_rounded,
+            title: 'Langkah Pembayaran',
+          ),
           SizedBox(height: 14.h),
           ...List.generate(steps.length, (index) {
             final isLast = index == steps.length - 1;
@@ -479,7 +510,11 @@ class _PaymentPageState extends State<PaymentPage> {
               color: AppColors.surfaceLowest,
               borderRadius: BorderRadius.circular(15.r),
             ),
-            child: Icon(Icons.receipt_long_rounded, color: AppColors.primary, size: 21.sp),
+            child: Icon(
+              Icons.receipt_long_rounded,
+              color: AppColors.primary,
+              size: 21.sp,
+            ),
           ),
           SizedBox(width: 12.w),
           Expanded(
@@ -520,7 +555,11 @@ class _PaymentPageState extends State<PaymentPage> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.verified_user_outlined, color: AppColors.success, size: 20.sp),
+          Icon(
+            Icons.verified_user_outlined,
+            color: AppColors.success,
+            size: 20.sp,
+          ),
           SizedBox(width: 10.w),
           Expanded(
             child: Text(
@@ -538,7 +577,11 @@ class _PaymentPageState extends State<PaymentPage> {
     );
   }
 
-  Widget _buildSectionTitle(BuildContext context, {required IconData icon, required String title}) {
+  Widget _buildSectionTitle(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+  }) {
     final theme = Theme.of(context);
 
     return Row(
@@ -565,7 +608,11 @@ class _PaymentPageState extends State<PaymentPage> {
     );
   }
 
-  Widget _buildBottomButton(BuildContext context, BookingProvider provider, int total) {
+  Widget _buildBottomButton(
+    BuildContext context,
+    BookingProvider provider,
+    int total,
+  ) {
     final theme = Theme.of(context);
 
     return SafeArea(
@@ -590,7 +637,11 @@ class _PaymentPageState extends State<PaymentPage> {
                 ? null
                 : () {
                     final booking = BookingModel(
-                      id: 'BK-${DateTime.now().millisecondsSinceEpoch}',
+                      id:
+                          provider.remoteBookingCode ??
+                          'BK-${DateTime.now().millisecondsSinceEpoch}',
+                      remoteId: provider.remoteBookingId,
+                      courtId: provider.selectedCourtId,
                       venueName: provider.selectedVenueName ?? '-',
                       venueLocation: provider.selectedVenueLocation ?? '-',
                       venueImageUrl: provider.selectedVenueImageUrl ?? '',
@@ -599,15 +650,25 @@ class _PaymentPageState extends State<PaymentPage> {
                       date: provider.selectedDate,
                       startTime: provider.selectedTime ?? '-',
                       endTime: _endTimeFor(provider.selectedTime),
-                      totalPrice: total,
+                      totalPrice: provider.remoteBookingTotal ?? total,
                       status: BookingStatus.upcoming,
+                      rawStatus: provider.remoteBookingId == null
+                          ? 'confirmed'
+                          : 'pending_payment',
+                      paymentStatus: provider.remoteBookingId == null
+                          ? 'paid'
+                          : 'pending',
+                      paymentMethod: 'qris',
                     );
 
                     context.read<AppDataProvider>().confirmBooking(booking);
 
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => PaymentSuccessPage(booking: booking)),
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            PaymentSuccessPage(booking: booking),
+                      ),
                     );
                   },
             style: ElevatedButton.styleFrom(
@@ -618,7 +679,9 @@ class _PaymentPageState extends State<PaymentPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                  _isExpired ? Icons.timer_off_rounded : Icons.check_circle_outline_rounded,
+                  _isExpired
+                      ? Icons.timer_off_rounded
+                      : Icons.check_circle_outline_rounded,
                   color: _isExpired ? AppColors.textMuted : Colors.white,
                   size: 19.sp,
                 ),

@@ -1,4 +1,5 @@
 import 'package:apkbooking/core/app_colors.dart';
+import 'package:apkbooking/core/services/supabase_booking_service.dart';
 import 'package:apkbooking/core/utils/currency_formatter.dart';
 import 'package:apkbooking/models/venue_model.dart';
 import 'package:apkbooking/providers/booking_provider.dart';
@@ -10,11 +11,35 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:apkbooking/views/booking/checkout_page.dart';
 
-class CourtDetailPage extends StatelessWidget {
+class CourtDetailPage extends StatefulWidget {
   const CourtDetailPage({super.key, required this.venue, required this.court});
 
   final VenueModel venue;
   final VenueCourtModel court;
+
+  @override
+  State<CourtDetailPage> createState() => _CourtDetailPageState();
+}
+
+class _CourtDetailPageState extends State<CourtDetailPage> {
+  final SupabaseBookingService _bookingService = SupabaseBookingService();
+  List<CourtAvailabilitySlot> _availabilitySlots = const [];
+  List<VenueReviewModel> _reviews = const [];
+  bool _isLoadingAvailability = false;
+  bool _isLoadingReviews = false;
+  String? _availabilityError;
+  int _availabilityRequestId = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final provider = context.read<BookingProvider>();
+      _loadAvailability(provider.selectedDate);
+      _loadReviews();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +63,7 @@ class CourtDetailPage extends StatelessWidget {
                   _sectionTitle('Galeri Lapangan'),
                   SizedBox(height: 12.h),
                   MediaGalleryCarousel(
-                    images: court.galleryUrls,
+                    images: widget.court.galleryUrls,
                     height: 210.h,
                     borderRadius: BorderRadius.circular(22.r),
                   ),
@@ -48,6 +73,12 @@ class CourtDetailPage extends StatelessWidget {
                   _sectionTitle('Fasilitas & Spesifikasi'),
                   SizedBox(height: 12.h),
                   _buildSpecs(),
+
+                  SizedBox(height: 30.h),
+
+                  _sectionTitle('Ulasan Lapangan'),
+                  SizedBox(height: 12.h),
+                  _buildReviews(),
 
                   SizedBox(height: 30.h),
 
@@ -146,7 +177,7 @@ class CourtDetailPage extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             AppRemoteImage(
-              imageUrl: court.imageUrl,
+              imageUrl: widget.court.imageUrl,
               width: double.infinity,
               height: double.infinity,
             ),
@@ -171,13 +202,13 @@ class CourtDetailPage extends StatelessWidget {
                 children: [
                   _buildHeroBadge(
                     icon: Icons.star_rounded,
-                    label: venue.rating.toStringAsFixed(1),
+                    label: widget.venue.rating.toStringAsFixed(1),
                     color: AppColors.accentGold,
                   ),
                   SizedBox(width: 10.w),
                   _buildHeroBadge(
                     icon: Icons.sports_tennis_rounded,
-                    label: court.environment,
+                    label: widget.court.environment,
                     color: Colors.white,
                   ),
                 ],
@@ -189,7 +220,11 @@ class CourtDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildHeroBadge({required IconData icon, required String label, required Color color}) {
+  Widget _buildHeroBadge({
+    required IconData icon,
+    required String label,
+    required Color color,
+  }) {
     return Container(
       constraints: BoxConstraints(maxWidth: 155.w),
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
@@ -208,7 +243,11 @@ class CourtDetailPage extends StatelessWidget {
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: Colors.white, fontSize: 12.sp, fontWeight: FontWeight.w900),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w900,
+              ),
             ),
           ),
         ],
@@ -225,7 +264,7 @@ class CourtDetailPage extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                court.name,
+                widget.court.name,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
@@ -247,7 +286,7 @@ class CourtDetailPage extends StatelessWidget {
             Icon(Icons.star_rounded, color: AppColors.accentGold, size: 19.sp),
             SizedBox(width: 4.w),
             Text(
-              venue.rating.toStringAsFixed(1),
+              widget.venue.rating.toStringAsFixed(1),
               style: TextStyle(
                 fontWeight: FontWeight.w900,
                 fontSize: 14.sp,
@@ -257,7 +296,7 @@ class CourtDetailPage extends StatelessWidget {
             SizedBox(width: 5.w),
             Flexible(
               child: Text(
-                '(${venue.reviewCount} ulasan) • ${court.environment}',
+                '(${widget.venue.reviewCount} ulasan) • ${widget.court.environment}',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
@@ -278,7 +317,9 @@ class CourtDetailPage extends StatelessWidget {
       constraints: BoxConstraints(maxWidth: 145.w),
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [AppColors.primaryLight, AppColors.infoContainer]),
+        gradient: const LinearGradient(
+          colors: [AppColors.primaryLight, AppColors.infoContainer],
+        ),
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(color: AppColors.primary.withValues(alpha: 0.10)),
       ),
@@ -288,7 +329,7 @@ class CourtDetailPage extends StatelessWidget {
         text: TextSpan(
           children: [
             TextSpan(
-              text: CurrencyFormatter.idr(court.pricePerHour),
+              text: CurrencyFormatter.idr(widget.court.pricePerHour),
               style: TextStyle(
                 fontSize: 13.sp,
                 fontWeight: FontWeight.w900,
@@ -325,16 +366,151 @@ class CourtDetailPage extends StatelessWidget {
         ],
       ),
       child: Column(
-        children: court.specs.entries.map((entry) {
-          final isLast = entry.key == court.specs.keys.last;
+        children: widget.court.specs.entries.map((entry) {
+          final isLast = entry.key == widget.court.specs.keys.last;
 
           return Column(
             children: [
               _specRow(entry.key, entry.value),
-              if (!isLast) Divider(height: 22.h, color: AppColors.divider.withValues(alpha: 0.35)),
+              if (!isLast)
+                Divider(
+                  height: 22.h,
+                  color: AppColors.divider.withValues(alpha: 0.35),
+                ),
             ],
           );
         }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildReviews() {
+    if (_isLoadingReviews) {
+      return Container(
+        height: 92.h,
+        alignment: Alignment.center,
+        child: SizedBox(
+          height: 26.w,
+          width: 26.w,
+          child: const CircularProgressIndicator(strokeWidth: 2.5),
+        ),
+      );
+    }
+
+    final reviews = _reviews.isNotEmpty ? _reviews : widget.venue.reviews;
+
+    if (reviews.isEmpty) {
+      return Container(
+        width: double.infinity,
+        padding: EdgeInsets.all(16.w),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceLowest,
+          borderRadius: BorderRadius.circular(22.r),
+          border: Border.all(color: AppColors.divider.withValues(alpha: 0.26)),
+        ),
+        child: Text(
+          'Belum ada ulasan untuk lapangan ini.',
+          style: TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: 12.5.sp,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      );
+    }
+
+    return Column(children: reviews.take(3).map(_reviewCard).toList());
+  }
+
+  Widget _reviewCard(VenueReviewModel review) {
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.only(bottom: 12.h),
+      padding: EdgeInsets.all(14.w),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceLowest,
+        borderRadius: BorderRadius.circular(22.r),
+        border: Border.all(color: AppColors.divider.withValues(alpha: 0.26)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.04),
+            blurRadius: 14,
+            offset: const Offset(0, 7),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipOval(
+            child: AppRemoteImage(
+              imageUrl: review.avatarUrl,
+              width: 40.w,
+              height: 40.w,
+            ),
+          ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        review.author,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                    Icon(
+                      Icons.star_rounded,
+                      color: AppColors.accentGold,
+                      size: 15.sp,
+                    ),
+                    SizedBox(width: 3.w),
+                    Text(
+                      review.rating.toStringAsFixed(1),
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 3.h),
+                Text(
+                  review.timeLabel,
+                  style: TextStyle(
+                    color: AppColors.textMuted,
+                    fontSize: 10.5.sp,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                if (review.comment.trim().isNotEmpty) ...[
+                  SizedBox(height: 7.h),
+                  Text(
+                    review.comment,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 12.sp,
+                      height: 1.4,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -378,10 +554,11 @@ class CourtDetailPage extends StatelessWidget {
         itemBuilder: (context, index) {
           final date = DateTime.now().add(Duration(days: index));
           final isSelected =
-              DateFormat('dd-MM').format(date) == DateFormat('dd-MM').format(provider.selectedDate);
+              DateFormat('dd-MM').format(date) ==
+              DateFormat('dd-MM').format(provider.selectedDate);
 
           return GestureDetector(
-            onTap: () => provider.setDate(date),
+            onTap: () => _selectDate(provider, date),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 220),
               curve: Curves.easeOutCubic,
@@ -442,6 +619,44 @@ class CourtDetailPage extends StatelessWidget {
   }
 
   Widget _buildTimeGrid(BookingProvider provider) {
+    if (_isLoadingAvailability) {
+      return Container(
+        height: 116.h,
+        alignment: Alignment.center,
+        child: SizedBox(
+          height: 28.w,
+          width: 28.w,
+          child: const CircularProgressIndicator(strokeWidth: 2.6),
+        ),
+      );
+    }
+
+    if (_availabilitySlots.isNotEmpty) {
+      return _buildRemoteTimeGrid(provider);
+    }
+
+    if (_availabilityError != null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            _availabilityError!,
+            style: TextStyle(
+              color: AppColors.textMuted,
+              fontSize: 11.sp,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SizedBox(height: 12.h),
+          _buildDummyTimeGrid(provider),
+        ],
+      );
+    }
+
+    return _buildDummyTimeGrid(provider);
+  }
+
+  Widget _buildRemoteTimeGrid(BookingProvider provider) {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -452,11 +667,12 @@ class CourtDetailPage extends StatelessWidget {
         mainAxisSpacing: 10.w,
         childAspectRatio: 2.05,
       ),
-      itemCount: court.availableTimes.length,
+      itemCount: _availabilitySlots.length,
       itemBuilder: (context, index) {
-        final time = court.availableTimes[index];
+        final slot = _availabilitySlots[index];
+        final time = slot.displayLabel;
         final isSelected = provider.selectedTime == time;
-        final isBooked = court.bookedTimes.contains(time);
+        final isBooked = !slot.isAvailable;
 
         return Material(
           color: Colors.transparent,
@@ -464,11 +680,11 @@ class CourtDetailPage extends StatelessWidget {
           child: InkWell(
             onTap: () {
               if (isBooked) {
-                _showSnackBar(context, 'Jam $time sudah dibooking. Pilih jam lain.');
+                _showSnackBar(context, _availabilityMessage(time, slot.reason));
                 return;
               }
 
-              provider.setTime(time);
+              provider.setTime(time, slotId: slot.id);
             },
             borderRadius: BorderRadius.circular(14.r),
             splashColor: AppColors.primary.withValues(alpha: 0.08),
@@ -486,12 +702,16 @@ class CourtDetailPage extends StatelessWidget {
                     : null,
                 color: isSelected
                     ? null
-                    : (isBooked ? Colors.grey.shade100 : AppColors.surfaceLowest),
+                    : (isBooked
+                          ? Colors.grey.shade100
+                          : AppColors.surfaceLowest),
                 borderRadius: BorderRadius.circular(14.r),
                 border: Border.all(
                   color: isSelected
                       ? Colors.transparent
-                      : (isBooked ? Colors.transparent : AppColors.divider.withValues(alpha: 0.30)),
+                      : (isBooked
+                            ? Colors.transparent
+                            : AppColors.divider.withValues(alpha: 0.30)),
                 ),
                 boxShadow: isSelected
                     ? [
@@ -511,7 +731,9 @@ class CourtDetailPage extends StatelessWidget {
                   style: TextStyle(
                     color: isSelected
                         ? Colors.white
-                        : (isBooked ? Colors.grey.shade400 : AppColors.textPrimary),
+                        : (isBooked
+                              ? Colors.grey.shade400
+                              : AppColors.textPrimary),
                     fontWeight: FontWeight.w900,
                     fontSize: 12.sp,
                     decoration: isBooked ? TextDecoration.lineThrough : null,
@@ -522,6 +744,109 @@ class CourtDetailPage extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildDummyTimeGrid(BookingProvider provider) {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.zero,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4,
+        crossAxisSpacing: 10.w,
+        mainAxisSpacing: 10.w,
+        childAspectRatio: 2.05,
+      ),
+      itemCount: widget.court.availableTimes.length,
+      itemBuilder: (context, index) {
+        final time = widget.court.availableTimes[index];
+        final isSelected = provider.selectedTime == time;
+        final isBooked = widget.court.bookedTimes.contains(time);
+
+        return _buildTimeTile(
+          time: time,
+          isSelected: isSelected,
+          isBooked: isBooked,
+          onTap: () {
+            if (isBooked) {
+              _showSnackBar(
+                context,
+                'Jam $time sudah dibooking. Pilih jam lain.',
+              );
+              return;
+            }
+
+            provider.setTime(time);
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildTimeTile({
+    required String time,
+    required bool isSelected,
+    required bool isBooked,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(14.r),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14.r),
+        splashColor: AppColors.primary.withValues(alpha: 0.08),
+        highlightColor: AppColors.primary.withValues(alpha: 0.04),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOutCubic,
+          decoration: BoxDecoration(
+            gradient: isSelected
+                ? const LinearGradient(
+                    colors: AppColors.primaryGradient,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  )
+                : null,
+            color: isSelected
+                ? null
+                : (isBooked ? Colors.grey.shade100 : AppColors.surfaceLowest),
+            borderRadius: BorderRadius.circular(14.r),
+            border: Border.all(
+              color: isSelected
+                  ? Colors.transparent
+                  : (isBooked
+                        ? Colors.transparent
+                        : AppColors.divider.withValues(alpha: 0.30)),
+            ),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.20),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ]
+                : [],
+          ),
+          child: Center(
+            child: Text(
+              time,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: isSelected
+                    ? Colors.white
+                    : (isBooked ? Colors.grey.shade400 : AppColors.textPrimary),
+                fontWeight: FontWeight.w900,
+                fontSize: 12.sp,
+                decoration: isBooked ? TextDecoration.lineThrough : null,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -553,23 +878,31 @@ class CourtDetailPage extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   if (!hasSelectedTime) {
-                    _showSnackBar(context, 'Pilih jam tersedia terlebih dahulu.');
+                    _showSnackBar(
+                      context,
+                      'Pilih jam tersedia terlebih dahulu.',
+                    );
                     return;
                   }
 
                   provider.setVenueSelection(
-                    venueId: venue.id,
-                    venueName: venue.name,
-                    venueLocation: venue.location,
-                    venueImageUrl: venue.imageUrl,
-                    sport: venue.sports.isNotEmpty ? venue.sports.first : '-',
-                    fieldName: court.name,
-                    price: court.pricePerHour,
+                    venueId: widget.venue.id,
+                    courtId: widget.court.id,
+                    venueName: widget.venue.name,
+                    venueLocation: widget.venue.location,
+                    venueImageUrl: widget.venue.imageUrl,
+                    sport: widget.venue.sports.isNotEmpty
+                        ? widget.venue.sports.first
+                        : '-',
+                    fieldName: widget.court.name,
+                    price: widget.court.pricePerHour,
                   );
 
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const CheckoutPage()),
+                    MaterialPageRoute(
+                      builder: (context) => const CheckoutPage(),
+                    ),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -577,14 +910,20 @@ class CourtDetailPage extends StatelessWidget {
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: AppColors.divider,
                   disabledForegroundColor: AppColors.textMuted,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16.r),
+                  ),
                   elevation: 0,
                   padding: EdgeInsets.symmetric(horizontal: 10.w),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 18.sp),
+                    Icon(
+                      Icons.arrow_forward_rounded,
+                      color: Colors.white,
+                      size: 18.sp,
+                    ),
                     SizedBox(width: 7.w),
                     Flexible(
                       child: FittedBox(
@@ -592,7 +931,10 @@ class CourtDetailPage extends StatelessWidget {
                         child: Text(
                           'Lanjut',
                           maxLines: 1,
-                          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15.sp),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w900,
+                            fontSize: 15.sp,
+                          ),
                         ),
                       ),
                     ),
@@ -641,7 +983,7 @@ class CourtDetailPage extends StatelessWidget {
           text: TextSpan(
             children: [
               TextSpan(
-                text: CurrencyFormatter.idr(court.pricePerHour),
+                text: CurrencyFormatter.idr(widget.court.pricePerHour),
                 style: TextStyle(
                   fontSize: 11.5.sp,
                   fontWeight: FontWeight.w900,
@@ -663,6 +1005,90 @@ class CourtDetailPage extends StatelessWidget {
     );
   }
 
+  void _selectDate(BookingProvider provider, DateTime date) {
+    provider.setDate(date);
+    _loadAvailability(date);
+  }
+
+  Future<void> _loadAvailability(DateTime date) async {
+    final requestId = ++_availabilityRequestId;
+
+    if (!_isUuid(widget.court.id)) {
+      setState(() {
+        _availabilitySlots = const [];
+        _availabilityError = null;
+        _isLoadingAvailability = false;
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoadingAvailability = true;
+      _availabilityError = null;
+    });
+
+    try {
+      final slots = await _bookingService.getCourtAvailability(
+        courtId: widget.court.id,
+        date: date,
+      );
+
+      if (!mounted || requestId != _availabilityRequestId) return;
+
+      setState(() {
+        _availabilitySlots = slots;
+        _availabilityError = slots.isEmpty
+            ? 'Slot belum tersedia untuk tanggal ini.'
+            : null;
+        _isLoadingAvailability = false;
+      });
+    } catch (_) {
+      if (!mounted || requestId != _availabilityRequestId) return;
+
+      setState(() {
+        _availabilitySlots = const [];
+        _availabilityError =
+            'Slot Supabase belum bisa dimuat, menampilkan jadwal lokal.';
+        _isLoadingAvailability = false;
+      });
+    }
+  }
+
+  Future<void> _loadReviews() async {
+    if (!_isUuid(widget.court.id)) return;
+
+    setState(() => _isLoadingReviews = true);
+
+    try {
+      final reviews = await _bookingService.getCourtReviews(widget.court.id);
+      if (!mounted) return;
+
+      setState(() {
+        _reviews = reviews;
+        _isLoadingReviews = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _isLoadingReviews = false);
+    }
+  }
+
+  bool _isUuid(String value) {
+    return RegExp(
+      r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+    ).hasMatch(value);
+  }
+
+  String _availabilityMessage(String time, String? reason) {
+    return switch (reason) {
+      'booked' => 'Jam $time sudah dibooking. Pilih jam lain.',
+      'maintenance' => 'Jam $time sedang maintenance.',
+      'past_time' => 'Jam $time sudah lewat.',
+      'outside_operating_hours' => 'Jam $time di luar jam operasional.',
+      _ => 'Jam $time belum tersedia.',
+    };
+  }
+
   void _showSnackBar(BuildContext context, String message) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
@@ -672,7 +1098,9 @@ class CourtDetailPage extends StatelessWidget {
           behavior: SnackBarBehavior.floating,
           backgroundColor: AppColors.primary,
           margin: EdgeInsets.all(20.w),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.r)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14.r),
+          ),
         ),
       );
   }

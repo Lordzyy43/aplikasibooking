@@ -1,40 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:apkbooking/models/user_model.dart';
-// import 'package:apkbooking/services/api_client.dart'; // Aktifkan nanti kalau sudah konek API
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthProvider extends ChangeNotifier {
+  AuthProvider() {
+    _hydrateSession();
+  }
+
   UserModel? _user;
   bool _isLoading = false;
   String? _errorMessage;
+
+  SupabaseClient get _client => Supabase.instance.client;
 
   UserModel? get user => _user;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get isAuthenticated => _user != null;
 
-  /// Login dummy.
-  /// Untuk sementara, semua email dan password dianggap berhasil.
   Future<bool> login(String email, String password) async {
     _setLoading(true);
     _clearError();
 
     try {
-      await Future.delayed(const Duration(seconds: 1));
-
       final cleanEmail = email.trim();
-
-      _user = UserModel(
-        id: _generateDummyUserId(),
-        name: _getNameFromEmail(cleanEmail),
-        email: cleanEmail.isNotEmpty ? cleanEmail : 'user@example.com',
-        phone: '08123456789',
-        avatarUrl: 'assets/Avatar/Avatar.png',
-        walletBalance: 50000,
-        points: 100,
+      final response = await _client.auth.signInWithPassword(
+        email: cleanEmail,
+        password: password,
       );
 
+      if (response.user == null) {
+        _errorMessage = 'Akun tidak ditemukan atau password salah.';
+        return false;
+      }
+
+      _user = await _userFromSupabase(response.user!);
+
       return true;
-    } catch (_) {
+    } on AuthException catch (e) {
+      _errorMessage = e.message;
+      return false;
+    } catch (e) {
       _errorMessage = 'Terjadi kesalahan saat login.';
       return false;
     } finally {
@@ -42,8 +48,6 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Register dummy.
-  /// Setelah register berhasil, user langsung dianggap login.
   Future<bool> register({
     required String name,
     required String email,
@@ -54,19 +58,26 @@ class AuthProvider extends ChangeNotifier {
     _clearError();
 
     try {
-      await Future.delayed(const Duration(seconds: 1));
+      final cleanName = name.trim().isNotEmpty ? name.trim() : 'User Aerobook';
+      final cleanEmail = email.trim();
+      final cleanPhone = phone.trim();
 
-      _user = UserModel(
-        id: _generateDummyUserId(),
-        name: name.trim().isNotEmpty ? name.trim() : 'User Aerobook',
-        email: email.trim().isNotEmpty ? email.trim() : 'user@example.com',
-        phone: phone.trim().isNotEmpty ? phone.trim() : '08123456789',
-        avatarUrl: 'assets/Avatar/Avatar.png',
-        walletBalance: 0,
-        points: 0,
+      final response = await _client.auth.signUp(
+        email: cleanEmail,
+        password: password,
+        data: {'full_name': cleanName, 'phone': cleanPhone, 'role': 'customer'},
       );
 
+      if (response.user == null) {
+        _errorMessage = 'Registrasi belum berhasil. Coba lagi.';
+        return false;
+      }
+
+      _user = await _userFromSupabase(response.user!);
       return true;
+    } on AuthException catch (e) {
+      _errorMessage = e.message;
+      return false;
     } catch (_) {
       _errorMessage = 'Terjadi kesalahan saat register.';
       return false;
@@ -92,7 +103,13 @@ class AuthProvider extends ChangeNotifier {
     _clearError();
 
     try {
-      await Future.delayed(const Duration(milliseconds: 800));
+      await _client
+          .from('users')
+          .update({
+            'full_name': name.trim().isNotEmpty ? name.trim() : _user!.name,
+            'phone': phone.trim().isNotEmpty ? phone.trim() : _user!.phone,
+          })
+          .eq('id', _user!.id);
 
       _user = UserModel(
         id: _user!.id,
@@ -105,6 +122,9 @@ class AuthProvider extends ChangeNotifier {
       );
 
       return true;
+    } on PostgrestException catch (e) {
+      _errorMessage = e.message;
+      return false;
     } catch (_) {
       _errorMessage = 'Terjadi kesalahan saat update profil.';
       return false;
@@ -113,8 +133,8 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Logout user.
-  void logout() {
+  Future<void> logout() async {
+    await _client.auth.signOut();
     _user = null;
     _clearError();
     notifyListeners();
@@ -135,8 +155,54 @@ class AuthProvider extends ChangeNotifier {
     _errorMessage = null;
   }
 
-  String _generateDummyUserId() {
-    return 'USR-${DateTime.now().millisecondsSinceEpoch}';
+  Future<void> _hydrateSession() async {
+    final sessionUser = _client.auth.currentUser;
+    if (sessionUser == null) return;
+
+    try {
+      _user = await _userFromSupabase(sessionUser);
+      notifyListeners();
+    } catch (_) {
+      _user = null;
+      notifyListeners();
+    }
+  }
+
+  Future<UserModel> _userFromSupabase(User authUser) async {
+    Map<String, dynamic>? profile;
+
+    try {
+      profile = await _client.rpc('ensure_customer_user').maybeSingle();
+    } catch (_) {
+      try {
+        profile = await _client
+            .from('users')
+            .select('full_name, phone, avatar_url, wallet_balance, points')
+            .eq('id', authUser.id)
+            .maybeSingle();
+      } catch (_) {
+        profile = null;
+      }
+    }
+
+    final metadata = authUser.userMetadata ?? const <String, dynamic>{};
+    final email = authUser.email ?? '';
+    final name =
+        profile?['full_name']?.toString() ??
+        metadata['full_name']?.toString() ??
+        _getNameFromEmail(email);
+
+    return UserModel(
+      id: authUser.id,
+      name: name,
+      email: email,
+      phone: profile?['phone']?.toString() ?? metadata['phone']?.toString(),
+      avatarUrl:
+          profile?['avatar_url']?.toString() ?? 'assets/Avatar/Avatar.png',
+      walletBalance:
+          int.tryParse(profile?['wallet_balance']?.toString() ?? '') ?? 0,
+      points: int.tryParse(profile?['points']?.toString() ?? '') ?? 0,
+    );
   }
 
   String _getNameFromEmail(String email) {

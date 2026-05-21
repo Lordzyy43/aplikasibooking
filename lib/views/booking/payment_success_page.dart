@@ -1,6 +1,7 @@
 import 'package:apkbooking/core/app_colors.dart';
 import 'package:apkbooking/core/utils/currency_formatter.dart';
 import 'package:apkbooking/models/booking_model.dart';
+import 'package:apkbooking/providers/app_data_provider.dart';
 import 'package:apkbooking/providers/booking_provider.dart';
 import 'package:apkbooking/views/main_screen.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,8 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       context.read<BookingProvider>().resetBooking();
+      context.read<AppDataProvider>().refreshBookings();
+      context.read<AppDataProvider>().refreshNotifications();
     });
   }
 
@@ -80,7 +83,10 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
           Positioned(
             right: -42.w,
             top: -46.h,
-            child: _buildGlowCircle(size: 132.h, color: Colors.white.withValues(alpha: 0.11)),
+            child: _buildGlowCircle(
+              size: 132.h,
+              color: Colors.white.withValues(alpha: 0.11),
+            ),
           ),
           Positioned(
             left: -42.w,
@@ -97,13 +103,22 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.16),
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.22),
+                  ),
                 ),
                 child: Container(
                   height: 88.w,
                   width: 88.w,
-                  decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                  child: Icon(Icons.check_circle_rounded, color: AppColors.success, size: 66.sp),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.check_circle_rounded,
+                    color: AppColors.success,
+                    size: 66.sp,
+                  ),
                 ),
               ),
               SizedBox(height: 20.h),
@@ -119,7 +134,9 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
               ),
               SizedBox(height: 9.h),
               Text(
-                'Pembayaran sudah dikonfirmasi. E-ticket kamu sudah siap digunakan.',
+                widget.booking.isPendingPayment
+                    ? 'Booking kamu sudah tersimpan dan menunggu konfirmasi pembayaran.'
+                    : 'Pembayaran sudah dikonfirmasi. E-ticket kamu sudah siap digunakan.',
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: Colors.white.withValues(alpha: 0.84),
@@ -134,15 +151,21 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.16),
                   borderRadius: BorderRadius.circular(999.r),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.20)),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.20),
+                  ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.verified_rounded, color: AppColors.accentGold, size: 16.sp),
+                    Icon(
+                      Icons.verified_rounded,
+                      color: AppColors.accentGold,
+                      size: 16.sp,
+                    ),
                     SizedBox(width: 6.w),
                     Text(
-                      'Payment Confirmed',
+                      widget.booking.paymentLabel,
                       style: theme.textTheme.labelMedium?.copyWith(
                         color: Colors.white,
                         fontSize: 12.sp,
@@ -268,7 +291,9 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
             decoration: BoxDecoration(
               color: AppColors.primaryLight.withValues(alpha: 0.55),
               borderRadius: BorderRadius.circular(20.r),
-              border: Border.all(color: AppColors.primary.withValues(alpha: 0.10)),
+              border: Border.all(
+                color: AppColors.primary.withValues(alpha: 0.10),
+              ),
             ),
             child: Row(
               children: [
@@ -414,11 +439,17 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.info_outline_rounded, color: AppColors.primary, size: 20.sp),
+          Icon(
+            Icons.info_outline_rounded,
+            color: AppColors.primary,
+            size: 20.sp,
+          ),
           SizedBox(width: 10.w),
           Expanded(
             child: Text(
-              'Tunjukkan e-ticket ini kepada admin venue saat tiba di lokasi.',
+              widget.booking.isPendingPayment
+                  ? 'Status akan berubah aktif setelah pembayaran dikonfirmasi admin.'
+                  : 'Tunjukkan e-ticket ini kepada admin venue saat tiba di lokasi.',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: AppColors.textSecondary,
                 fontSize: 12.sp,
@@ -458,18 +489,27 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                 onPressed: () {
                   Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (context) => const MainScreen(initialIndex: 2)),
+                    MaterialPageRoute(
+                      builder: (context) => const MainScreen(initialIndex: 2),
+                    ),
                     (route) => false,
                   );
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.confirmation_number_outlined, color: Colors.white, size: 18.sp),
+                    Icon(
+                      Icons.confirmation_number_outlined,
+                      color: Colors.white,
+                      size: 18.sp,
+                    ),
                     SizedBox(width: 8.w),
                     Text(
                       'Lihat Tiket Saya',
-                      style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 14.sp,
+                      ),
                     ),
                   ],
                 ),
@@ -483,7 +523,9 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                 onPressed: () {
                   Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (context) => const MainScreen(initialIndex: 0)),
+                    MaterialPageRoute(
+                      builder: (context) => const MainScreen(initialIndex: 0),
+                    ),
                     (route) => false,
                   );
                 },
