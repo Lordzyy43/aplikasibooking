@@ -11,8 +11,22 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class MyBookingPage extends StatelessWidget {
+class MyBookingPage extends StatefulWidget {
   const MyBookingPage({super.key});
+
+  @override
+  State<MyBookingPage> createState() => _MyBookingPageState();
+}
+
+class _MyBookingPageState extends State<MyBookingPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<AppDataProvider>().refreshBookings();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,8 +51,16 @@ class MyBookingPage extends StatelessWidget {
               Expanded(
                 child: TabBarView(
                   children: [
-                    _buildBookingList(context, provider.upcomingBookings, isHistory: false),
-                    _buildBookingList(context, provider.completedBookings, isHistory: true),
+                    _buildBookingList(
+                      context,
+                      provider.upcomingBookings,
+                      isHistory: false,
+                    ),
+                    _buildBookingList(
+                      context,
+                      provider.completedBookings,
+                      isHistory: true,
+                    ),
                   ],
                 ),
               ),
@@ -49,7 +71,11 @@ class MyBookingPage extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, {required int activeCount, required int historyCount}) {
+  Widget _buildHeader(
+    BuildContext context, {
+    required int activeCount,
+    required int historyCount,
+  }) {
     final theme = Theme.of(context);
     final totalCount = activeCount + historyCount;
 
@@ -78,7 +104,10 @@ class MyBookingPage extends StatelessWidget {
             Positioned(
               right: -34.w,
               top: -34.h,
-              child: _buildGlowCircle(size: 112.h, color: Colors.white.withValues(alpha: 0.10)),
+              child: _buildGlowCircle(
+                size: 112.h,
+                color: Colors.white.withValues(alpha: 0.10),
+              ),
             ),
             Positioned(
               left: -40.w,
@@ -99,7 +128,9 @@ class MyBookingPage extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.16),
                         borderRadius: BorderRadius.circular(16.r),
-                        border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.22),
+                        ),
                       ),
                       child: Icon(
                         Icons.confirmation_number_rounded,
@@ -253,7 +284,10 @@ class MyBookingPage extends StatelessWidget {
           labelColor: Colors.white,
           unselectedLabelColor: AppColors.textMuted,
           labelStyle: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w900),
-          unselectedLabelStyle: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w700),
+          unselectedLabelStyle: TextStyle(
+            fontSize: 13.sp,
+            fontWeight: FontWeight.w700,
+          ),
           tabs: const [
             Tab(text: 'Aktif'),
             Tab(text: 'Riwayat'),
@@ -272,7 +306,9 @@ class MyBookingPage extends StatelessWidget {
       return Padding(
         padding: EdgeInsets.fromLTRB(20.w, 28.h, 20.w, 128.h),
         child: EmptyStateView(
-          icon: isHistory ? Icons.history_rounded : Icons.calendar_today_outlined,
+          icon: isHistory
+              ? Icons.history_rounded
+              : Icons.calendar_today_outlined,
           title: isHistory ? 'Belum ada riwayat' : 'Belum ada booking aktif',
           message: isHistory
               ? 'Riwayat booking yang sudah selesai akan muncul di sini.'
@@ -321,18 +357,21 @@ class _BookingCard extends StatelessWidget {
   }
 
   String _statusLabel() {
-    if (isActive) return 'UPCOMING';
-    return 'COMPLETED';
+    return booking.shortStatusLabel;
   }
 
   Color _statusColor() {
-    if (isActive) return AppColors.warning;
-    return AppColors.success;
+    if (booking.isPendingPayment) return AppColors.warning;
+    if (booking.isCancelled || booking.isExpired) return AppColors.error;
+    if (booking.isFinished) return AppColors.success;
+    return AppColors.primary;
   }
 
   IconData _statusIcon() {
-    if (isActive) return Icons.flash_on_rounded;
-    return Icons.check_circle_rounded;
+    if (booking.isPendingPayment) return Icons.schedule_rounded;
+    if (booking.isCancelled || booking.isExpired) return Icons.cancel_rounded;
+    if (booking.isFinished) return Icons.check_circle_rounded;
+    return Icons.flash_on_rounded;
   }
 
   void _handleAction(BuildContext context) {
@@ -344,7 +383,10 @@ class _BookingCard extends StatelessWidget {
       return;
     }
 
-    Navigator.push(context, MaterialPageRoute(builder: (_) => const VenueListPage()));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const VenueListPage()),
+    );
   }
 
   @override
@@ -364,7 +406,9 @@ class _BookingCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.surfaceLowest,
             borderRadius: BorderRadius.circular(24.r),
-            border: Border.all(color: AppColors.divider.withValues(alpha: 0.28)),
+            border: Border.all(
+              color: AppColors.divider.withValues(alpha: 0.28),
+            ),
             boxShadow: [
               BoxShadow(
                 color: AppColors.primary.withValues(alpha: 0.055),
@@ -414,7 +458,10 @@ class _BookingCard extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
-                  colors: [Colors.black.withValues(alpha: 0.30), Colors.transparent],
+                  colors: [
+                    Colors.black.withValues(alpha: 0.30),
+                    Colors.transparent,
+                  ],
                 ),
               ),
             ),
@@ -429,7 +476,11 @@ class _BookingCard extends StatelessWidget {
                 color: Colors.white.withValues(alpha: 0.92),
                 borderRadius: BorderRadius.circular(12.r),
               ),
-              child: Icon(Icons.sports_tennis_rounded, color: AppColors.primary, size: 17.sp),
+              child: Icon(
+                Icons.sports_tennis_rounded,
+                color: AppColors.primary,
+                size: 17.sp,
+              ),
             ),
           ),
         ],
@@ -486,7 +537,11 @@ class _BookingCard extends StatelessWidget {
         SizedBox(height: 10.h),
         Row(
           children: [
-            Icon(Icons.calendar_month_rounded, size: 14.sp, color: AppColors.primary),
+            Icon(
+              Icons.calendar_month_rounded,
+              size: 14.sp,
+              color: AppColors.primary,
+            ),
             SizedBox(width: 5.w),
             Expanded(
               child: Text(
@@ -506,13 +561,19 @@ class _BookingCard extends StatelessWidget {
     );
   }
 
-  Widget _buildFooter(BuildContext context, ThemeData theme, Color actionColor) {
+  Widget _buildFooter(
+    BuildContext context,
+    ThemeData theme,
+    Color actionColor,
+  ) {
     return Container(
       padding: EdgeInsets.fromLTRB(14.w, 12.h, 14.w, 14.h),
       decoration: BoxDecoration(
         color: AppColors.surfaceLow.withValues(alpha: 0.75),
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(24.r)),
-        border: Border(top: BorderSide(color: AppColors.divider.withValues(alpha: 0.22))),
+        border: Border(
+          top: BorderSide(color: AppColors.divider.withValues(alpha: 0.22)),
+        ),
       ),
       child: Row(
         children: [
@@ -523,7 +584,11 @@ class _BookingCard extends StatelessWidget {
               color: AppColors.primaryLight.withValues(alpha: 0.65),
               borderRadius: BorderRadius.circular(13.r),
             ),
-            child: Icon(Icons.payments_rounded, color: AppColors.primary, size: 17.sp),
+            child: Icon(
+              Icons.payments_rounded,
+              color: AppColors.primary,
+              size: 17.sp,
+            ),
           ),
           SizedBox(width: 10.w),
           Expanded(
@@ -565,13 +630,17 @@ class _BookingCard extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      isActive ? Icons.confirmation_number_outlined : Icons.refresh_rounded,
+                      isActive
+                          ? Icons.confirmation_number_outlined
+                          : Icons.refresh_rounded,
                       color: Colors.white,
                       size: 14.sp,
                     ),
                     SizedBox(width: 6.w),
                     Text(
-                      isActive ? 'E-Ticket' : 'Booking Lagi',
+                      isActive
+                          ? (booking.isPendingPayment ? 'Detail' : 'E-Ticket')
+                          : 'Booking Lagi',
                       style: theme.textTheme.labelMedium?.copyWith(
                         color: Colors.white,
                         fontSize: 12.sp,

@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 import 'package:apkbooking/core/app_colors.dart';
+import 'package:apkbooking/providers/app_data_provider.dart';
 import 'package:apkbooking/providers/auth_provider.dart';
 import 'package:apkbooking/views/main_screen.dart';
 
@@ -31,6 +32,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+  bool _isSubmitting = false;
 
   @override
   void dispose() {
@@ -153,7 +155,9 @@ class _RegisterPageState extends State<RegisterPage> {
                             icon: Icons.phone_android_rounded,
                             keyboardType: TextInputType.phone,
                             textInputAction: TextInputAction.next,
-                            autofillHints: const [AutofillHints.telephoneNumber],
+                            autofillHints: const [
+                              AutofillHints.telephoneNumber,
+                            ],
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
                               LengthLimitingTextInputFormatter(15),
@@ -220,7 +224,8 @@ class _RegisterPageState extends State<RegisterPage> {
                               ),
                               onPressed: () {
                                 setState(() {
-                                  _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                                  _isConfirmPasswordVisible =
+                                      !_isConfirmPasswordVisible;
                                 });
                               },
                             ),
@@ -238,18 +243,21 @@ class _RegisterPageState extends State<RegisterPage> {
                                 width: double.infinity,
                                 height: 56.h,
                                 child: ElevatedButton(
-                                  onPressed: auth.isLoading ? null : _handleRegister,
+                                  onPressed: auth.isLoading
+                                      ? null
+                                      : _handleRegister,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.primary,
                                     foregroundColor: Colors.white,
-                                    disabledBackgroundColor: AppColors.primary.withValues(
-                                      alpha: 0.55,
-                                    ),
+                                    disabledBackgroundColor: AppColors.primary
+                                        .withValues(alpha: 0.55),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(18.r),
                                     ),
                                     elevation: auth.isLoading ? 0 : 10,
-                                    shadowColor: AppColors.primary.withValues(alpha: 0.28),
+                                    shadowColor: AppColors.primary.withValues(
+                                      alpha: 0.28,
+                                    ),
                                   ),
                                   child: AnimatedSwitcher(
                                     duration: const Duration(milliseconds: 220),
@@ -258,10 +266,11 @@ class _RegisterPageState extends State<RegisterPage> {
                                             key: const ValueKey('loading'),
                                             height: 24.h,
                                             width: 24.h,
-                                            child: const CircularProgressIndicator(
-                                              color: Colors.white,
-                                              strokeWidth: 3,
-                                            ),
+                                            child:
+                                                const CircularProgressIndicator(
+                                                  color: Colors.white,
+                                                  strokeWidth: 3,
+                                                ),
                                           )
                                         : Text(
                                             key: const ValueKey('text'),
@@ -285,7 +294,10 @@ class _RegisterPageState extends State<RegisterPage> {
                               borderRadius: BorderRadius.circular(12.r),
                               onTap: () => Navigator.pop(context),
                               child: Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 12.w,
+                                  vertical: 10.h,
+                                ),
                                 child: RichText(
                                   textAlign: TextAlign.center,
                                   text: TextSpan(
@@ -295,7 +307,9 @@ class _RegisterPageState extends State<RegisterPage> {
                                       fontWeight: FontWeight.w500,
                                     ),
                                     children: [
-                                      const TextSpan(text: 'Sudah punya akun? '),
+                                      const TextSpan(
+                                        text: 'Sudah punya akun? ',
+                                      ),
                                       TextSpan(
                                         text: 'Masuk Disini',
                                         style: TextStyle(
@@ -408,7 +422,9 @@ class _RegisterPageState extends State<RegisterPage> {
       child: Row(
         children: [
           Icon(
-            isEnough ? Icons.check_circle_outline_rounded : Icons.info_outline_rounded,
+            isEnough
+                ? Icons.check_circle_outline_rounded
+                : Icons.info_outline_rounded,
             size: 18.sp,
             color: isEnough ? AppColors.success : AppColors.warning,
           ),
@@ -461,6 +477,8 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future<void> _handleRegister() async {
+    if (_isSubmitting) return;
+
     FocusScope.of(context).unfocus();
 
     final isValid = _formKey.currentState?.validate() ?? false;
@@ -469,38 +487,50 @@ class _RegisterPageState extends State<RegisterPage> {
     TextInput.finishAutofillContext();
 
     final auth = Provider.of<AuthProvider>(context, listen: false);
+    if (auth.isLoading) return;
 
-    final success = await auth.register(
-      name: _nameController.text.trim(),
-      email: _emailController.text.trim(),
-      phone: _phoneController.text.trim(),
-      password: _passwordController.text,
-    );
+    setState(() => _isSubmitting = true);
 
-    if (!mounted) return;
-
-    if (success) {
-      _showSnackBar(
-        icon: Icons.check_circle_outline_rounded,
-        message: 'Akun demo berhasil dibuat. Selamat datang!',
-        backgroundColor: AppColors.success,
+    try {
+      final success = await auth.register(
+        name: _nameController.text.trim(),
+        email: _emailController.text.trim(),
+        phone: _phoneController.text.trim(),
+        password: _passwordController.text,
       );
-
-      await Future.delayed(const Duration(milliseconds: 500));
 
       if (!mounted) return;
 
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (_) => const MainScreen()),
-        (route) => false,
-      );
-    } else {
-      _showSnackBar(
-        icon: Icons.error_outline_rounded,
-        message: auth.errorMessage ?? 'Gagal membuat akun.',
-        backgroundColor: AppColors.error,
-      );
+      if (success) {
+        _showSnackBar(
+          icon: Icons.check_circle_outline_rounded,
+          message: 'Akun berhasil dibuat. Selamat datang!',
+          backgroundColor: AppColors.success,
+        );
+
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        if (!mounted) return;
+        await context.read<AppDataProvider>().loadInitialData();
+
+        if (!mounted) return;
+
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => const MainScreen()),
+          (route) => false,
+        );
+      } else {
+        _showSnackBar(
+          icon: Icons.error_outline_rounded,
+          message: auth.errorMessage ?? 'Gagal membuat akun.',
+          backgroundColor: AppColors.error,
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
     }
   }
 
@@ -525,7 +555,9 @@ class _RegisterPageState extends State<RegisterPage> {
       return 'Email tidak boleh kosong';
     }
 
-    final isValidEmail = RegExp(r'^[\w\.-]+@([\w-]+\.)+[\w-]{2,}$').hasMatch(email);
+    final isValidEmail = RegExp(
+      r'^[\w\.-]+@([\w-]+\.)+[\w-]{2,}$',
+    ).hasMatch(email);
 
     if (!isValidEmail) {
       return 'Format email belum valid';
@@ -608,7 +640,9 @@ class _RegisterPageState extends State<RegisterPage> {
           backgroundColor: backgroundColor,
           behavior: SnackBarBehavior.floating,
           margin: EdgeInsets.all(20.w),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.r)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14.r),
+          ),
         ),
       );
   }
@@ -660,7 +694,11 @@ class _RegisterPageState extends State<RegisterPage> {
               nextFocusNode.requestFocus();
             }
           },
-      style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+      style: TextStyle(
+        fontSize: 15.sp,
+        fontWeight: FontWeight.w600,
+        color: AppColors.textPrimary,
+      ),
       decoration: _buildInputDecoration(hint: hint, icon: icon, suffix: suffix),
     );
   }
@@ -684,11 +722,17 @@ class _RegisterPageState extends State<RegisterPage> {
       contentPadding: EdgeInsets.symmetric(vertical: 18.h, horizontal: 20.w),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18.r),
-        borderSide: BorderSide(color: AppColors.divider.withValues(alpha: 0.65), width: 1),
+        borderSide: BorderSide(
+          color: AppColors.divider.withValues(alpha: 0.65),
+          width: 1,
+        ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18.r),
-        borderSide: BorderSide(color: AppColors.divider.withValues(alpha: 0.65), width: 1),
+        borderSide: BorderSide(
+          color: AppColors.divider.withValues(alpha: 0.65),
+          width: 1,
+        ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18.r),

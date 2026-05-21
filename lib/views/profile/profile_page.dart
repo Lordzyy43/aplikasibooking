@@ -14,7 +14,12 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<AppDataProvider>().user;
+    final auth = context.watch<AuthProvider>();
+    final user = auth.user;
+
+    if (user == null) {
+      return _buildLoginRequired(context);
+    }
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -63,6 +68,93 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
+  Widget _buildLoginRequired(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all(24.w),
+          child: Center(
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(22.w),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceLowest,
+                borderRadius: BorderRadius.circular(28.r),
+                border: Border.all(
+                  color: AppColors.divider.withValues(alpha: 0.28),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.055),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    height: 64.w,
+                    width: 64.w,
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryLight,
+                      borderRadius: BorderRadius.circular(22.r),
+                    ),
+                    child: Icon(
+                      Icons.lock_outline_rounded,
+                      color: AppColors.primary,
+                      size: 30.sp,
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+                  Text(
+                    'Masuk untuk melihat profil',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.textPrimary,
+                      fontSize: 19.sp,
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  Text(
+                    'Profil, booking, dan notifikasi akan tersinkron setelah login.',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w600,
+                      height: 1.45,
+                    ),
+                  ),
+                  SizedBox(height: 20.h),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const OnboardingPage(),
+                          ),
+                          (route) => false,
+                        );
+                      },
+                      child: const Text('Masuk Sekarang'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildProfileHero(
     BuildContext context, {
     required String name,
@@ -99,7 +191,10 @@ class ProfilePage extends StatelessWidget {
           Positioned(
             right: -42.w,
             top: -42.h,
-            child: _buildGlowCircle(size: 132.h, color: Colors.white.withValues(alpha: 0.10)),
+            child: _buildGlowCircle(
+              size: 132.h,
+              color: Colors.white.withValues(alpha: 0.10),
+            ),
           ),
           Positioned(
             left: -44.w,
@@ -120,9 +215,15 @@ class ProfilePage extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.16),
                       borderRadius: BorderRadius.circular(16.r),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.22),
+                      ),
                     ),
-                    child: Icon(Icons.person_rounded, color: Colors.white, size: 24.sp),
+                    child: Icon(
+                      Icons.person_rounded,
+                      color: Colors.white,
+                      size: 24.sp,
+                    ),
                   ),
                   SizedBox(width: 12.w),
                   Expanded(
@@ -137,19 +238,28 @@ class ProfilePage extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 7.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 10.w,
+                      vertical: 7.h,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.16),
                       borderRadius: BorderRadius.circular(999.r),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.20)),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.20),
+                      ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.verified_rounded, color: AppColors.accentGold, size: 14.sp),
+                        Icon(
+                          Icons.verified_rounded,
+                          color: AppColors.accentGold,
+                          size: 14.sp,
+                        ),
                         SizedBox(width: 5.w),
                         Text(
-                          'Demo User',
+                          'Customer',
                           style: theme.textTheme.labelSmall?.copyWith(
                             color: Colors.white,
                             fontSize: 10.5.sp,
@@ -178,7 +288,11 @@ class ProfilePage extends StatelessWidget {
                       ],
                     ),
                     child: ClipOval(
-                      child: AppRemoteImage(imageUrl: safeAvatar, width: 82.w, height: 82.w),
+                      child: AppRemoteImage(
+                        imageUrl: safeAvatar,
+                        width: 82.w,
+                        height: 82.w,
+                      ),
                     ),
                   ),
                   SizedBox(width: 15.w),
@@ -210,11 +324,16 @@ class ProfilePage extends StatelessWidget {
                         ),
                         SizedBox(height: 10.h),
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 7.h),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 10.w,
+                            vertical: 7.h,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.white.withValues(alpha: 0.14),
                             borderRadius: BorderRadius.circular(999.r),
-                            border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.18),
+                            ),
                           ),
                           child: Text(
                             'Member Aerobook',
@@ -374,7 +493,8 @@ class ProfilePage extends StatelessWidget {
                 icon: Icons.history_rounded,
                 color: AppColors.warning,
                 title: 'Riwayat Aktivitas',
-                message: 'Riwayat booking lengkap bisa dibuka dari tab Bookings.',
+                message:
+                    'Riwayat booking lengkap bisa dibuka dari tab Bookings.',
               ),
             ),
           ),
@@ -384,8 +504,10 @@ class ProfilePage extends StatelessWidget {
               icon: Icons.favorite_outline_rounded,
               label: 'Favorit',
               color: AppColors.accentRose,
-              onTap: () =>
-                  _showSnackBar(context, 'Venue favorit berhasil disinkronkan untuk demo.'),
+              onTap: () => _showSnackBar(
+                context,
+                'Venue favorit berhasil disinkronkan untuk demo.',
+              ),
             ),
           ),
           Expanded(
@@ -409,7 +531,8 @@ class ProfilePage extends StatelessWidget {
               icon: Icons.star_outline_rounded,
               label: 'Ulasan',
               color: const Color(0xFF8B5CF6),
-              onTap: () => _showSnackBar(context, 'Kamu belum memiliki ulasan aktif.'),
+              onTap: () =>
+                  _showSnackBar(context, 'Kamu belum memiliki ulasan aktif.'),
             ),
           ),
         ],
@@ -487,13 +610,7 @@ class ProfilePage extends StatelessWidget {
             title: 'Informasi Pribadi',
             subtitle: 'Nama, email, dan data akun demo',
             color: AppColors.primary,
-            onTap: () => _showInfoSheet(
-              context,
-              icon: Icons.person_outline_rounded,
-              color: AppColors.primary,
-              title: 'Informasi Pribadi',
-              message: 'Data profil masih menggunakan akun demo.',
-            ),
+            onTap: () => _showEditProfileSheet(context),
           ),
           _menuDivider(),
           _ProfileMenuTile(
@@ -506,7 +623,8 @@ class ProfilePage extends StatelessWidget {
               icon: Icons.shield_outlined,
               color: AppColors.success,
               title: 'Keamanan Akun',
-              message: 'PIN dan verifikasi akun akan tersedia saat login backend aktif.',
+              message:
+                  'Email dan sesi login sudah tersambung ke Supabase Auth.',
             ),
           ),
           _menuDivider(),
@@ -520,7 +638,8 @@ class ProfilePage extends StatelessWidget {
               icon: Icons.support_agent_rounded,
               color: AppColors.warning,
               title: 'Pusat Bantuan',
-              message: 'Hubungi admin venue jika perlu bantuan booking atau pembayaran.',
+              message:
+                  'Hubungi admin venue jika perlu bantuan booking atau pembayaran.',
             ),
           ),
         ],
@@ -583,7 +702,9 @@ class ProfilePage extends StatelessWidget {
           behavior: SnackBarBehavior.floating,
           backgroundColor: AppColors.primary,
           margin: EdgeInsets.all(20.w),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.r)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14.r),
+          ),
         ),
       );
   }
@@ -676,6 +797,134 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
+  void _showEditProfileSheet(BuildContext context) {
+    final auth = context.read<AuthProvider>();
+    final user = auth.user;
+    if (user == null) return;
+
+    final nameController = TextEditingController(text: user.name);
+    final phoneController = TextEditingController(text: user.phone ?? '');
+    final formKey = GlobalKey<FormState>();
+
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (sheetContext) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
+          ),
+          child: SafeArea(
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 24.h),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceLowest,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 24,
+                    offset: const Offset(0, -8),
+                  ),
+                ],
+              ),
+              child: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        height: 4.h,
+                        width: 44.w,
+                        decoration: BoxDecoration(
+                          color: AppColors.divider,
+                          borderRadius: BorderRadius.circular(99.r),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 22.h),
+                    Text(
+                      'Edit Profil',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontSize: 19.sp,
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    SizedBox(height: 14.h),
+                    TextFormField(
+                      controller: nameController,
+                      textInputAction: TextInputAction.next,
+                      decoration: const InputDecoration(
+                        labelText: 'Nama lengkap',
+                      ),
+                      validator: (value) {
+                        if ((value ?? '').trim().isEmpty) {
+                          return 'Nama tidak boleh kosong';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 12.h),
+                    TextFormField(
+                      controller: phoneController,
+                      keyboardType: TextInputType.phone,
+                      decoration: const InputDecoration(labelText: 'Nomor HP'),
+                    ),
+                    SizedBox(height: 6.h),
+                    Text(
+                      user.email,
+                      style: TextStyle(
+                        color: AppColors.textMuted,
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(height: 20.h),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          final isValid =
+                              formKey.currentState?.validate() ?? false;
+                          if (!isValid) return;
+
+                          final success = await auth.updateProfile(
+                            name: nameController.text.trim(),
+                            email: user.email,
+                            phone: phoneController.text.trim(),
+                          );
+
+                          if (!context.mounted) return;
+                          Navigator.pop(sheetContext);
+                          _showSnackBar(
+                            context,
+                            success
+                                ? 'Profil berhasil diperbarui.'
+                                : auth.errorMessage ??
+                                      'Profil belum bisa diperbarui.',
+                          );
+                        },
+                        child: const Text('Simpan Profil'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    ).whenComplete(() {
+      nameController.dispose();
+      phoneController.dispose();
+    });
+  }
+
   void _confirmLogout(BuildContext context) {
     final theme = Theme.of(context);
 
@@ -718,7 +967,11 @@ class ProfilePage extends StatelessWidget {
                     color: AppColors.error.withValues(alpha: 0.10),
                     borderRadius: BorderRadius.circular(20.r),
                   ),
-                  child: Icon(Icons.logout_rounded, color: AppColors.error, size: 27.sp),
+                  child: Icon(
+                    Icons.logout_rounded,
+                    color: AppColors.error,
+                    size: 27.sp,
+                  ),
                 ),
                 SizedBox(height: 16.h),
                 Text(
@@ -758,14 +1011,18 @@ class ProfilePage extends StatelessWidget {
                           backgroundColor: AppColors.error,
                           shadowColor: AppColors.error.withValues(alpha: 0.28),
                         ),
-                        onPressed: () {
+                        onPressed: () async {
                           Navigator.pop(sheetContext);
 
-                          context.read<AuthProvider>().logout();
+                          await context.read<AuthProvider>().logout();
+                          if (!context.mounted) return;
+                          context.read<AppDataProvider>().clearSessionData();
 
                           Navigator.pushAndRemoveUntil(
                             context,
-                            MaterialPageRoute(builder: (_) => const OnboardingPage()),
+                            MaterialPageRoute(
+                              builder: (_) => const OnboardingPage(),
+                            ),
                             (route) => false,
                           );
                         },
@@ -863,7 +1120,11 @@ class _ProfileMenuTile extends StatelessWidget {
                 ),
               ),
               SizedBox(width: 8.w),
-              Icon(Icons.arrow_forward_ios_rounded, size: 13.sp, color: AppColors.textMuted),
+              Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 13.sp,
+                color: AppColors.textMuted,
+              ),
             ],
           ),
         ),
